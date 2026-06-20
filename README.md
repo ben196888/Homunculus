@@ -11,6 +11,13 @@ Install all skills globally for all supported agents:
 npx skills add ben196888/Homunculus --all --copy -g
 ```
 
+Install for a specific agent:
+
+```bash
+npx skills add ben196888/Homunculus --skill '*' --agent claude-code --copy -g -y
+npx skills add ben196888/Homunculus --skill '*' --agent codex --copy -g -y
+```
+
 Install selected skills:
 
 ```bash
