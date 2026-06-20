@@ -1,0 +1,19 @@
+name: Validate skills
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  validate-skills:
+    name: Validate skill naming
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Validate skill names
+        run: python3 scripts/validate_skill_names.py
