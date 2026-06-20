@@ -1,5 +1,5 @@
 ---
-name: "rfc-writer"
+name: "homunculus-productivity-rfc-writer"
 description: "Use when a requested change is cross-cutting, architectural, or needs alignment before implementation."
 ---
 

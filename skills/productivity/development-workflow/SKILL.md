@@ -1,5 +1,5 @@
 ---
-name: "development-workflow"
+name: "homunculus-productivity-development-workflow"
 description: "Use when a task is large enough to benefit from an explicit plan, clarifications, documentation, implementation, and verification workflow."
 ---
 

@@ -1,5 +1,5 @@
 ---
-name: wt:find
+name: homunculus-programming-wt-find
 description: Find and recover a git worktree from partial context — branch fragment, path fragment, recently edited file, or a vague description like "stripe refactor" or "the auth thing from last week". Use whenever the user says "find my worktree", "where's my branch for X", "I was working on something about Y", "which worktree has Z", or can't remember which worktree they need. Always use this skill before resorting to manual `git worktree list` when the user has a vague or partial description.
 user-invocable: true
 ---

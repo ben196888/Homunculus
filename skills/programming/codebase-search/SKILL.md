@@ -1,5 +1,5 @@
 ---
-name: "codebase-search"
+name: "homunculus-programming-codebase-search"
 description: "Use when exploring a repository so code search stays fast and precise."
 ---
 
