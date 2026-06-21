@@ -33,18 +33,15 @@ def validate_skill_file(skill_file: Path) -> list[str]:
     relative = skill_file.relative_to(REPO_ROOT)
     parts = relative.parts
 
-    if len(parts) != 4 or parts[0] != "skills" or parts[3] != "SKILL.md":
-        return [f"{relative}: expected path skills/<category>/<skill>/SKILL.md"]
+    if len(parts) < 4 or parts[0] != "skills" or parts[-1] != "SKILL.md":
+        return [f"{relative}: expected path skills/<subpath>/SKILL.md"]
 
-    category = parts[1]
-    skill = parts[2]
-    expected_name = f"homunculus-{category}-{skill}"
+    skill_path_parts = parts[1:-1]
+    expected_name = f"homunculus-{'-'.join(skill_path_parts)}"
 
-    if not KEBAB_RE.fullmatch(category):
-        errors.append(f"{relative}: category must be lowercase kebab-case: {category}")
-
-    if not KEBAB_RE.fullmatch(skill):
-        errors.append(f"{relative}: skill directory must be lowercase kebab-case: {skill}")
+    for segment in skill_path_parts:
+        if not KEBAB_RE.fullmatch(segment):
+            errors.append(f"{relative}: path segment must be lowercase kebab-case: {segment}")
 
     actual_name = extract_frontmatter_name(skill_file)
     if actual_name is None:
@@ -58,7 +55,7 @@ def validate_skill_file(skill_file: Path) -> list[str]:
 
 
 def main() -> int:
-    skill_files = sorted(REPO_ROOT.glob("**/SKILL.md"))
+    skill_files = sorted((REPO_ROOT / "skills").glob("**/SKILL.md"))
 
     if not skill_files:
         print("No SKILL.md files found.")

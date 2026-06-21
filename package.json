@@ -1,0 +1,11 @@
+{
+  "name": "homunculus-skills",
+  "private": true,
+  "scripts": {
+    "skill-alias": "python3 scripts/skill_alias.py",
+    "test": "python3 -m unittest scripts/test_skill_alias.py",
+    "validate": "pnpm validate:skill-aliases && pnpm validate:skills",
+    "validate:skill-aliases": "python3 scripts/skill_alias.py validate",
+    "validate:skills": "python3 scripts/validate_skill_names.py"
+  }
+}
