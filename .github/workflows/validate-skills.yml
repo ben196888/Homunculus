@@ -17,3 +17,6 @@ jobs:
 
       - name: Validate skill names
         run: python3 scripts/validate_skill_names.py
+
+      - name: Validate skill aliases
+        run: python3 scripts/skill_alias.py validate
