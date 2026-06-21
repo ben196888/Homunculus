@@ -1,3 +1,11 @@
 namespace: homunculus
 
-aliases: {}
+aliases:
+  productivity/edit-article:
+    source: mattpocock/skills
+    skill: edit-article
+    ref: main
+  productivity/grilling:
+    source: mattpocock/skills
+    skill: grilling
+    ref: main
