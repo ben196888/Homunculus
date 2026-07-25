@@ -3,6 +3,7 @@
   "private": true,
   "scripts": {
     "skill-alias": "python3 scripts/skill_alias.py",
+    "eval-init": "python3 scripts/init_iteration.py",
     "test": "python3 -m unittest scripts/test_skill_alias.py",
     "validate": "pnpm validate:skill-aliases && pnpm validate:skills",
     "validate:skill-aliases": "python3 scripts/skill_alias.py validate",
