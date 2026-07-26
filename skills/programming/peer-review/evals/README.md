@@ -49,9 +49,21 @@ notification arrives; that data is not recoverable later.
 
 ## Status
 
-Iteration 1 has never executed. Six agents were spawned and all six died on a monthly
-spend limit before producing output, so there is no grading, no benchmark, and no
-baseline comparison yet.
+Iteration 1 is half run. Three of six planned runs are recorded here — eval-0 both
+configurations, eval-1 with-skill. eval-1 baseline and both eval-2 runs were never
+spawned, nothing has been graded, and there is no `benchmark.json`, so no pass rate
+should be read out of this directory yet.
+
+The one complete pair looks non-discriminating. On eval-0 the baseline independently
+built a synthetic git repo, replayed the old and new guard bodies across 8 worktree
+states, reproduced the quoted-path defect, and rejected two of its own suspected bugs
+— most of what the skill is meant to induce — at near-identical cost (94.9k tokens and
+474s with the skill, 93.0k and 472s without). A fourteen-line CI diff is probably too
+easy a case to separate the two. The differences that remain, unconfirmed by grading,
+are that the with-skill run kept seven killed claims out of its drafts and reported each
+with the command that killed it, and that its `thread.md` is 17 lines against 51.
+
+Treat replacing eval-0 with a harder case as the more useful next move than grading it.
 
 What has happened instead: a single inline dry run of the skill against
 ocftw/open-star-ter-village#409. It found one real latent defect in the PR and, more
