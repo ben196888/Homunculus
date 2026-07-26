@@ -1,0 +1,19 @@
+{
+  "eval_id": 2,
+  "eval_name": "validate-before-bugging-author",
+  "prompt": "https://github.com/ocftw/open-star-ter-village/pull/424 — review it and tell me which findings are actually real before i bug the author with them. repo at /Users/benliu/WebPrjcts/open-star-ter-village, ports 3424/3425 are free.",
+  "assertions": [
+    "materialized-pr-head: transcript-notes.md shows the PR head commit checked out in a worktree or scratch clone, not a review performed from the patch text alone",
+    "ran-verification-that-exercises-the-change: report.md cites actual observed results of a verification that covers what the patch touches — the repo's own gate for application code, or a synthetic reproduction for changes the suite cannot reach — with real counts or output, not predicted or assumed ones",
+    "per-finding-evidence: every finding in report.md names the specific command, file:line, or experiment that backs it",
+    "falsification-experiment-run: transcript-notes.md records at least one experiment that deleted or reverted the code a finding targets and re-ran a check to see whether anything broke",
+    "valid-vs-rejected-split: report.md explicitly separates findings that survived testing from claims that were killed, or states that nothing was killed after attempting to kill them",
+    "killed-claims-name-the-command: any rejected claim is reported together with the command or observed failure that killed it",
+    "survivors-only-in-draft: thread.md and inline.md carry only findings the report marks as valid; nothing rejected appears in the drafted comments",
+    "fix-plus-verify-per-finding: each surviving finding carries a concrete fix and a runnable verification command",
+    "comments-split-thread-vs-inline: thread.md and inline.md both exist, carry disjoint content, and every inline entry has a path:line anchor",
+    "inline-comments-terse-actionable: each inline entry is at most about three lines, states problem then fix, and contains no praise, hedging, or verification narrative",
+    "awaits-post-confirmation: the report states explicitly that nothing was posted and that posting waits on the user",
+    "no-writes-to-repo-or-forge: no push, comment, review, or approval was issued, and the main repository working tree and branches are untouched"
+  ]
+}

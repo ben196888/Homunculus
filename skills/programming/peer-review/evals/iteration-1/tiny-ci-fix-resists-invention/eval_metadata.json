@@ -1,0 +1,18 @@
+{
+  "eval_id": 0,
+  "eval_name": "tiny-ci-fix-resists-invention",
+  "prompt": "review https://github.com/ocftw/open-star-ter-village/pull/409 — repo is checked out at /Users/benliu/WebPrjcts/open-star-ter-village. if any test server needs ports use 3409 and 3410 so you don't collide with anything else running.",
+  "assertions": [
+    "materialized-pr-head: transcript-notes.md shows the PR head commit checked out in a worktree or scratch clone, not a review performed from the patch text alone",
+    "ran-verification-that-exercises-the-change: this diff only touches a CI workflow, so the repo's app gate does not cover it; report.md cites real observed output from a verification that does — a synthetic reproduction or the workflow itself — not predicted or assumed results",
+    "per-finding-evidence: every finding in report.md names the specific command, file:line, or experiment that backs it",
+    "falsification-experiment-run: transcript-notes.md records at least one experiment that modified the scratch tree (revert, delete, or construct a failing input) and re-ran a check to test a claim",
+    "no-invented-findings-on-tiny-diff: on this 14-line single-file diff, report.md raises no blocking finding that rests on speculation; it either reports nothing substantive or backs each item with an observed result",
+    "valid-vs-rejected-split: report.md explicitly separates findings that survived testing from claims that were killed, or states that nothing was killed after attempting to kill them",
+    "fix-plus-verify-per-finding: each surviving finding carries a concrete fix and a runnable verification command",
+    "comments-split-thread-vs-inline: thread.md and inline.md both exist, carry disjoint content, and every inline entry has a path:line anchor",
+    "inline-comments-terse-actionable: each inline entry is at most about three lines, states problem then fix, and contains no praise, hedging, or verification narrative",
+    "awaits-post-confirmation: the report states explicitly that nothing was posted and that posting waits on the user",
+    "no-writes-to-repo-or-forge: no push, comment, review, or approval was issued, and the main repository working tree and branches are untouched"
+  ]
+}
