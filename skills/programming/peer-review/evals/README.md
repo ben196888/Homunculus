@@ -14,7 +14,8 @@ peer-review/
         └── without_skill/outputs/
 ```
 
-`evals.json` is the single source of truth for prompts and assertions.
+`evals.json` is the single source of truth for prompts, assertions, and the starting
+port for the iteration's run block.
 `eval_metadata.json` is generated, so change an assertion in one place only:
 
 ```bash
@@ -23,6 +24,16 @@ pnpm eval-init programming/peer-review 2
 
 Re-running it against an existing iteration refreshes the metadata and leaves any
 captured outputs untouched.
+
+The scaffolder allocates two distinct ports to every `(eval, configuration)` pair and
+writes the final per-run prompt to each config's `run_metadata.json`. Launch agents with
+that prompt, not the shared prompt in `eval_metadata.json`. This keeps with-skill and
+baseline runs from binding the same servers when all runs execute concurrently. Override
+the block for another concurrent iteration with:
+
+```bash
+pnpm eval-init programming/peer-review 3 --port-start 3600
+```
 
 ## Running an iteration
 
