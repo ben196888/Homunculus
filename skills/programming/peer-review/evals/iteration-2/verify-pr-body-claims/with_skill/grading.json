@@ -1,0 +1,99 @@
+{
+  "expectations": [
+    {
+      "text": "materialized-pr-head: transcript-notes.md shows the PR head checked out in a worktree or scratch clone, since this diff changes application code the suite covers",
+      "passed": true,
+      "evidence": "The transcript creates a disposable detached worktree at the exact PR head, ec4282db."
+    },
+    {
+      "text": "ran-verification-that-exercises-the-change: report.md cites actual observed results of the repo's own gate with real counts or output, not predicted or assumed ones",
+      "passed": true,
+      "evidence": "The report records 140/140 Jest, clean lint and both tsc configs, 16/16 isolated Playwright tests, and CI's 30/30 full Playwright run."
+    },
+    {
+      "text": "per-finding-evidence: every finding in report.md names the specific command, file:line, or experiment that backs it",
+      "passed": true,
+      "evidence": "Every finding cites source lines and either a live Chromium reproduction, predicate matrix, or observed focus/menu probe."
+    },
+    {
+      "text": "execution-contract-read-not-assumed: any claim about the environment the code runs in — shell, package manager era, injected variables, library semantics — is sourced from a file or log the transcript shows being read, not asserted from recall",
+      "passed": true,
+      "evidence": "The run reads boardgame.io's vendored server implementation, build.yml, installed dependency sources, application predicates, and observed browser behavior."
+    },
+    {
+      "text": "falsification-experiment-run: transcript-notes.md records at least one experiment that deleted or reverted the code a finding targets and re-ran a check to see whether anything broke",
+      "passed": true,
+      "evidence": "The run deletes jest.setup.ts and its configuration entry, reruns Jest to observe 12 failures, restores them, and confirms 140/140."
+    },
+    {
+      "text": "pr-body-claims-run-not-read: each user-visible behavior the PR body asserts is confirmed or contradicted by an observed run, not accepted from the description",
+      "passed": false,
+      "evidence": "Most headline behaviors are exercised, but the report's stale-credential re-entry/demotion claim is supported only by reading loadSavedCredentials rather than a live run."
+    },
+    {
+      "text": "valid-vs-rejected-split: report.md explicitly separates findings that survived testing from claims that were killed, or states that nothing was killed after attempting to kill them",
+      "passed": true,
+      "evidence": "The report has distinct 'Confirmed findings' and 'Claims I tried to kill and could not' sections."
+    },
+    {
+      "text": "killed-claims-name-the-command: any rejected claim is reported together with the command or observed failure that killed it",
+      "passed": true,
+      "evidence": "The rejected-claims table names the Chromium action, grep, source read, deletion test, or clean rerun; transcript-notes.md preserves exact commands and results."
+    },
+    {
+      "text": "latent-vs-live-stated: each surviving finding says whether it fires today and what input would trigger it",
+      "passed": true,
+      "evidence": "Finding 1 is live-reproduced when all seated players leave; finding 2 fires when a seat is vacated after gameover; the two nits name the mobile menu and Escape inputs."
+    },
+    {
+      "text": "survivors-only-in-draft: thread.md and inline.md carry only findings the report marks as valid; nothing rejected appears in the drafted comments",
+      "passed": true,
+      "evidence": "The drafts contain only the two confirmed behavior gaps and two a11y nits; rejected hypotheses are absent."
+    },
+    {
+      "text": "fix-plus-verify-per-finding: each surviving finding carries a concrete fix and a runnable verification command",
+      "passed": false,
+      "evidence": "All findings suggest fixes and scenarios, but finding 1 and the two a11y nits do not each include a runnable verification command."
+    },
+    {
+      "text": "proposed-fix-itself-tested: at least one recommended fix was run against the reproduction, or expressed as a test that fails before it and passes after",
+      "passed": true,
+      "evidence": "The proposed gameover predicate fix is run through a seven-case branch matrix: head fails finished-plus-vacated, the naive fix regresses, and the full fix selects the board."
+    },
+    {
+      "text": "comments-split-thread-vs-inline: thread.md and inline.md both exist, carry disjoint content, and every inline entry has a path:line anchor",
+      "passed": true,
+      "evidence": "The lobby-row finding is developed at thread level, while the gameover and GameHeader items are line-anchored inline; thread.md only cross-references the inline item."
+    },
+    {
+      "text": "inline-comments-terse-actionable: each inline entry is at most about three lines, states problem then fix, and contains no praise, hedging, or verification narrative",
+      "passed": false,
+      "evidence": "The gameover inline comment includes a code block and branch-matrix verification narrative, substantially exceeding the terse comment shape."
+    },
+    {
+      "text": "awaits-post-confirmation: the report states explicitly that nothing was posted and that posting waits on the user",
+      "passed": false,
+      "evidence": "The report says nothing has been posted, but it does not explicitly say posting is waiting for the user's confirmation."
+    },
+    {
+      "text": "no-writes-to-repo-or-forge: no push, comment, review, or approval was issued, and the main repository working tree and branches are untouched",
+      "passed": true,
+      "evidence": "The transcript records cleanup to an empty scratch status, worktree removal, read-only gh usage, and no writes to the source repository or forge."
+    }
+  ],
+  "summary": {
+    "passed": 12,
+    "failed": 4,
+    "total": 16,
+    "pass_rate": 0.75
+  },
+  "eval_feedback": {
+    "suggestions": [
+      {
+        "assertion": "pr-body-claims-run-not-read",
+        "reason": "The assertion is intentionally strict: the run made a real claim from source reading that the baseline later verified in Chromium."
+      }
+    ],
+    "overall": "This is the strongest skilled run; it preserves rejected claims and tests one proposed fix, but still misses one live body-claim check and draft terseness."
+  }
+}

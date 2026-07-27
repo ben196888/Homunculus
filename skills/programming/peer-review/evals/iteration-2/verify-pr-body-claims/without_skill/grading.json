@@ -1,0 +1,94 @@
+{
+  "expectations": [
+    {
+      "text": "materialized-pr-head: transcript-notes.md shows the PR head checked out in a worktree or scratch clone, since this diff changes application code the suite covers",
+      "passed": true,
+      "evidence": "The merged PR tree is materialized in a disposable clone and the final branch state is also inspected; application tests run against that scratch checkout."
+    },
+    {
+      "text": "ran-verification-that-exercises-the-change: report.md cites actual observed results of the repo's own gate with real counts or output, not predicted or assumed ones",
+      "passed": true,
+      "evidence": "The report cites clean lint and both tsc configs, Jest 140/140, Playwright 16/16, and four live browser probes."
+    },
+    {
+      "text": "per-finding-evidence: every finding in report.md names the specific command, file:line, or experiment that backs it",
+      "passed": true,
+      "evidence": "Findings cite exact source lines, probe numbers and outputs, git-diff evidence, or measured polling requests."
+    },
+    {
+      "text": "execution-contract-read-not-assumed: any claim about the environment the code runs in — shell, package manager era, injected variables, library semantics — is sourced from a file or log the transcript shows being read, not asserted from recall",
+      "passed": true,
+      "evidence": "The transcript reads React's installed version, application and test shims, workflow behavior, source predicates, and real browser results."
+    },
+    {
+      "text": "falsification-experiment-run: transcript-notes.md records at least one experiment that deleted or reverted the code a finding targets and re-ran a check to see whether anything broke",
+      "passed": false,
+      "evidence": "The run adds probe specs and attacks claims, but it never deletes or reverts target production code and reruns a check."
+    },
+    {
+      "text": "pr-body-claims-run-not-read: each user-visible behavior the PR body asserts is confirmed or contradicted by an observed run, not accepted from the description",
+      "passed": true,
+      "evidence": "Dialog dismissal/focus, termination, return, stale-credential demotion, compact-menu behavior, and gate claims are exercised by Playwright, existing tests, or dedicated live probes."
+    },
+    {
+      "text": "valid-vs-rejected-split: report.md explicitly separates findings that survived testing from claims that were killed, or states that nothing was killed after attempting to kill them",
+      "passed": true,
+      "evidence": "The report separates 'Verified TRUE — do not raise these' from numbered real findings and explicitly labels the stale-server result a false alarm."
+    },
+    {
+      "text": "killed-claims-name-the-command: any rejected claim is reported together with the command or observed failure that killed it",
+      "passed": true,
+      "evidence": "Verified claims name the probe or test that confirmed them, and the false e2e regression is paired with EADDRINUSE evidence and a clean 16/16 rerun."
+    },
+    {
+      "text": "latent-vs-live-stated: each surviving finding says whether it fires today and what input would trigger it",
+      "passed": true,
+      "evidence": "The functional gap names all players leaving or closing tabs; the evidence issue is current; the mixed-seat, attribution, and polling findings state their live or conditional scope."
+    },
+    {
+      "text": "survivors-only-in-draft: thread.md and inline.md carry only findings the report marks as valid; nothing rejected appears in the drafted comments",
+      "passed": true,
+      "evidence": "thread.md carries findings 1-2 and inline.md carries findings 3-5 plus nits; verified-true claims and the stale-server false alarm are absent."
+    },
+    {
+      "text": "fix-plus-verify-per-finding: each surviving finding carries a concrete fix and a runnable verification command",
+      "passed": false,
+      "evidence": "The report offers fix directions, but each finding does not have its own runnable verification command."
+    },
+    {
+      "text": "proposed-fix-itself-tested: at least one recommended fix was run against the reproduction, or expressed as a test that fails before it and passes after",
+      "passed": false,
+      "evidence": "The findings are reproduced, but no recommended code fix is applied or encoded as a before/after test."
+    },
+    {
+      "text": "comments-split-thread-vs-inline: thread.md and inline.md both exist, carry disjoint content, and every inline entry has a path:line anchor",
+      "passed": true,
+      "evidence": "The thread contains findings 1-2; inline contains distinct findings 3-5 and nits, each with a file and line or tight symbol anchor."
+    },
+    {
+      "text": "inline-comments-terse-actionable: each inline entry is at most about three lines, states problem then fix, and contains no praise, hedging, or verification narrative",
+      "passed": false,
+      "evidence": "The inline drafts are multi-paragraph explanations with source excerpts, measured results, and review narrative."
+    },
+    {
+      "text": "awaits-post-confirmation: the report states explicitly that nothing was posted and that posting waits on the user",
+      "passed": false,
+      "evidence": "The report describes what it would send but does not explicitly state that nothing was posted and posting awaits user confirmation."
+    },
+    {
+      "text": "no-writes-to-repo-or-forge: no push, comment, review, or approval was issued, and the main repository working tree and branches are untouched",
+      "passed": true,
+      "evidence": "The transcript records a disposable clone, read-only gh use, cleanup, and an unchanged source worktree aside from pre-existing dirt."
+    }
+  ],
+  "summary": {
+    "passed": 11,
+    "failed": 5,
+    "total": 16,
+    "pass_rate": 0.6875
+  },
+  "eval_feedback": {
+    "suggestions": [],
+    "overall": "The baseline is exceptionally strong on live body-claim verification and nearly matches the skill; its misses are target-code falsification, fix testing, and terse drafting."
+  }
+}
