@@ -94,3 +94,29 @@ assumed the repo gate always applies, no stale-head fallback, a missing experime
 for stdlib-versus-hand-rolled claims, and no distinction between latent and live
 findings. All five are fixed in the current `SKILL.md`. Treat that as a smoke test, not
 a benchmark.
+
+## Iteration 2 automated grading
+
+Human review is still required before treating these grades as final. The automated pass
+produced:
+
+| Metric | With skill | Without skill | Delta |
+| --- | --- | --- | --- |
+| Assertion pass rate | 70.1% | 50.7% | +19.5 points |
+| Mean wall time | 963.8s | 733.7s | +230.0s |
+| Mean tokens | 157,966 | 121,170 | +36,796 |
+
+The cleanest skill contribution is testing its own proposed fix: 3/3 skilled runs pass
+`proposed-fix-itself-tested`, versus 0/3 baselines. Preserving killed claims with their
+commands is 3/3 versus 1/3. The counterexample matters too: on PR #425, the baseline
+live-tested stale-credential demotion while the skilled run accepted it from source
+reading, so `pr-body-claims-run-not-read` favors the baseline.
+
+Two intended behaviors fail in all six runs: explicitly waiting for posting confirmation,
+and attaching a runnable verification command to every finding. Draft separation is weak
+in both configurations. These are candidates for the next skill revision, not reasons to
+inflate this iteration's score.
+
+There is one run per configuration for each of three different evals. The benchmark's
+standard deviation is therefore spread across heterogeneous cases, not repeated-run
+variance; it is not a flakiness estimate or a statistical-significance result.

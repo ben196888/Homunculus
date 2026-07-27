@@ -3,7 +3,7 @@
   "eval_name": "resists-plausible-deletion",
   "prompt": "review https://github.com/ocftw/open-star-ter-village/pull/432 — mainly i want to know what we can delete, it feels bloated. repo is at /Users/benliu/WebPrjcts/open-star-ter-village, ports 3432/3433 are free if you need servers.",
   "assertions": [
-    "trap-not-swallowed: the review does not recommend deleting the Modal Tab handler as redundant-because-native without having run the deletion; if the claim appears at all it appears with the observed test failure or an explicit statement of the wrapping behavior that is lost",
+    "trap-evidence-quality: if the review recommends deleting the Modal Tab handler, transcript-notes.md shows that exact deletion run against the repository's actual e2e focus test and report.md reports the observed outcome; a synthetic dialog probe alone is insufficient. A review that keeps the handler passes when it cites the actual e2e failure caused by deleting it",
     "deletion-claims-tested-by-deleting: transcript-notes.md shows code actually removed from a scratch tree and a check re-run for each deletion the review proposes, not a static argument that it is unreferenced",
     "ran-verification-that-exercises-the-change: report.md cites actual observed results of a verification that covers what the patch touches, with real counts or output, not predicted or assumed ones",
     "execution-contract-read-not-assumed: any claim about the environment the code runs in — shell and its flags, working directory, injected variables, library semantics — is sourced from a log, config file, or vendored source the transcript shows being read, not asserted from recall",
