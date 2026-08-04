@@ -30,6 +30,12 @@ Install selected skills:
 npx skills add github.com/ben196888/homunculus --skill homunculus-programming-codebase-search homunculus-programming-wt-add homunculus-programming-wt-drop homunculus-programming-wt-find -g --copy
 ```
 
+Install the P0 workflow skills:
+
+```bash
+npx skills add github.com/ben196888/homunculus --skill homunculus-productivity-task-ledger homunculus-productivity-change-detection homunculus-programming-mr-steward -g --copy
+```
+
 List available skills without installing:
 
 ```bash
@@ -44,6 +50,9 @@ npx skills add github.com/ben196888/homunculus --list
 - `homunculus-programming-wt-find` - recover worktrees from partial context.
 - `homunculus-productivity-development-workflow` - plan, clarify, document, implement, verify.
 - `homunculus-productivity-rfc-writer` - write RFCs for cross-cutting or architectural changes.
+- `homunculus-productivity-task-ledger` - persist concise local ticket, branch, verification, and MR state across tasks.
+- `homunculus-productivity-change-detection` - check changed work has completion evidence before handoff.
+- `homunculus-programming-mr-steward` - inspect GitLab MR state and recommend read-only follow-up actions.
 
 ## Layout
 

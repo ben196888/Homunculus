@@ -4,9 +4,10 @@
   "scripts": {
     "skill-alias": "python3 scripts/skill_alias.py",
     "eval-init": "python3 scripts/init_iteration.py",
-    "test": "python3 -m unittest scripts/test_skill_alias.py",
+    "test": "python3 scripts/test_skill_alias.py",
     "validate": "pnpm validate:skill-aliases && pnpm validate:skills",
     "validate:skill-aliases": "python3 scripts/skill_alias.py validate",
-    "validate:skills": "python3 scripts/validate_skill_names.py"
+    "validate:skills": "python3 scripts/validate_skill_names.py",
+    "test:p0-skills": "python3 -m unittest tests/test_p0_workflows.py"
   }
 }
