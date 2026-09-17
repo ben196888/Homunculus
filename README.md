@@ -53,6 +53,7 @@ npx skills add github.com/ben196888/homunculus --list
 - `homunculus-productivity-task-ledger` - persist concise local ticket, branch, verification, and MR state across tasks.
 - `homunculus-productivity-change-detection` - check changed work has completion evidence before handoff.
 - `homunculus-programming-mr-steward` - inspect GitLab MR state and recommend read-only follow-up actions.
+- `homunculus-productivity-harness-session-retro` - analyze recent Codex sessions and recommend skills or harness components to create, improve, merge, keep, or retire.
 
 ## Layout
 

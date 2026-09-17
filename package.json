@@ -8,6 +8,7 @@
     "validate": "pnpm validate:skill-aliases && pnpm validate:skills",
     "validate:skill-aliases": "python3 scripts/skill_alias.py validate",
     "validate:skills": "python3 scripts/validate_skill_names.py",
-    "test:p0-skills": "python3 -m unittest tests/test_p0_workflows.py"
+    "test:p0-skills": "python3 -m unittest tests/test_p0_workflows.py",
+    "test:session-retro": "python3 -m unittest tests/test_session_retro.py"
   }
 }
