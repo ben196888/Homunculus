@@ -33,7 +33,7 @@ def validate_skill_file(skill_file: Path) -> list[str]:
     relative = skill_file.relative_to(REPO_ROOT)
     parts = relative.parts
 
-    if len(parts) < 4 or parts[0] != "skills" or parts[-1] != "SKILL.md":
+    if len(parts) < 3 or parts[0] != "skills" or parts[-1] != "SKILL.md":
         return [f"{relative}: expected path skills/<subpath>/SKILL.md"]
 
     skill_path_parts = parts[1:-1]
