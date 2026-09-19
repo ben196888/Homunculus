@@ -38,6 +38,7 @@ npx skills add github.com/ben196888/homunculus --list
 
 ## Skills
 
+- `homunculus-create-printable-html` - self-contained, multilingual HTML documents optimized for printing.
 - `homunculus-programming-codebase-search` - fast repository exploration using `rg`.
 - `homunculus-programming-wt-add` - create git worktrees for isolated tasks.
 - `homunculus-programming-wt-drop` - remove completed worktrees and branches.
