@@ -44,6 +44,7 @@ npx skills add github.com/ben196888/homunculus --list
 
 ## Skills
 
+- `homunculus-productivity-commit-plan` - review a multi-commit plan as the intended git history before implementation.
 - `homunculus-productivity-create-printable-html` - self-contained, multilingual HTML documents optimized for printing.
 - `homunculus-programming-codebase-search` - fast repository exploration using `rg`.
 - `homunculus-programming-wt-add` - create git worktrees for isolated tasks.
