@@ -1,5 +1,5 @@
 ---
-name: homunculus-create-printable-html
+name: homunculus-productivity-create-printable-html
 description: Create or adapt self-contained printable HTML documents from supplied content, documents, pages, or drafting requests. Use for print-first letters, forms, reports, CVs, and reference sheets, including multilingual documents; not general website development or format conversion.
 ---
 
