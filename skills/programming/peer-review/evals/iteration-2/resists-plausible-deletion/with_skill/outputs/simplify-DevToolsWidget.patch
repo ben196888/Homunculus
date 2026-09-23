@@ -1,0 +1,348 @@
+diff --git a/packages/webapp/src/app/globals.css b/packages/webapp/src/app/globals.css
+index 530be733..e60616cf 100644
+--- a/packages/webapp/src/app/globals.css
++++ b/packages/webapp/src/app/globals.css
+@@ -457,3 +457,27 @@ body:has(.modal[open]) {
+ .menu-item:hover {
+   background: var(--paper-2);
+ }
++
++/* Developer harness drawer (dev-only route). */
++.dev-tools__launcher {
++  position: fixed; right: 20px; bottom: 20px; z-index: 1301;
++  width: 40px; height: 40px; font-size: 20px; line-height: 1; cursor: pointer;
++  border: 2px solid var(--ink); border-radius: 50%;
++  background: var(--orange); color: var(--ink); box-shadow: 0 3px 0 var(--ink);
++}
++.dev-tools__launcher[data-open='true'] { opacity: 0; pointer-events: none; }
++.dev-tools { box-sizing: border-box; border-bottom: 0; }
++.dev-tools--right { margin: 0 0 0 auto; width: 320px; max-width: 320px; height: 100vh; max-height: 100vh; border-radius: 0; border-right: 0; }
++.dev-tools--bottom { margin: auto 0 0; width: 100%; max-width: 100%; max-height: 80vh; border-radius: 22px 22px 0 0; }
++.dev-tools__header { display: flex; align-items: center; gap: 8px; font-size: 20px; }
++.dev-tools__header h2 { flex: 1; margin: 0; font-size: 20px; font-weight: 800; }
++.dev-tools__header button { width: 36px; height: 36px; border: 0; background: transparent; color: inherit; cursor: pointer; font-size: 28px; line-height: 1; }
++.dev-tools__hint { margin: 6px 0 0; color: #666; font-size: 14px; }
++.dev-tools hr { margin: 16px 0; border: 0; border-top: 1px solid #d8d1c7; }
++.dev-tools__group { margin: 0; padding: 0; border: 0; }
++.dev-tools__group legend { margin-bottom: 8px; font-weight: 700; }
++.dev-tools__group label { display: flex; align-items: center; gap: 10px; min-height: 40px; cursor: pointer; }
++.dev-tools__group input { width: 18px; height: 18px; accent-color: var(--orange); }
++@media (max-width: 767px) {
++  .dev-tools__launcher { right: 12px; top: 72px; bottom: auto; }
++}
+diff --git a/packages/webapp/src/components/design/Modal.tsx b/packages/webapp/src/components/design/Modal.tsx
+index 1ecf580a..46fad4ba 100644
+--- a/packages/webapp/src/components/design/Modal.tsx
++++ b/packages/webapp/src/components/design/Modal.tsx
+@@ -19,7 +19,7 @@ export default function Modal({
+   ariaDescribedBy,
+   role,
+   width = 'min(560px, 100%)',
+-  style,
++  className,
+   dataTestid,
+   children,
+ }: {
+@@ -32,7 +32,7 @@ export default function Modal({
+   /** Defaults to the dialog element's implicit role. */
+   role?: 'alertdialog';
+   width?: string;
+-  style?: React.CSSProperties;
++  className?: string;
+   dataTestid?: string;
+   children: React.ReactNode;
+ }) {
+@@ -69,14 +69,14 @@ export default function Modal({
+   return (
+     <dialog
+       ref={dialogRef}
+-      className="modal"
++      className={className ? `modal ${className}` : 'modal'}
+       aria-label={ariaLabel}
+       aria-labelledby={ariaLabelledBy}
+       aria-describedby={ariaDescribedBy}
+       role={role}
+       data-testid={dataTestid}
+       tabIndex={-1}
+-      style={{ width, fontFamily: 'var(--font-zh)', ...style }}
++      style={{ width, fontFamily: 'var(--font-zh)' }}
+       onCancel={(event) => {
+         event.preventDefault();
+         onClose?.();
+diff --git a/packages/webapp/src/components/dev/DevGameHost.tsx b/packages/webapp/src/components/dev/DevGameHost.tsx
+index 78d607eb..91ec2753 100644
+--- a/packages/webapp/src/components/dev/DevGameHost.tsx
++++ b/packages/webapp/src/components/dev/DevGameHost.tsx
+@@ -86,7 +86,6 @@ export default function DevGameHost({
+           transport={transport}
+           onPerspectiveChange={handlePerspectiveChange}
+           onTransportChange={handleTransportChange}
+-          hasLocalSetupOverrides={Boolean(seed || demo)}
+         />
+       }
+     />
+diff --git a/packages/webapp/src/components/dev/DevToolsWidget.tsx b/packages/webapp/src/components/dev/DevToolsWidget.tsx
+index 3efdaec5..74c24173 100644
+--- a/packages/webapp/src/components/dev/DevToolsWidget.tsx
++++ b/packages/webapp/src/components/dev/DevToolsWidget.tsx
+@@ -5,22 +5,51 @@ import { Modal } from '@/components/design';
+ import { useIsMobile } from '@/lib/useIsMobile';
+ import type { DevPerspective, DevTransport } from '@/components/dev/devConfig';
+ 
+-const PERSPECTIVE_OPTIONS: ReadonlyArray<{
+-  value: DevPerspective;
+-  label: string;
+-}> = [
+-  { value: 'player1', label: 'Alice · Player 1' },
+-  { value: 'player2', label: 'Bob · Player 2' },
+-  { value: 'player3', label: 'Charlie · Player 3' },
+-  { value: 'observer', label: 'Observer' },
+-];
++const PERSPECTIVE_OPTIONS = [
++  ['player1', 'Alice · Player 1'],
++  ['player2', 'Bob · Player 2'],
++  ['player3', 'Charlie · Player 3'],
++  ['observer', 'Observer'],
++] as const satisfies ReadonlyArray<readonly [DevPerspective, string]>;
++
++const TRANSPORT_OPTIONS = [
++  ['offline', 'Offline · Local'],
++  ['online', 'Online · SocketIO'],
++] as const satisfies ReadonlyArray<readonly [DevTransport, string]>;
++
++function RadioGroup<T extends string>({
++  name, legend, options, value, onChange,
++}: {
++  name: string;
++  legend: string;
++  options: ReadonlyArray<readonly [T, string]>;
++  value: T;
++  onChange: (next: T) => void;
++}) {
++  return (
++    <fieldset className="dev-tools__group">
++      <legend>{legend}</legend>
++      {options.map(([optionValue, label]) => (
++        <label key={optionValue} data-testid={`${name}-${optionValue}`}>
++          <input
++            type="radio"
++            name={name}
++            value={optionValue}
++            checked={value === optionValue}
++            onChange={() => onChange(optionValue)}
++          />
++          {label}
++        </label>
++      ))}
++    </fieldset>
++  );
++}
+ 
+ export interface DevToolsWidgetProps {
+   perspective: DevPerspective;
+   transport: DevTransport;
+   onPerspectiveChange: (perspective: DevPerspective) => void;
+   onTransportChange: (transport: DevTransport) => void;
+-  hasLocalSetupOverrides?: boolean;
+ }
+ 
+ export default function DevToolsWidget({
+@@ -28,176 +57,44 @@ export default function DevToolsWidget({
+   transport,
+   onPerspectiveChange,
+   onTransportChange,
+-  hasLocalSetupOverrides = false,
+ }: DevToolsWidgetProps) {
+   const [open, setOpen] = React.useState(false);
+-  const isMobile = useIsMobile();
+-  const anchor = isMobile ? 'bottom' : 'right';
++  const anchor = useIsMobile() ? 'bottom' : 'right';
+ 
+   return (
+     <>
+       <button
+         type="button"
++        className="dev-tools__launcher"
+         aria-label="Open developer controls"
+         data-testid="dev-tools-open"
++        data-open={open}
+         onClick={() => setOpen(true)}
+-        style={{
+-          position: 'fixed',
+-          right: isMobile ? 12 : 20,
+-          top: isMobile ? 72 : 'auto',
+-          bottom: isMobile ? 'auto' : 20,
+-          zIndex: 1301,
+-          width: 40,
+-          height: 40,
+-          border: '2px solid var(--ink)',
+-          borderRadius: '50%',
+-          background: 'var(--orange)',
+-          color: 'var(--ink)',
+-          boxShadow: '0 3px 0 var(--ink)',
+-          cursor: 'pointer',
+-          fontSize: 20,
+-          lineHeight: 1,
+-          opacity: open ? 0 : 1,
+-          pointerEvents: open ? 'none' : 'auto',
+-        }}
+       >
+         <span aria-hidden="true">⚙</span>
+       </button>
+ 
+-      <Modal
+-        open={open}
+-        onClose={() => setOpen(false)}
+-        ariaLabelledBy="dev-tools-title"
+-        style={
+-          isMobile
+-            ? {
+-                boxSizing: 'border-box',
+-                margin: 'auto 0 0',
+-                width: '100%',
+-                maxWidth: '100%',
+-                maxHeight: '80vh',
+-                borderRadius: '22px 22px 0 0',
+-                borderBottom: 0,
+-              }
+-            : {
+-                boxSizing: 'border-box',
+-                margin: '0 0 0 auto',
+-                width: 320,
+-                maxWidth: 320,
+-                height: '100vh',
+-                maxHeight: '100vh',
+-                borderRadius: 0,
+-                borderRight: 0,
+-                borderBottom: 0,
+-              }
+-        }
+-      >
++      <Modal open={open} onClose={() => setOpen(false)} ariaLabelledBy="dev-tools-title" className={`dev-tools dev-tools--${anchor}`}>
+         <div data-testid="dev-tools-drawer" data-anchor={anchor}>
+-            <header style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+-              <span aria-hidden="true" style={{ fontSize: 20 }}>
+-                ⚙
+-              </span>
+-              <h2
+-                id="dev-tools-title"
+-                style={{ flex: 1, margin: 0, fontSize: 20, fontWeight: 800 }}
+-              >
+-                Developer controls
+-              </h2>
+-              <button
+-                type="button"
+-                aria-label="Close developer controls"
+-                data-testid="dev-tools-close"
+-                onClick={() => setOpen(false)}
+-                style={{
+-                  width: 36,
+-                  height: 36,
+-                  border: 0,
+-                  background: 'transparent',
+-                  color: 'inherit',
+-                  cursor: 'pointer',
+-                  fontSize: 28,
+-                  lineHeight: 1,
+-                }}
+-              >
+-                <span aria-hidden="true">×</span>
+-              </button>
+-            </header>
+-
+-            <p style={{ margin: '6px 0 0', color: '#666', fontSize: 14 }}>
+-              Switch perspective without leaving the current match.
+-            </p>
+-
+-            <hr style={{ margin: '16px 0', border: 0, borderTop: '1px solid #d8d1c7' }} />
+-
+-            <fieldset style={{ margin: 0, padding: 0, border: 0 }}>
+-              <legend style={{ marginBottom: 8, fontWeight: 700 }}>Perspective</legend>
+-              {PERSPECTIVE_OPTIONS.map((option) => (
+-                <label
+-                  key={option.value}
+-                  data-testid={`dev-perspective-${option.value}`}
+-                  style={{
+-                    display: 'flex',
+-                    alignItems: 'center',
+-                    gap: 10,
+-                    minHeight: 40,
+-                    cursor: 'pointer',
+-                  }}
+-                >
+-                  <input
+-                    type="radio"
+-                    name="dev-perspective"
+-                    value={option.value}
+-                    checked={perspective === option.value}
+-                    onChange={() => onPerspectiveChange(option.value)}
+-                    style={{ width: 18, height: 18, accentColor: 'var(--orange)' }}
+-                  />
+-                  {option.label}
+-                </label>
+-              ))}
+-            </fieldset>
+-
+-            <hr style={{ margin: '16px 0', border: 0, borderTop: '1px solid #d8d1c7' }} />
+-
+-            <fieldset style={{ margin: 0, padding: 0, border: 0 }}>
+-              <legend style={{ marginBottom: 8, fontWeight: 700 }}>Transport</legend>
+-              {(
+-                [
+-                  ['offline', 'Offline · Local'],
+-                  ['online', 'Online · SocketIO'],
+-                ] as const
+-              ).map(([value, label]) => (
+-                <label
+-                  key={value}
+-                  data-testid={`dev-transport-${value}`}
+-                  style={{
+-                    display: 'flex',
+-                    alignItems: 'center',
+-                    gap: 10,
+-                    minHeight: 40,
+-                    cursor: 'pointer',
+-                  }}
+-                >
+-                  <input
+-                    type="radio"
+-                    name="dev-transport"
+-                    value={value}
+-                    checked={transport === value}
+-                    onChange={() => onTransportChange(value)}
+-                    style={{ width: 18, height: 18, accentColor: 'var(--orange)' }}
+-                  />
+-                  {label}
+-                </label>
+-              ))}
+-            </fieldset>
++          <header className="dev-tools__header">
++            <span aria-hidden="true">⚙</span>
++            <h2 id="dev-tools-title">Developer controls</h2>
++            <button
++              type="button"
++              aria-label="Close developer controls"
++              data-testid="dev-tools-close"
++              onClick={() => setOpen(false)}
++            >
++              <span aria-hidden="true">×</span>
++            </button>
++          </header>
+ 
+-            <p style={{ margin: '12px 0 0', color: '#666', fontSize: 12 }}>
+-              Changing transport starts a fresh three-player match.
+-            </p>
+-            {hasLocalSetupOverrides && (
+-              <p style={{ margin: '8px 0 0', color: '#9b5d00', fontSize: 12 }}>
+-                Seed and demo overrides apply only in Offline mode.
+-              </p>
+-            )}
++          <p className="dev-tools__hint">Switch perspective without leaving the current match.</p>
++          <hr />
++          <RadioGroup name="dev-perspective" legend="Perspective" options={PERSPECTIVE_OPTIONS} value={perspective} onChange={onPerspectiveChange} />
++          <hr />
++          <RadioGroup name="dev-transport" legend="Transport" options={TRANSPORT_OPTIONS} value={transport} onChange={onTransportChange} />
++          <p className="dev-tools__hint">Changing transport starts a fresh three-player match.</p>
+         </div>
+       </Modal>
+     </>

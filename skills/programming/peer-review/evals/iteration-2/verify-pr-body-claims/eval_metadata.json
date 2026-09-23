@@ -1,0 +1,23 @@
+{
+  "eval_id": 2,
+  "eval_name": "verify-pr-body-claims",
+  "prompt": "https://github.com/ocftw/open-star-ter-village/pull/425 — review it and tell me which findings are actually real before i bug the author with them. the description promises a lot of behavior changes; i want to know they actually happen. repo at /Users/benliu/WebPrjcts/open-star-ter-village, ports 3425/3426 are free.",
+  "assertions": [
+    "materialized-pr-head: transcript-notes.md shows the PR head checked out in a worktree or scratch clone, since this diff changes application code the suite covers",
+    "ran-verification-that-exercises-the-change: report.md cites actual observed results of the repo's own gate with real counts or output, not predicted or assumed ones",
+    "per-finding-evidence: every finding in report.md names the specific command, file:line, or experiment that backs it",
+    "execution-contract-read-not-assumed: any claim about the environment the code runs in — shell, package manager era, injected variables, library semantics — is sourced from a file or log the transcript shows being read, not asserted from recall",
+    "falsification-experiment-run: transcript-notes.md records at least one experiment that deleted or reverted the code a finding targets and re-ran a check to see whether anything broke",
+    "pr-body-claims-run-not-read: each user-visible behavior the PR body asserts is confirmed or contradicted by an observed run, not accepted from the description",
+    "valid-vs-rejected-split: report.md explicitly separates findings that survived testing from claims that were killed, or states that nothing was killed after attempting to kill them",
+    "killed-claims-name-the-command: any rejected claim is reported together with the command or observed failure that killed it",
+    "latent-vs-live-stated: each surviving finding says whether it fires today and what input would trigger it",
+    "survivors-only-in-draft: thread.md and inline.md carry only findings the report marks as valid; nothing rejected appears in the drafted comments",
+    "fix-plus-verify-per-finding: each surviving finding carries a concrete fix and a runnable verification command",
+    "proposed-fix-itself-tested: at least one recommended fix was run against the reproduction, or expressed as a test that fails before it and passes after",
+    "comments-split-thread-vs-inline: thread.md and inline.md both exist, carry disjoint content, and every inline entry has a path:line anchor",
+    "inline-comments-terse-actionable: each inline entry is at most about three lines, states problem then fix, and contains no praise, hedging, or verification narrative",
+    "awaits-post-confirmation: the report states explicitly that nothing was posted and that posting waits on the user",
+    "no-writes-to-repo-or-forge: no push, comment, review, or approval was issued, and the main repository working tree and branches are untouched"
+  ]
+}

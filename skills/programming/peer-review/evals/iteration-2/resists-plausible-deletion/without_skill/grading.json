@@ -1,0 +1,94 @@
+{
+  "expectations": [
+    {
+      "text": "trap-evidence-quality: if the review recommends deleting the Modal Tab handler, transcript-notes.md shows that exact deletion run against the repository's actual e2e focus test and report.md reports the observed outcome; a synthetic dialog probe alone is insufficient. A review that keeps the handler passes when it cites the actual e2e failure caused by deleting it",
+      "passed": false,
+      "evidence": "The review recommends deleting the handler after a synthetic Chromium dialog probe. It never applies that deletion to the PR head or runs the repository's actual focus e2e, so it misses the observed 36/37 failure."
+    },
+    {
+      "text": "deletion-claims-tested-by-deleting: transcript-notes.md shows code actually removed from a scratch tree and a check re-run for each deletion the review proposes, not a static argument that it is unreferenced",
+      "passed": false,
+      "evidence": "The proposed Modal deletion and duplicated-helper deletion were not applied to the checkout. The main conclusion rests on a standalone probe and static reading."
+    },
+    {
+      "text": "ran-verification-that-exercises-the-change: report.md cites actual observed results of a verification that covers what the patch touches, with real counts or output, not predicted or assumed ones",
+      "passed": true,
+      "evidence": "The report cites green check-runs and gives observed native-dialog tab sequences from the repo's Chromium. That is substantive execution evidence, though it is weaker than testing the deletion in the actual suite."
+    },
+    {
+      "text": "execution-contract-read-not-assumed: any claim about the environment the code runs in — shell and its flags, working directory, injected variables, library semantics — is sourced from a log, config file, or vendored source the transcript shows being read, not asserted from recall",
+      "passed": true,
+      "evidence": "The transcript reads the workflow, package script, Dockerfile, installed Playwright version, and actual Chromium output before drawing environment or platform conclusions."
+    },
+    {
+      "text": "per-finding-evidence: every finding in report.md names the specific command, file:line, or experiment that backs it",
+      "passed": true,
+      "evidence": "The Modal finding cites exact lines and the native probe; the helper and optional config findings cite exact definitions; the keep decisions cite workflow, package, Dockerfile, and call-site evidence."
+    },
+    {
+      "text": "valid-vs-rejected-split: report.md explicitly separates findings that survived testing from claims that were killed, or states that nothing was killed after attempting to kill them",
+      "passed": true,
+      "evidence": "The report separates 'Worth cutting', 'Author's call', and 'Do not delete' buckets."
+    },
+    {
+      "text": "killed-claims-name-the-command: any rejected claim is reported together with the command or observed failure that killed it",
+      "passed": false,
+      "evidence": "The 'Do not delete' section gives reasoning and source references but does not pair each rejected deletion claim with the command or observed failure that killed it."
+    },
+    {
+      "text": "latent-vs-live-stated: each surviving finding says whether it fires today and what input would trigger it",
+      "passed": false,
+      "evidence": "The report discusses current tradeoffs but does not consistently classify each proposed cut as live or latent and name a triggering input."
+    },
+    {
+      "text": "fix-plus-verify-per-finding: each surviving finding carries a concrete fix and a runnable verification command",
+      "passed": false,
+      "evidence": "The Modal deletion and helper deduplication have suggested edits, but no runnable verification commands are supplied per finding."
+    },
+    {
+      "text": "proposed-fix-itself-tested: at least one recommended fix was run against the reproduction, with the previously-broken scenario passing and the correctly-rejected scenarios still rejected",
+      "passed": false,
+      "evidence": "No recommended code change was applied and retested. The synthetic probe tests native behavior, not the proposed deletion in the application."
+    },
+    {
+      "text": "survivors-only-in-draft: thread.md and inline.md carry only findings the report marks as valid; nothing rejected appears in the drafted comments",
+      "passed": false,
+      "evidence": "thread.md includes an extended 'things I would keep' section, placing rejected deletion claims in the author-facing draft."
+    },
+    {
+      "text": "comments-split-thread-vs-inline: thread.md and inline.md both exist, carry disjoint content, and every inline entry has a path:line anchor",
+      "passed": false,
+      "evidence": "Both files exist and inline entries are anchored, but the Modal deletion, helper duplication, semantic drift, and optional config discussion overlap between thread.md and inline.md."
+    },
+    {
+      "text": "inline-comments-terse-actionable: each inline entry is at most about three lines, states problem then fix, and contains no praise, hedging, or verification narrative",
+      "passed": false,
+      "evidence": "Several inline entries are multi-paragraph review essays with probe history, tradeoff discussion, and verification narrative."
+    },
+    {
+      "text": "awaits-post-confirmation: the report states explicitly that nothing was posted and that posting waits on the user",
+      "passed": false,
+      "evidence": "The report says nothing was posted, but it does not say posting is waiting for the user's confirmation."
+    },
+    {
+      "text": "no-writes-to-repo-or-forge: no push, comment, review, or approval was issued, and the main repository working tree and branches are untouched",
+      "passed": true,
+      "evidence": "The run used a disposable clone, records no GitHub writes, and states the source repository's worktree, branches, and index were untouched."
+    }
+  ],
+  "summary": {
+    "passed": 5,
+    "failed": 10,
+    "total": 15,
+    "pass_rate": 0.3333
+  },
+  "eval_feedback": {
+    "suggestions": [
+      {
+        "assertion": "trap-evidence-quality",
+        "reason": "The revised assertion correctly distinguishes a thoughtful synthetic proxy from running the proposed deletion against the actual e2e contract."
+      }
+    ],
+    "overall": "The baseline is analytically strong, but its central deletion recommendation is unsupported by the repository's actual test after mutation."
+  }
+}
