@@ -1,0 +1,569 @@
+{
+  "metadata": {
+    "skill_name": "homunculus-programming-autosquash",
+    "comparison": "bundled Python helper vs instructions only",
+    "executor_model": "gpt-5.6-luna",
+    "reasoning_effort": "medium",
+    "evals_run": [
+      "clean_fixups",
+      "dirty_diverged_squash",
+      "no_markers",
+      "lease_race"
+    ],
+    "runs_per_configuration": 1
+  },
+  "runs": [
+    {
+      "eval_id": 0,
+      "eval_name": "clean_fixups",
+      "configuration": "instructions_only",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": 113.264,
+        "tokens": 265998,
+        "input_tokens": 261052,
+        "cached_input_tokens": 225024,
+        "uncached_input_tokens": 36028,
+        "output_tokens": 4946,
+        "reasoning_output_tokens": 762
+      },
+      "expectations": [
+        {
+          "text": "run-completed",
+          "passed": true,
+          "evidence": "Codex turn completed without timeout or process failure"
+        },
+        {
+          "text": "markers-folded",
+          "passed": true,
+          "evidence": "subjects=['feat: add beta', 'feat: add alpha']"
+        },
+        {
+          "text": "tree-preserved",
+          "passed": true,
+          "evidence": "final tree equals pre-cleanup tree"
+        },
+        {
+          "text": "remote-updated",
+          "passed": true,
+          "evidence": "local=2b13b7a91cb3 remote=2b13b7a91cb3"
+        },
+        {
+          "text": "lease-evidenced",
+          "passed": true,
+          "evidence": "report describes exact lease protection"
+        },
+        {
+          "text": "recovery-evidenced",
+          "passed": true,
+          "evidence": "report includes reflog and old SHA"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "eval_name": "dirty_diverged_squash",
+      "configuration": "instructions_only",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": 140.864,
+        "tokens": 330521,
+        "input_tokens": 324381,
+        "cached_input_tokens": 289024,
+        "uncached_input_tokens": 35357,
+        "output_tokens": 6140,
+        "reasoning_output_tokens": 1341
+      },
+      "expectations": [
+        {
+          "text": "run-completed",
+          "passed": true,
+          "evidence": "Codex turn completed without timeout or process failure"
+        },
+        {
+          "text": "markers-folded",
+          "passed": true,
+          "evidence": "marked=[]"
+        },
+        {
+          "text": "remote-integrated",
+          "passed": true,
+          "evidence": "remote files include remote.txt=True"
+        },
+        {
+          "text": "message-valid",
+          "passed": true,
+          "evidence": "combined subject='feat: add feature'"
+        },
+        {
+          "text": "dirty-restored",
+          "passed": true,
+          "evidence": "final staged/unstaged/untracked fingerprint matches pre-run"
+        },
+        {
+          "text": "verification-evidenced",
+          "passed": true,
+          "evidence": "report records repository and tree verification"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "lease_race",
+      "configuration": "instructions_only",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": 156.021,
+        "tokens": 342892,
+        "input_tokens": 336279,
+        "cached_input_tokens": 307200,
+        "uncached_input_tokens": 29079,
+        "output_tokens": 6613,
+        "reasoning_output_tokens": 1523
+      },
+      "expectations": [
+        {
+          "text": "run-completed",
+          "passed": true,
+          "evidence": "Codex turn completed without timeout or process failure"
+        },
+        {
+          "text": "concurrent-work-preserved",
+          "passed": true,
+          "evidence": "remote files=['README.md', 'base.txt', 'feature.txt', 'race.txt', 'verify.sh']"
+        },
+        {
+          "text": "lease-handled",
+          "passed": true,
+          "evidence": "report identifies lease/concurrency outcome"
+        },
+        {
+          "text": "no-unsafe-overwrite",
+          "passed": true,
+          "evidence": "remote=72e9d8c69042 concurrent=72e9d8c69042"
+        },
+        {
+          "text": "recovery-evidenced",
+          "passed": true,
+          "evidence": "report includes recovery guidance"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "no_markers",
+      "configuration": "instructions_only",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": 81.303,
+        "tokens": 176752,
+        "input_tokens": 173113,
+        "cached_input_tokens": 155392,
+        "uncached_input_tokens": 17721,
+        "output_tokens": 3639,
+        "reasoning_output_tokens": 496
+      },
+      "expectations": [
+        {
+          "text": "run-completed",
+          "passed": true,
+          "evidence": "Codex turn completed without timeout or process failure"
+        },
+        {
+          "text": "head-unchanged",
+          "passed": true,
+          "evidence": "head=12b101f4ea9c expected=12b101f4ea9c"
+        },
+        {
+          "text": "remote-unchanged",
+          "passed": true,
+          "evidence": "remote=12b101f4ea9c expected=12b101f4ea9c"
+        },
+        {
+          "text": "tree-unchanged",
+          "passed": true,
+          "evidence": "tree unchanged"
+        },
+        {
+          "text": "no-op-reported",
+          "passed": true,
+          "evidence": "report identifies no marked commits"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 0,
+      "eval_name": "clean_fixups",
+      "configuration": "with_script",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": 126.398,
+        "tokens": 312309,
+        "input_tokens": 307448,
+        "cached_input_tokens": 283904,
+        "uncached_input_tokens": 23544,
+        "output_tokens": 4861,
+        "reasoning_output_tokens": 1075
+      },
+      "expectations": [
+        {
+          "text": "run-completed",
+          "passed": true,
+          "evidence": "Codex turn completed without timeout or process failure"
+        },
+        {
+          "text": "markers-folded",
+          "passed": true,
+          "evidence": "subjects=['feat: add beta', 'feat: add alpha']"
+        },
+        {
+          "text": "tree-preserved",
+          "passed": true,
+          "evidence": "final tree equals pre-cleanup tree"
+        },
+        {
+          "text": "remote-updated",
+          "passed": true,
+          "evidence": "local=a9a7882836ee remote=a9a7882836ee"
+        },
+        {
+          "text": "lease-evidenced",
+          "passed": true,
+          "evidence": "report describes exact lease protection"
+        },
+        {
+          "text": "recovery-evidenced",
+          "passed": true,
+          "evidence": "report includes reflog and old SHA"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "eval_name": "dirty_diverged_squash",
+      "configuration": "with_script",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": 108.239,
+        "tokens": 244196,
+        "input_tokens": 239598,
+        "cached_input_tokens": 210944,
+        "uncached_input_tokens": 28654,
+        "output_tokens": 4598,
+        "reasoning_output_tokens": 949
+      },
+      "expectations": [
+        {
+          "text": "run-completed",
+          "passed": true,
+          "evidence": "Codex turn completed without timeout or process failure"
+        },
+        {
+          "text": "markers-folded",
+          "passed": true,
+          "evidence": "marked=[]"
+        },
+        {
+          "text": "remote-integrated",
+          "passed": true,
+          "evidence": "remote files include remote.txt=True"
+        },
+        {
+          "text": "message-valid",
+          "passed": true,
+          "evidence": "combined subject='feat: add feature'"
+        },
+        {
+          "text": "dirty-restored",
+          "passed": true,
+          "evidence": "final staged/unstaged/untracked fingerprint matches pre-run"
+        },
+        {
+          "text": "verification-evidenced",
+          "passed": true,
+          "evidence": "report records repository and tree verification"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "lease_race",
+      "configuration": "with_script",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": 99.244,
+        "tokens": 201755,
+        "input_tokens": 197612,
+        "cached_input_tokens": 182784,
+        "uncached_input_tokens": 14828,
+        "output_tokens": 4143,
+        "reasoning_output_tokens": 664
+      },
+      "expectations": [
+        {
+          "text": "run-completed",
+          "passed": true,
+          "evidence": "Codex turn completed without timeout or process failure"
+        },
+        {
+          "text": "concurrent-work-preserved",
+          "passed": true,
+          "evidence": "remote files=['README.md', 'base.txt', 'feature.txt', 'race.txt', 'verify.sh']"
+        },
+        {
+          "text": "lease-handled",
+          "passed": true,
+          "evidence": "report identifies lease/concurrency outcome"
+        },
+        {
+          "text": "no-unsafe-overwrite",
+          "passed": true,
+          "evidence": "remote=b84e9b0d2920 concurrent=b84e9b0d2920"
+        },
+        {
+          "text": "recovery-evidenced",
+          "passed": true,
+          "evidence": "report includes recovery guidance"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "no_markers",
+      "configuration": "with_script",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": 63.056,
+        "tokens": 132681,
+        "input_tokens": 130059,
+        "cached_input_tokens": 104704,
+        "uncached_input_tokens": 25355,
+        "output_tokens": 2622,
+        "reasoning_output_tokens": 429
+      },
+      "expectations": [
+        {
+          "text": "run-completed",
+          "passed": true,
+          "evidence": "Codex turn completed without timeout or process failure"
+        },
+        {
+          "text": "head-unchanged",
+          "passed": true,
+          "evidence": "head=e58d72b9a534 expected=e58d72b9a534"
+        },
+        {
+          "text": "remote-unchanged",
+          "passed": true,
+          "evidence": "remote=e58d72b9a534 expected=e58d72b9a534"
+        },
+        {
+          "text": "tree-unchanged",
+          "passed": true,
+          "evidence": "tree unchanged"
+        },
+        {
+          "text": "no-op-reported",
+          "passed": true,
+          "evidence": "report identifies no marked commits"
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "run_summary": {
+    "with_script": {
+      "runs": 4,
+      "accuracy": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "total_tokens": {
+        "mean": 222735.25,
+        "stddev": 75352.415,
+        "min": 132681,
+        "max": 312309
+      },
+      "input_tokens": {
+        "mean": 218679.25,
+        "stddev": 74419.672,
+        "min": 130059,
+        "max": 307448
+      },
+      "cached_input_tokens": {
+        "mean": 195584,
+        "stddev": 74070.611,
+        "min": 104704,
+        "max": 283904
+      },
+      "uncached_input_tokens": {
+        "mean": 23095.25,
+        "stddev": 5903.529,
+        "min": 14828,
+        "max": 28654
+      },
+      "output_tokens": {
+        "mean": 4056,
+        "stddev": 1000.952,
+        "min": 2622,
+        "max": 4861
+      },
+      "reasoning_output_tokens": {
+        "mean": 779.25,
+        "stddev": 289.966,
+        "min": 429,
+        "max": 1075
+      },
+      "duration_seconds": {
+        "mean": 99.234,
+        "stddev": 26.632,
+        "min": 63.056,
+        "max": 126.398
+      },
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "tokens": {
+        "mean": 222735.25,
+        "stddev": 75352.415,
+        "min": 132681,
+        "max": 312309
+      },
+      "time_seconds": {
+        "mean": 99.234,
+        "stddev": 26.632,
+        "min": 63.056,
+        "max": 126.398
+      }
+    },
+    "instructions_only": {
+      "runs": 4,
+      "accuracy": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "total_tokens": {
+        "mean": 279040.75,
+        "stddev": 76070.8,
+        "min": 176752,
+        "max": 342892
+      },
+      "input_tokens": {
+        "mean": 273706.25,
+        "stddev": 74749.384,
+        "min": 173113,
+        "max": 336279
+      },
+      "cached_input_tokens": {
+        "mean": 244160,
+        "stddev": 68878.551,
+        "min": 155392,
+        "max": 307200
+      },
+      "uncached_input_tokens": {
+        "mean": 29546.25,
+        "stddev": 8481.996,
+        "min": 17721,
+        "max": 36028
+      },
+      "output_tokens": {
+        "mean": 5334.5,
+        "stddev": 1330.294,
+        "min": 3639,
+        "max": 6613
+      },
+      "reasoning_output_tokens": {
+        "mean": 1030.5,
+        "stddev": 481.923,
+        "min": 496,
+        "max": 1523
+      },
+      "duration_seconds": {
+        "mean": 122.863,
+        "stddev": 32.878,
+        "min": 81.303,
+        "max": 156.021
+      },
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "tokens": {
+        "mean": 279040.75,
+        "stddev": 76070.8,
+        "min": 176752,
+        "max": 342892
+      },
+      "time_seconds": {
+        "mean": 122.863,
+        "stddev": 32.878,
+        "min": 81.303,
+        "max": 156.021
+      }
+    },
+    "delta": {
+      "accuracy": "+0.000",
+      "pass_rate": "+0.00",
+      "total_tokens": "-56305.5",
+      "tokens": "-56306",
+      "uncached_input_tokens": "-6451.0",
+      "output_tokens": "-1278.5",
+      "duration_seconds": "-23.629",
+      "time_seconds": "-23.6"
+    }
+  },
+  "notes": [
+    "Both variants passed all 22 objective assertions across four scenarios.",
+    "The bundled helper used 20.2% fewer total tokens, 21.8% fewer uncached input tokens, 24.0% fewer output tokens, and 19.2% less wall time on average.",
+    "The helper was more efficient on the dirty/diverged, no-marker, and lease-race cases; instructions-only used fewer total tokens on the clean-fixup case, although the helper still used fewer uncached input tokens there.",
+    "Each scenario was run once per configuration, so per-scenario variance and flakiness are not measured."
+  ]
+}

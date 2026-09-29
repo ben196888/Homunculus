@@ -1,0 +1,13 @@
+FINAL LOG
+e58d72b (HEAD -> feature/autosquash, origin/feature/autosquash) fix typo
+a012eff feat: add feature
+e722e36 (origin/main, origin/HEAD, main) chore: initialize benchmark
+
+STATUS
+## feature/autosquash...origin/feature/autosquash
+
+LOCAL HEAD
+e58d72b9a534eb801f76c72ad09d1f6d6fde7f29
+
+BARE-ORIGIN FEATURE REF
+e58d72b9a534eb801f76c72ad09d1f6d6fde7f29	refs/heads/feature/autosquash

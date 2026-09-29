@@ -1,0 +1,7 @@
+No-op completed: no existing `fixup!` or `squash!` commits were found, so no rebase, stash, or push occurred. Local and bare-origin SHAs remain identical.
+
+Artifacts:
+
+- [report.md](</Users/beliu/.codex/worktrees/88d7/Homunculus/skills/programming/autosquash/evals/script-vs-instructions/iteration-1/no_markers/instructions_only/run-1/outputs/report.md>)
+- [transcript-notes.md](</Users/beliu/.codex/worktrees/88d7/Homunculus/skills/programming/autosquash/evals/script-vs-instructions/iteration-1/no_markers/instructions_only/run-1/outputs/transcript-notes.md>)
+- [final-state.txt](</Users/beliu/.codex/worktrees/88d7/Homunculus/skills/programming/autosquash/evals/script-vs-instructions/iteration-1/no_markers/instructions_only/run-1/outputs/final-state.txt>)

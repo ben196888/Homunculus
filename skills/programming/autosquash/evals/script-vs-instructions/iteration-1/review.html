@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eval Review</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" integrity="sha384-EnyY0/GSHQGSxSgMwaIPzSESbqoOLSexfnSMN2AP+39Ckmn92stwABZynq1JyzdT" crossorigin="anonymous"></script>
+  <style>
+    :root {
+      --bg: #faf9f5;
+      --surface: #ffffff;
+      --border: #e8e6dc;
+      --text: #141413;
+      --text-muted: #b0aea5;
+      --accent: #d97757;
+      --accent-hover: #c4613f;
+      --green: #788c5d;
+      --green-bg: #eef2e8;
+      --red: #c44;
+      --red-bg: #fceaea;
+      --header-bg: #141413;
+      --header-text: #faf9f5;
+      --radius: 6px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Lora', Georgia, serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ---- Header ---- */
+    .header {
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .header h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    .header .instructions {
+      font-size: 0.8rem;
+      opacity: 0.7;
+      margin-top: 0.25rem;
+    }
+    .header .progress {
+      font-size: 0.875rem;
+      opacity: 0.8;
+      text-align: right;
+    }
+
+    /* ---- Main content ---- */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* ---- Sections ---- */
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      flex-shrink: 0;
+    }
+    .section-header {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.75rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .section-body {
+      padding: 1rem;
+    }
+
+    /* ---- Config badge ---- */
+    .config-badge {
+      display: inline-block;
+      padding: 0.2rem 0.625rem;
+      border-radius: 9999px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      margin-left: 0.75rem;
+      vertical-align: middle;
+    }
+    .config-badge.config-primary {
+      background: rgba(33, 150, 243, 0.12);
+      color: #1976d2;
+    }
+    .config-badge.config-baseline {
+      background: rgba(255, 193, 7, 0.15);
+      color: #f57f17;
+    }
+
+    /* ---- Prompt ---- */
+    .prompt-text {
+      white-space: pre-wrap;
+      font-size: 0.9375rem;
+      line-height: 1.6;
+    }
+
+    /* ---- Outputs ---- */
+    .output-file {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .output-file + .output-file {
+      margin-top: 1rem;
+    }
+    .output-file-header {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .output-file-header .dl-btn {
+      font-size: 0.7rem;
+      color: var(--accent);
+      text-decoration: none;
+      cursor: pointer;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-weight: 500;
+      opacity: 0.8;
+    }
+    .output-file-header .dl-btn:hover {
+      opacity: 1;
+      text-decoration: underline;
+    }
+    .output-file-content {
+      padding: 0.75rem;
+      overflow-x: auto;
+    }
+    .output-file-content pre {
+      font-size: 0.8125rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+    }
+    .output-file-content img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+    }
+    .output-file-content iframe {
+      width: 100%;
+      height: 600px;
+      border: none;
+    }
+    .output-file-content table {
+      border-collapse: collapse;
+      font-size: 0.8125rem;
+      width: 100%;
+    }
+    .output-file-content table td,
+    .output-file-content table th {
+      border: 1px solid var(--border);
+      padding: 0.375rem 0.5rem;
+      text-align: left;
+    }
+    .output-file-content table th {
+      background: var(--bg);
+      font-weight: 600;
+    }
+    .output-file-content .download-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.875rem;
+      cursor: pointer;
+    }
+    .output-file-content .download-link:hover {
+      background: var(--border);
+    }
+    .empty-state {
+      color: var(--text-muted);
+      font-style: italic;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    /* ---- Feedback ---- */
+    .prev-feedback {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.625rem 0.75rem;
+      margin-top: 0.75rem;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .prev-feedback-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.25rem;
+      color: var(--text-muted);
+    }
+    .feedback-textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.9375rem;
+      line-height: 1.5;
+      resize: vertical;
+      color: var(--text);
+    }
+    .feedback-textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    .feedback-status {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+      min-height: 1.1em;
+    }
+
+    /* ---- Grades (collapsible) ---- */
+    .grades-toggle {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+    .grades-toggle:hover {
+      color: var(--accent);
+    }
+    .grades-toggle .arrow {
+      margin-right: 0.5rem;
+      transition: transform 0.15s;
+      font-size: 0.75rem;
+    }
+    .grades-toggle .arrow.open {
+      transform: rotate(90deg);
+    }
+    .grades-content {
+      display: none;
+      margin-top: 0.75rem;
+    }
+    .grades-content.open {
+      display: block;
+    }
+    .grades-summary {
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .grade-badge {
+      display: inline-block;
+      padding: 0.125rem 0.5rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .grade-pass { background: var(--green-bg); color: var(--green); }
+    .grade-fail { background: var(--red-bg); color: var(--red); }
+    .assertion-list {
+      list-style: none;
+    }
+    .assertion-item {
+      padding: 0.625rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.8125rem;
+    }
+    .assertion-item:last-child { border-bottom: none; }
+    .assertion-status {
+      font-weight: 600;
+      margin-right: 0.5rem;
+    }
+    .assertion-status.pass { color: var(--green); }
+    .assertion-status.fail { color: var(--red); }
+    .assertion-evidence {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      margin-top: 0.25rem;
+      padding-left: 1.5rem;
+    }
+
+    /* ---- View tabs ---- */
+    .view-tabs {
+      display: flex;
+      gap: 0;
+      padding: 0 2rem;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .view-tab {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.625rem 1.25rem;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: var(--text-muted);
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+    }
+    .view-tab:hover { color: var(--text); }
+    .view-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+    .view-panel { display: none; }
+    .view-panel.active { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+
+    /* ---- Benchmark view ---- */
+    .benchmark-view {
+      padding: 1.5rem 2rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .benchmark-table {
+      border-collapse: collapse;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.8125rem;
+      width: 100%;
+      margin-bottom: 1.5rem;
+    }
+    .benchmark-table th, .benchmark-table td {
+      padding: 0.625rem 0.75rem;
+      text-align: left;
+      border: 1px solid var(--border);
+    }
+    .benchmark-table th {
+      font-family: 'Poppins', sans-serif;
+      background: var(--header-bg);
+      color: var(--header-text);
+      font-weight: 500;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .benchmark-table tr:hover { background: var(--bg); }
+    .benchmark-table tr.benchmark-row-with { background: rgba(33, 150, 243, 0.06); }
+    .benchmark-table tr.benchmark-row-without { background: rgba(255, 193, 7, 0.06); }
+    .benchmark-table tr.benchmark-row-with:hover { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-without:hover { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-table tr.benchmark-row-avg { font-weight: 600; border-top: 2px solid var(--border); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-with { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-without { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-delta-positive { color: var(--green); font-weight: 600; }
+    .benchmark-delta-negative { color: var(--red); font-weight: 600; }
+    .benchmark-notes {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+    }
+    .benchmark-notes h3 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+    }
+    .benchmark-notes ul {
+      list-style: disc;
+      padding-left: 1.25rem;
+    }
+    .benchmark-notes li {
+      font-size: 0.8125rem;
+      line-height: 1.6;
+      margin-bottom: 0.375rem;
+    }
+    .benchmark-empty {
+      color: var(--text-muted);
+      font-style: italic;
+      text-align: center;
+      padding: 3rem;
+    }
+
+    /* ---- Navigation ---- */
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      flex-shrink: 0;
+    }
+    .nav-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text);
+      transition: all 0.15s;
+    }
+    .nav-btn:hover:not(:disabled) {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .nav-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .done-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.5rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+    .done-btn:hover {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .done-btn.ready {
+      border: none;
+      background: var(--accent);
+      color: white;
+      font-weight: 600;
+    }
+    .done-btn.ready:hover {
+      background: var(--accent-hover);
+    }
+    /* ---- Done overlay ---- */
+    .done-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+    .done-overlay.visible {
+      display: flex;
+    }
+    .done-card {
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 2rem 3rem;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 500px;
+    }
+    .done-card h2 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .done-card p {
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+    .done-card .btn-row {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+    .done-card button {
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+    }
+    .done-card button:hover {
+      background: var(--bg);
+    }
+    /* ---- Toast ---- */
+    .toast {
+      position: fixed;
+      bottom: 5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 0.625rem 1.25rem;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      z-index: 200;
+    }
+    .toast.visible {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div id="app" style="height:100vh; display:flex; flex-direction:column;">
+    <div class="header">
+      <div>
+        <h1>Eval Review: <span id="skill-name"></span></h1>
+        <div class="instructions">Review each output and leave feedback below. Navigate with arrow keys or buttons. When done, copy feedback and paste into Claude Code.</div>
+      </div>
+      <div class="progress" id="progress"></div>
+    </div>
+
+    <!-- View tabs (only shown when benchmark data exists) -->
+    <div class="view-tabs" id="view-tabs" style="display:none;">
+      <button class="view-tab active" onclick="switchView('outputs')">Outputs</button>
+      <button class="view-tab" onclick="switchView('benchmark')">Benchmark</button>
+    </div>
+
+    <!-- Outputs panel (qualitative review) -->
+    <div class="view-panel active" id="panel-outputs">
+    <div class="main">
+      <!-- Prompt -->
+      <div class="section">
+        <div class="section-header">Prompt <span class="config-badge" id="config-badge" style="display:none;"></span></div>
+        <div class="section-body">
+          <div class="prompt-text" id="prompt-text"></div>
+        </div>
+      </div>
+
+      <!-- Outputs -->
+      <div class="section">
+        <div class="section-header">Output</div>
+        <div class="section-body" id="outputs-body">
+          <div class="empty-state">No output files found</div>
+        </div>
+      </div>
+
+      <!-- Previous Output (collapsible) -->
+      <div class="section" id="prev-outputs-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="togglePrevOutputs()">
+            <span class="arrow" id="prev-outputs-arrow">&#9654;</span>
+            Previous Output
+          </div>
+        </div>
+        <div class="grades-content" id="prev-outputs-content"></div>
+      </div>
+
+      <!-- Grades (collapsible) -->
+      <div class="section" id="grades-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="toggleGrades()">
+            <span class="arrow" id="grades-arrow">&#9654;</span>
+            Formal Grades
+          </div>
+        </div>
+        <div class="grades-content" id="grades-content"></div>
+      </div>
+
+      <!-- Feedback -->
+      <div class="section">
+        <div class="section-header">Your Feedback</div>
+        <div class="section-body">
+          <textarea
+            class="feedback-textarea"
+            id="feedback"
+            placeholder="What do you think of this output? Any issues, suggestions, or things that look great?"
+          ></textarea>
+          <div class="feedback-status" id="feedback-status"></div>
+          <div class="prev-feedback" id="prev-feedback" style="display:none;">
+            <div class="prev-feedback-label">Previous feedback</div>
+            <div id="prev-feedback-text"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav" id="outputs-nav">
+      <button class="nav-btn" id="prev-btn" onclick="navigate(-1)">&#8592; Previous</button>
+      <button class="done-btn" id="done-btn" onclick="showDoneDialog()">Submit All Reviews</button>
+      <button class="nav-btn" id="next-btn" onclick="navigate(1)">Next &#8594;</button>
+    </div>
+    </div><!-- end panel-outputs -->
+
+    <!-- Benchmark panel (quantitative stats) -->
+    <div class="view-panel" id="panel-benchmark">
+      <div class="benchmark-view" id="benchmark-content">
+        <div class="benchmark-empty">No benchmark data available. Run a benchmark to see quantitative results here.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Done overlay -->
+  <div class="done-overlay" id="done-overlay">
+    <div class="done-card">
+      <h2>Review Complete</h2>
+      <p>Your feedback has been saved. Go back to your Claude Code session and tell Claude you're done reviewing.</p>
+      <div class="btn-row">
+        <button onclick="closeDoneDialog()">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ---- Embedded data (injected by generate_review.py) ----
+    const EMBEDDED_DATA = {"skill_name": "autosquash: script vs instructions", "runs": [{"id": "clean_fixups-instructions_only-run-1", "prompt": "(No prompt found)", "eval_id": null, "outputs": [{"name": "agent-final.txt", "type": "text", "content": "Completed successfully.\n\n- Folded 2 `fixup!` commits.\n- Tree preserved: `4f688c4\u2026`\n- Verification passed: `./verify.sh`\n- Workspace remained clean.\n- Lease-protected push succeeded; remote now points to `2b13b7a\u2026`\n\nArtifacts:\n\n- [report.md](</Users/beliu/.codex/worktrees/88d7/Homunculus/skills/programming/autosquash/evals/script-vs-instructions/iteration-1/clean_fixups/instructions_only/run-1/outputs/report.md>)\n- [transcript-notes.md](</Users/beliu/.codex/worktrees/88d7/Homunculus/skills/programming/autosquash/evals/script-vs-instructions/iteration-1/clean_fixups/instructions_only/run-1/outputs/transcript-notes.md>)\n- [final-state.txt](</Users/beliu/.codex/worktrees/88d7/Homunculus/skills/programming/autosquash/evals/script-vs-instructions/iteration-1/clean_fixups/instructions_only/run-1/outputs/final-state.txt>)"}, {"name": "codex-stderr-tail.txt", "type": "text", "content": "Reading additional input from stdin...\n2026-09-29T15:35:50.939985Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back\n2026-09-29T15:35:50.948676Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back\n2026-09-29T15:35:50.957528Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back\n2026-09-29T15:37:42.839843Z  WARN codex_core::shell_snapshot: Failed to delete shell snapshot at AbsolutePathBuf(\"/Users/beliu/.codex/shell_snapshots/01a0edce-d76d-74c3-8455-0f43fc1055f2.1790696150895331000.sh\"): Os { code: 2, kind: NotFound, message: \"No such file or directory\" }\n"}, {"name": "final-state.txt", "type": "text", "content": "Final log:\n* 2b13b7a (HEAD -> feature/autosquash, origin/feature/autosquash) feat: add beta\n* 5eecbc7 feat: add alpha\n* e722e36 (origin/main, origin/HEAD, main) chore: initialize benchmark\n\nFinal status:\n## feature/autosquash...origin/feature/autosquash\n\nLocal HEAD:\n2b13b7a91cb3eb3915cdd10731d4bb4f06a72fdd\n\nBare-origin feature ref:\n2b13b7a91cb3eb3915cdd10731d4bb4f06a72fdd\trefs/heads/feature/autosquash\n"}, {"name": "report.md", "type": "text", "content": "# Autosquash report\n\n- Base: `origin/main` (`e722e36f4e0e459a2d55fbc369c383435904b3b9`)\n- Remote: `origin`; branch: `feature/autosquash`\n- Folded commits: 2 existing `fixup!` commits\n- Old HEAD: `a51903cf5e6a31989b9ac1e6316d70ca93e26d00`\n- New HEAD: `2b13b7a91cb3eb3915cdd10731d4bb4f06a72fdd`\n- Rewritten commits: `e77877d7e22c648ed827cdbe01284f02ac1adfcb` -> `5eecbc71cc9240b991f809bb6b66ef45e6d6ef11`; `90dde2fb8af4ad31cbd9bf004a2370f5ab15d2ca` -> `2b13b7a91cb3eb3915cdd10731d4bb4f06a72fdd`\n- Tree verification: passed; pre-autosquash tree and final tree both `4f688c463da0c4707f39c56b78d885629217a71c`.\n- Repository verification: `./verify.sh` passed.\n- Workspace restoration: no stash was needed because the worktree was clean. Pre/post status, staged diff, unstaged diff, and untracked-file hashes all matched.\n- Push/lease outcome: passed. Used `git push --force-with-lease=\"refs/heads/feature/autosquash:90dde2fb8af4ad31cbd9bf004a2370f5ab15d2ca\" origin HEAD:refs/heads/feature/autosquash`; remote advanced to `2b13b7a91cb3eb3915cdd10731d4bb4f06a72fdd`.\n\nRecovery guidance: use `git reflog` to locate the pre-rewrite state, then restore it with `git reset --hard a51903cf5e6a31989b9ac1e6316d70ca93e26d00`. The old remote tip was `90dde2fb8af4ad31cbd9bf004a2370f5ab15d2ca`; do not force-push a recovery unless the remote lease is checked first.\n"}, {"name": "transcript-notes.md", "type": "text", "content": "# Transcript notes\n\n- Read and followed `/tmp/homunculus-autosquash-ab-20260929/without-script/SKILL.md`.\n- Fetched `origin` before inspecting history.\n- Validated `origin/main..HEAD`: two `fixup!` commits, unique earlier targets, and no merge commits.\n- Recorded recovery fingerprints in `/tmp/homunculus-autosquash-snapshot.Hm3m10`.\n- Ran `GIT_SEQUENCE_EDITOR=true GIT_EDITOR=true git rebase -i --autosquash origin/main`.\n- Confirmed no marked commits remained and the tree identity was preserved.\n- Ran the repository-required `./verify.sh` successfully.\n- Confirmed workspace fingerprints were unchanged; no stash was created because the workspace was clean.\n- Pushed with the exact fetched SHA in `--force-with-lease`; verified the bare-origin ref.\n"}], "grading": {"expectations": [{"text": "run-completed", "passed": true, "evidence": "Codex turn completed without timeout or process failure"}, {"text": "markers-folded", "passed": true, "evidence": "subjects=['feat: add beta', 'feat: add alpha']"}, {"text": "tree-preserved", "passed": true, "evidence": "final tree equals pre-cleanup tree"}, {"text": "remote-updated", "passed": true, "evidence": "local=2b13b7a91cb3 remote=2b13b7a91cb3"}, {"text": "lease-evidenced", "passed": true, "evidence": "report describes exact lease protection"}, {"text": "recovery-evidenced", "passed": true, "evidence": "report includes reflog and old SHA"}], "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}, "timing": {"input_tokens": 261052, "cached_input_tokens": 225024, "output_tokens": 4946, "reasoning_output_tokens": 762, "cache_write_input_tokens": 0, "total_tokens": 265998, "uncached_input_tokens": 36028, "duration_ms": 113264, "total_duration_seconds": 113.264}, "execution": {"returncode": 0, "timed_out": false, "model": "gpt-5.6-luna"}}}, {"id": "clean_fixups-with_script-run-1", "prompt": "(No prompt found)", "eval_id": null, "outputs": [{"name": "agent-final.txt", "type": "text", "content": "Autosquash completed successfully.\n\n- Folded 2 `fixup!` commits.\n- `./verify.sh` passed.\n- Workspace is clean and restored.\n- Force-with-lease push succeeded.\n- Local HEAD and bare-origin ref: `a9a7882836eee0b69aba427146ce40ec1b6da8d0`.\n\nArtifacts:\n\n- [report.md](/Users/beliu/.codex/worktrees/88d7/Homunculus/skills/programming/autosquash/evals/script-vs-instructions/iteration-1/clean_fixups/with_script/run-1/outputs/report.md)\n- [transcript-notes.md](/Users/beliu/.codex/worktrees/88d7/Homunculus/skills/programming/autosquash/evals/script-vs-instructions/iteration-1/clean_fixups/with_script/run-1/outputs/transcript-notes.md)\n- [final-state.txt](/Users/beliu/.codex/worktrees/88d7/Homunculus/skills/programming/autosquash/evals/script-vs-instructions/iteration-1/clean_fixups/with_script/run-1/outputs/final-state.txt)"}, {"name": "codex-stderr-tail.txt", "type": "text", "content": "Reading additional input from stdin...\n2026-09-29T15:33:15.307855Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back\n2026-09-29T15:33:15.316788Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back\n2026-09-29T15:35:20.005839Z  WARN codex_core::shell_snapshot: Failed to delete shell snapshot at AbsolutePathBuf(\"/Users/beliu/.codex/shell_snapshots/01a0edcc-776d-7a83-b432-9849ef8da528.1790695995262320000.sh\"): Os { code: 2, kind: NotFound, message: \"No such file or directory\" }\n"}, {"name": "final-state.txt", "type": "text", "content": "FINAL LOG\n* a9a7882 (HEAD -> feature/autosquash, origin/feature/autosquash) feat: add beta\n* 9395f59 feat: add alpha\n* 48475ea (origin/main, origin/HEAD, main) chore: initialize benchmark\n\nSTATUS\n## feature/autosquash...origin/feature/autosquash\n\nLOCAL HEAD\na9a7882836eee0b69aba427146ce40ec1b6da8d0\n\nBARE-ORIGIN FEATURE REF\na9a7882836eee0b69aba427146ce40ec1b6da8d0 refs/heads/feature/autosquash\n"}, {"name": "report.md", "type": "text", "content": "# Autosquash report\n\n- Base: `origin/main` (`48475ea4fbf28ef7e68a8381bafffff573ca891f`)\n- Remote: `origin`; branch `feature/autosquash`\n- Marked commits folded: 2 (`fixup!` only; ordinary commits remained in scope as targets)\n- Observed old SHAs:\n  - `db1e55a8046b3f491bd9bf9f746d012734718c75` target `feat: add alpha`, with fixup `590f20518537aa78cd55607554a769e303abec5a`\n  - `5bda6e4b47ff471755516657ba53b1765774e942` target `feat: add beta`, with fixup `0c60deb33068ef7c3cf830f1fea6b249fa542cc1`\n- Observed new SHAs:\n  - alpha: `9395f59877d3246bb679bdc2211c11462fcfac79`\n  - beta / final tip: `a9a7882836eee0b69aba427146ce40ec1b6da8d0`\n- Tree verification: passed. Old tip `0c60deb33068^{tree}` and new tip `HEAD^{tree}` were both `4f688c463da0c4707f39c56b78d885629217a71c`; `git diff --exit-code 0c60deb33068 HEAD` was clean.\n- Project verification: `./verify.sh` passed.\n- Workspace restoration: yes. Final porcelain status was clean; no user changes were present to restore.\n- Push/lease outcome: succeeded using explicit force-with-lease against the fetched `origin/feature/autosquash` SHA. The bare origin feature ref is now `a9a7882836eee0b69aba427146ce40ec1b6da8d0`.\n- Recovery guidance: if rollback is required, inspect `git reflog` and restore the pre-rewrite tip with `git reset --hard 0c60deb33068ef7c3cf830f1fea6b249fa542cc1`. Do not use this reset if new local work has been added.\n"}, {"name": "transcript-notes.md", "type": "text", "content": "# Transcript notes\n\n- Read and followed `/tmp/homunculus-autosquash-ab-20260929/with-script/SKILL.md`.\n- Planned with explicit `--base origin/main --remote origin`.\n- Plan found exactly two marked commits: `590f20518537` targeting alpha and `0c60deb33068` targeting beta.\n- Repository guidance named `./verify.sh` as the fast project check; no other relevant manifests or CI checks were present.\n- Applied non-interactively with the supplied autosquash helper and `--verify './verify.sh'`; no squash-message override was needed because both marked commits were fixups.\n- Helper reported successful autosquash, two folded commits, passed verification, restored workspace, and successful force-with-lease push.\n- Final independent checks confirmed identical old/new committed trees, clean workspace, matching local and tracking refs, and matching bare-origin feature ref.\n"}], "grading": {"expectations": [{"text": "run-completed", "passed": true, "evidence": "Codex turn completed without timeout or process failure"}, {"text": "markers-folded", "passed": true, "evidence": "subjects=['feat: add beta', 'feat: add alpha']"}, {"text": "tree-preserved", "passed": true, "evidence": "final tree equals pre-cleanup tree"}, {"text": "remote-updated", "passed": true, "evidence": "local=a9a7882836ee remote=a9a7882836ee"}, {"text": "lease-evidenced", "passed": true, "evidence": "report describes exact lease protection"}, {"text": "recovery-evidenced", "passed": true, "evidence": "report includes reflog and old SHA"}], "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}, "timing": {"input_tokens": 307448, "cached_input_tokens": 283904, "output_tokens": 4861, "reasoning_output_tokens": 1075, "cache_write_input_tokens": 0, "total_tokens": 312309, "uncached_input_tokens": 23544, "duration_ms": 126398, "total_duration_seconds": 126.398}, "execution": {"returncode": 0, "timed_out": false, "model": "gpt-5.6-luna"}}}, {"id": "dirty_diverged_squash-instructions_only-run-1", "prompt": "(No prompt found)", "eval_id": null, "outputs": [{"name": "agent-final.txt", "type": "text", "content": "Completed successfully.\n\n- Reconciled diverged branch onto `origin/feature/autosquash`\n- Folded 1 `squash!` commit\n- Preserved dirty staged, unstaged, and untracked work\n- `./verify.sh` passed\n- Tree remained unchanged\n- Lease-protected force push succeeded\n- Local and bare-origin refs now match at `c432a942...`\n\nArtifacts:\n\n- [report.md](</Users/beliu/.codex/worktrees/88d7/Homunculus/skills/programming/autosquash/evals/script-vs-instructions/iteration-1/dirty_diverged_squash/instructions_only/run-1/outputs/report.md>)\n- [transcript-notes.md](</Users/beliu/.codex/worktrees/88d7/Homunculus/skills/programming/autosquash/evals/script-vs-instructions/iteration-1/dirty_diverged_squash/instructions_only/run-1/outputs/transcript-notes.md>)\n- [final-state.txt](</Users/beliu/.codex/worktrees/88d7/Homunculus/skills/programming/autosquash/evals/script-vs-instructions/iteration-1/dirty_diverged_squash/instructions_only/run-1/outputs/final-state.txt>)"}, {"name": "codex-stderr-tail.txt", "type": "text", "content": "Reading additional input from stdin...\n2026-09-29T15:35:46.808950Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back\n2026-09-29T15:35:46.817500Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back\n2026-09-29T15:35:46.824051Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back\n2026-09-29T15:38:05.650052Z  WARN codex_core::shell_snapshot: Failed to delete shell snapshot at AbsolutePathBuf(\"/Users/beliu/.codex/shell_snapshots/01a0edce-c72b-7950-b05b-7ebb45c4e8f1.1790696146751939000.sh\"): Os { code: 2, kind: NotFound, message: \"No such file or directory\" }\n"}, {"name": "final-state.txt", "type": "text", "content": "Final log:\n* c432a94 (HEAD -> feature/autosquash, origin/feature/autosquash) docs: add remote work\n* 67b9aae feat: add feature\n* e722e36 (origin/main, origin/HEAD, main) chore: initialize benchmark\n\nFinal status:\n## feature/autosquash...origin/feature/autosquash\n M README.md\nA  staged.txt\n?? scratch.txt\n\nLocal HEAD:\nc432a94284ea0d403e79cc1b454d189c5975acd\n\nBare-origin feature ref:\nc432a94284ea0d403e79cc1b454d189c5975acd\n"}, {"name": "report.md", "type": "text", "content": "# Autosquash report\n\n- Repository: `feature/autosquash`; base: `origin/main`; remote: `origin`; remote branch: `feature/autosquash`.\n- Fetched remote SHA before rewrite: `1a79c1adf99572f568e0e9b5475f560671c51d7a`.\n- Old local HEAD: `23e4f066cc51636110bfbbcd8517d8273b0ea61a`.\n- New local HEAD: `c432a94284ea0d403e79cc1b454d189c5975acd`.\n- Folded commits: 1 existing `squash!` commit, rewritten as `feat: add feature` (`67b9aae`). The remote-only `docs: add remote work` commit was preserved.\n- Eligible range contained no merge commits; target resolution was unambiguous.\n- Tree verification: tree immediately before autosquash and after autosquash both equal `5c47f72c0a892179c177cfb400b99c8d7d6dadce`.\n- Repository verification: `./verify.sh` passed.\n- Workspace restoration: passed. Restored status is ` M README.md`, `A  staged.txt`, `?? scratch.txt`; staged and unstaged diffs matched the pre-run snapshot, and `scratch.txt` retained hash `2fbf7dee647928d720cb5dccf60f93496688b503`.\n- Push outcome: succeeded with exact `--force-with-lease` for `refs/heads/feature/autosquash:1a79c1adf99572f568e0e9b5475f560671c51d7a`. Bare origin feature ref is `c432a94284ea0d403e79cc1b454d189c5975acd`.\n- The temporary workflow stash was dropped only after restoration, verification, and push succeeded.\n\nRecovery guidance: use `git reflog` to locate the old state, then `git reset --hard 23e4f066cc51636110bfbbcd8517d8273b0ea61a` if recovery is needed. The dirty workspace was restored before the stash was dropped.\n"}, {"name": "transcript-notes.md", "type": "text", "content": "# Transcript notes\n\n1. Fetched `origin`; remote feature advanced to `1a79c1a`, while local HEAD was `23e4f06`.\n2. Inspected `origin/main..HEAD`: `f21da9d feat: add feature`, then `23e4f06 squash! feat: add feature`; no merges.\n3. Snapshot showed README unstaged work, staged `staged.txt`, and untracked `scratch.txt` (hash `2fbf7dee647928d720cb5dccf60f93496688b503`).\n4. Saved dirty state as stash `2dc1e7b2f8b76276c98fd4783e6dcf32743af2cd`.\n5. Rebasing local-only work onto fetched `origin/feature/autosquash` produced `0554efe`; tree before autosquash was `5c47f72c0a892179c177cfb400b99c8d7d6dadce`.\n6. Native interactive autosquash against `origin/main` folded the squash commit and produced `67b9aae` plus preserved remote work as final `c432a94`; tree identity was unchanged.\n7. `./verify.sh` passed. `git stash apply --index` restored the exact staged, unstaged, and untracked work.\n8. Exact lease push succeeded: `1a79c1a...c432a94` forced update. The workflow stash was then dropped.\n"}], "grading": {"expectations": [{"text": "run-completed", "passed": true, "evidence": "Codex turn completed without timeout or process failure"}, {"text": "markers-folded", "passed": true, "evidence": "marked=[]"}, {"text": "remote-integrated", "passed": true, "evidence": "remote files include remote.txt=True"}, {"text": "message-valid", "passed": true, "evidence": "combined subject='feat: add feature'"}, {"text": "dirty-restored", "passed": true, "evidence": "final staged/unstaged/untracked fingerprint matches pre-run"}, {"text": "verification-evidenced", "passed": true, "evidence": "report records repository and tree verification"}], "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}, "timing": {"input_tokens": 324381, "cached_input_tokens": 289024, "output_tokens": 6140, "reasoning_output_tokens": 1341, "cache_write_input_tokens": 0, "total_tokens": 330521, "uncached_input_tokens": 35357, "duration_ms": 140864, "total_duration_seconds": 140.864}, "execution": {"returncode": 0, "timed_out": false, "model": "gpt-5.6-luna"}}}, {"id": "dirty_diverged_squash-with_script-run-1", "prompt": "(No prompt found)", "eval_id": null, "outputs": [{"name": "agent-final.txt", "type": "text", "content": "Completed successfully.\n\n- Folded 1 `squash!` commit.\n- Old HEAD: `c6bbc48beefd`\n- New HEAD: `29a8395c0050`\n- `./verify.sh` passed.\n- Dirty staged, unstaged, and untracked work restored.\n- Force-with-lease push succeeded; local and bare-origin refs match.\n- Recovery guidance included.\n\nArtifacts:\n\n- [report.md](</Users/beliu/.codex/worktrees/88d7/Homunculus/skills/programming/autosquash/evals/script-vs-instructions/iteration-1/dirty_diverged_squash/with_script/run-1/outputs/report.md>)\n- [transcript-notes.md](</Users/beliu/.codex/worktrees/88d7/Homunculus/skills/programming/autosquash/evals/script-vs-instructions/iteration-1/dirty_diverged_squash/with_script/run-1/outputs/transcript-notes.md>)\n- [final-state.txt](</Users/beliu/.codex/worktrees/88d7/Homunculus/skills/programming/autosquash/evals/script-vs-instructions/iteration-1/dirty_diverged_squash/with_script/run-1/outputs/final-state.txt>)"}, {"name": "codex-stderr-tail.txt", "type": "text", "content": "Reading additional input from stdin...\n2026-09-29T15:35:51.327166Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back\n2026-09-29T15:35:51.338116Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back\n2026-09-29T15:35:51.345797Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back\n2026-09-29T15:37:38.169562Z  WARN codex_core::shell_snapshot: Failed to delete shell snapshot at AbsolutePathBuf(\"/Users/beliu/.codex/shell_snapshots/01a0edce-d8f6-76a2-8c9d-299fe692ab96.1790696151286965000.sh\"): Os { code: 2, kind: NotFound, message: \"No such file or directory\" }\n"}, {"name": "final-state.txt", "type": "text", "content": "Final log:\n29a8395 (HEAD -> feature/autosquash, origin/feature/autosquash) docs: add remote work\n0c80802 feat: add feature\ne722e36 (origin/main, origin/HEAD, main) chore: initialize benchmark\n\nFinal status:\n## feature/autosquash...origin/feature/autosquash\n M README.md\nA  staged.txt\n?? scratch.txt\n\nLocal HEAD:\n29a8395c005082b9fc8e235d9e1f81427b7735a3\n\nBare-origin feature ref:\n29a8395c005082b9fc8e235d9e1f81427b7735a3 refs/heads/feature/autosquash\n"}, {"name": "report.md", "type": "text", "content": "# Autosquash report\n\n- Base: `origin/main` (`e722e36f4e0e`)\n- Remote: `origin`; feature ref: `origin/feature/autosquash`\n- Divergence: remote reconciliation was required.\n- Marked commits folded: 1 (`c6bbc48beefd` squash! targeting `a3593131fbde`)\n- Observed old feature HEAD: `c6bbc48beefd81ac80ab370aeb311ba9a953baec`\n- Observed new local HEAD: `29a8395c005082b9fc8e235d9e1f81427b7735a3`\n\nThe synthesized squash message was `feat: add feature`. The rewritten squashed\ncommit is `0c80802b3d0e7ee74f431069795a62cfd25c51e3`; the reconciled remote\ncommit `docs: add remote work` remains visible as `29a8395`.\n\nTree verification passed: the pre-rewrite marked-series tree\n`aae026fab1718dbfea99c7b7b25acd85bf329351` equals the rewritten squashed\ncommit tree. The final HEAD tree additionally contains the reconciled remote\ncommit, as expected.\n\n`./verify.sh` passed. Workspace restoration passed: the unstaged README change,\nstaged `staged.txt`, and untracked `scratch.txt` were restored. The helper\nreported the saved dirty state fingerprint as restored successfully.\n\nPush passed with an explicit `--force-with-lease` against the fetched remote\nSHA. The bare-origin feature ref is\n`29a8395c005082b9fc8e235d9e1f81427b7735a3`, matching local HEAD.\n\nRecovery guidance: inspect `git reflog`, then restore the pre-operation tip with\n`git reset --hard c6bbc48beefd81ac80ab370aeb311ba9a953baec` if needed. Because\nthe workspace was dirty, preserve or reapply its restored changes before any\nsuch reset.\n\nUnmarked commits were left in scope only as ordinary history: the reconciled\n`docs: add remote work` commit was retained; no ordinary commit was folded.\n"}, {"name": "transcript-notes.md", "type": "text", "content": "# Transcript notes\n\n1. Read only `/tmp/homunculus-autosquash-ab-20260929/with-script/SKILL.md`.\n2. Initial state: branch `feature/autosquash`, ahead of remote by 1; dirty tracked, staged, and untracked work present.\n3. Ran the required plan with `--base origin/main --remote origin`; it identified one `squash!` commit targeting `a3593131fbde`.\n4. Inspected repository guidance. `README.md` required `./verify.sh`; that script checks `base.txt` exists.\n5. Applied with the helper, explicit squash message `feat: add feature`, and `--verify './verify.sh'`.\n6. Helper result: old `c6bbc48beefd` to new `29a8395c0050`; reconciliation `diverged`; verification passed; workspace restored; force-with-lease passed.\n7. Independent checks confirmed local HEAD and the bare-origin feature ref both equal `29a8395c005082b9fc8e235d9e1f81427b7735a3`.\n8. Final dirty state remains ` M README.md`, `A  staged.txt`, and `?? scratch.txt`.\n"}], "grading": {"expectations": [{"text": "run-completed", "passed": true, "evidence": "Codex turn completed without timeout or process failure"}, {"text": "markers-folded", "passed": true, "evidence": "marked=[]"}, {"text": "remote-integrated", "passed": true, "evidence": "remote files include remote.txt=True"}, {"text": "message-valid", "passed": true, "evidence": "combined subject='feat: add feature'"}, {"text": "dirty-restored", "passed": true, "evidence": "final staged/unstaged/untracked fingerprint matches pre-run"}, {"text": "verification-evidenced", "passed": true, "evidence": "report records repository and tree verification"}], "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}, "timing": {"input_tokens": 239598, "cached_input_tokens": 210944, "output_tokens": 4598, "reasoning_output_tokens": 949, "cache_write_input_tokens": 0, "total_tokens": 244196, "uncached_input_tokens": 28654, "duration_ms": 108239, "total_duration_seconds": 108.239}, "execution": {"returncode": 0, "timed_out": false, "model": "gpt-5.6-luna"}}}, {"id": "lease_race-instructions_only-run-1", "prompt": "(No prompt found)", "eval_id": null, "outputs": [{"name": "agent-final.txt", "type": "text", "content": "Completed safely.\n\n- Folded the existing `fixup!` commit.\n- Tree verified unchanged.\n- `./verify.sh` passed.\n- Workspace restored clean.\n- Exact force-with-lease was rejected due to concurrent remote advancement; no overwrite occurred.\n- Final local HEAD: `0794dd2f4694a6f291861e42ec1331e2f21d8e60`\n- Bare-origin feature ref: `72e9d8c690420f58f681708632b9384c5d0c312f`\n\nArtifacts:\n\n- [report.md](/Users/beliu/.codex/worktrees/88d7/Homunculus/skills/programming/autosquash/evals/script-vs-instructions/iteration-1/lease_race/instructions_only/run-1/outputs/report.md)\n- [transcript-notes.md](/Users/beliu/.codex/worktrees/88d7/Homunculus/skills/programming/autosquash/evals/script-vs-instructions/iteration-1/lease_race/instructions_only/run-1/outputs/transcript-notes.md)\n- [final-state.txt](/Users/beliu/.codex/worktrees/88d7/Homunculus/skills/programming/autosquash/evals/script-vs-instructions/iteration-1/lease_race/instructions_only/run-1/outputs/final-state.txt)"}, {"name": "codex-stderr-tail.txt", "type": "text", "content": "Reading additional input from stdin...\n2026-09-29T15:40:44.163278Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back\n2026-09-29T15:40:44.174454Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back\n2026-09-29T15:40:44.215814Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back\n"}, {"name": "final-state.txt", "type": "text", "content": "FINAL LOG\n0794dd2 (HEAD -> feature/autosquash) feat: add feature\nadb0a2a test: add concurrent update verification\n6fe7484 (origin/main, origin/HEAD, main) chore: initialize benchmark\n\nFINAL STATUS\n## feature/autosquash...origin/feature/autosquash [ahead 1, behind 1]\n\nLOCAL HEAD\n0794dd2f4694a6f291861e42ec1331e2f21d8e60\n\nBARE-ORIGIN FEATURE REF\n72e9d8c690420f58f681708632b9384c5d0c312f refs/heads/feature/autosquash\n"}, {"name": "report.md", "type": "text", "content": "# Autosquash report\n\n- Base: `origin/main` at `6fe7484756492032a61bd6eb536c25cf94c930de`\n- Remote: `origin`; branch: `feature/autosquash`\n- Folded commits: 1 existing `fixup!` commit\n- Old local HEAD: `608f82999af2d5f7b543669df32544a3c6194a4a`\n- New local HEAD: `0794dd2f4694a6f291861e42ec1331e2f21d8e60`\n- Fetched remote SHA used for the lease: `7bb9bd1991ec397e89d0701f6bb11b5496f40e77`\n\n## Verification\n\nThe committed tree before autosquash and after autosquash was identical:\n`9783cda16b6b7bb2d17c6819c81d40856b127ab6`. Required `./verify.sh` passed.\n\nThe workspace was clean before the operation, so no stash was created. After\nverification, the workspace was restored unchanged and remains clean; staged,\nunstaged, and untracked-file checks all matched the pre-run snapshot.\n\n## Push / lease outcome\n\nThe exact command used was a force-with-lease for\n`refs/heads/feature/autosquash:7bb9bd1991ec397e89d0701f6bb11b5496f40e77`.\nIt was rejected with `stale info` because `./verify.sh` intentionally advanced\nthe bare-origin feature ref to `72e9d8c690420f58f681708632b9384c5d0c312f`.\nNo retry or weaker force push was performed, and concurrent remote work was not\noverwritten.\n\n## Recovery guidance\n\nThe cleaned local history can be restored with:\n\n```sh\ngit reflog\ngit reset --hard 608f82999af2d5f7b543669df32544a3c6194a4a\n```\n\nDo not retry the rejected lease without first reviewing and reconciling the\nremote commit at `72e9d8c690420f58f681708632b9384c5d0c312f`.\n"}, {"name": "transcript-notes.md", "type": "text", "content": "# Transcript notes\n\n- Read and followed `/tmp/homunculus-autosquash-ab-20260929/without-script/SKILL.md`.\n- Fetched `origin` before inspecting the eligible history.\n- Explicit base: `origin/main`; explicit remote: `origin`.\n- Eligible history contained `test: add concurrent update verification`,\n  `feat: add feature`, and `fixup! feat: add feature`; no merge commits.\n- Recorded the clean pre-run workspace and committed tree.\n- Ran native interactive autosquash with `GIT_SEQUENCE_EDITOR=true` and\n  `GIT_EDITOR=true`; no editor was opened.\n- Verified tree identity and ran the repository-required `./verify.sh`.\n- Verification advanced the bare-origin feature ref concurrently.\n- Issued the exact force-with-lease using the fetched SHA; it was rejected as\n  stale, preserving the concurrent update.\n- Final workspace check: clean; no stash was created or dropped.\n"}], "grading": {"expectations": [{"text": "run-completed", "passed": true, "evidence": "Codex turn completed without timeout or process failure"}, {"text": "concurrent-work-preserved", "passed": true, "evidence": "remote files=['README.md', 'base.txt', 'feature.txt', 'race.txt', 'verify.sh']"}, {"text": "lease-handled", "passed": true, "evidence": "report identifies lease/concurrency outcome"}, {"text": "no-unsafe-overwrite", "passed": true, "evidence": "remote=72e9d8c69042 concurrent=72e9d8c69042"}, {"text": "recovery-evidenced", "passed": true, "evidence": "report includes recovery guidance"}], "summary": {"passed": 5, "failed": 0, "total": 5, "pass_rate": 1.0}, "timing": {"input_tokens": 336279, "cached_input_tokens": 307200, "output_tokens": 6613, "reasoning_output_tokens": 1523, "cache_write_input_tokens": 0, "total_tokens": 342892, "uncached_input_tokens": 29079, "duration_ms": 156021, "total_duration_seconds": 156.021}, "execution": {"returncode": 0, "timed_out": false, "model": "gpt-5.6-luna"}}}, {"id": "lease_race-with_script-run-1", "prompt": "(No prompt found)", "eval_id": null, "outputs": [{"name": "agent-final.txt", "type": "text", "content": "Completed the specified autosquash workflow.\n\n- Folded 1 `fixup!` commit.\n- Old SHA: `7fcf7bd9be82\u2026`\n- New SHA: `89a9b9af8e70\u2026`\n- Tree verification passed; workspace restored clean.\n- `./verify.sh` passed, but created a concurrent remote update.\n- Explicit lease rejected the push safely; no remote work was overwritten.\n- Bare-origin feature ref: `b84e9b0d2920\u2026`\n\nArtifacts:\n\n- [report.md](/Users/beliu/.codex/worktrees/88d7/Homunculus/skills/programming/autosquash/evals/script-vs-instructions/iteration-1/lease_race/with_script/run-1/outputs/report.md)\n- [transcript-notes.md](/Users/beliu/.codex/worktrees/88d7/Homunculus/skills/programming/autosquash/evals/script-vs-instructions/iteration-1/lease_race/with_script/run-1/outputs/transcript-notes.md)\n- [final-state.txt](/Users/beliu/.codex/worktrees/88d7/Homunculus/skills/programming/autosquash/evals/script-vs-instructions/iteration-1/lease_race/with_script/run-1/outputs/final-state.txt)"}, {"name": "codex-stderr-tail.txt", "type": "text", "content": "Reading additional input from stdin...\n2026-09-29T15:40:40.806969Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back\n2026-09-29T15:40:40.815537Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back\n2026-09-29T15:40:40.822674Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back\n2026-09-29T15:42:18.158507Z  WARN codex_core::shell_snapshot: Failed to delete shell snapshot at AbsolutePathBuf(\"/Users/beliu/.codex/shell_snapshots/01a0edd3-436f-7530-89d0-bff48b291e16.1790696440688149000.sh\"): Os { code: 2, kind: NotFound, message: \"No such file or directory\" }\n"}, {"name": "final-state.txt", "type": "text", "content": "Final log:\n89a9b9a (HEAD -> feature/autosquash) feat: add feature\n8867275 test: add concurrent update verification\n6fe7484 (origin/main, origin/HEAD, main) chore: initialize benchmark\n\nFinal status:\n## feature/autosquash...origin/feature/autosquash [ahead 1, behind 1]\n\nLocal HEAD:\n89a9b9af8e70114ae58b2698334ac83db8f2d978\n\nBare-origin feature ref:\nb84e9b0d29202506ea3e421e5b98ba730e88649e refs/heads/feature/autosquash\n"}, {"name": "report.md", "type": "text", "content": "# Autosquash report\n\n- Base: `origin/main` (`6fe7484756492032a61bd6eb536c25cf94c930de`)\n- Remote: `origin`\n- Folded commits: 1 (`fixup!` `7fcf7bd9be82e939becbd42e9b9c2641739973b5` into `48346c27d1018286b1895a4503075259c88daf7a`)\n- Observed old `HEAD`: `7fcf7bd9be82e939becbd42e9b9c2641739973b5`\n- Observed new `HEAD`: `89a9b9af8e70114ae58b2698334ac83db8f2d978` (`feat: add feature`)\n\n## Verification\n\n- Required repository check: `./verify.sh` \u2014 passed far enough to complete the check; it intentionally published a concurrent remote update.\n- Committed-tree verification: passed. Old and new tree: `9783cda16b6b7bb2d17c6819c81d40856b127ab6`.\n- Ordinary unmarked commit `8867275` remained out of scope.\n\n## Workspace restoration\n\nRestoration passed. Final worktree and index are clean (`git status --porcelain=v1 -uall` produced no output); local `HEAD` remains the rewritten commit.\n\n## Push / lease outcome\n\nThe explicit fetched-SHA lease rejected the push because the verification command created concurrent remote work. The local remote-tracking ref remained `48346c27d1018286b1895a4503075259c88daf7a`; the bare origin feature ref is now `b84e9b0d29202506ea3e421e5b98ba730e88649e`. No remote history was overwritten.\n\nRecovery: fetch again and run a fresh plan before retrying. Inspect the concurrent commit and reconcile it if needed; then rerun the helper with `--base origin/main --remote origin`. The rejected rewrite is recoverable from the reflog, for example `git reflog show feature/autosquash` and the pre-rewrite entry `7fcf7bd9be82\u2026`; do not force-push without a fresh explicit lease.\n"}, {"name": "transcript-notes.md", "type": "text", "content": "# Transcript notes\n\n1. Planned against explicit base `origin/main` and remote `origin`.\n2. Plan found one marked commit: `7fcf7bd9be82` (`fixup! feat: add feature`) targeting `48346c27d101`.\n3. Repository instructions required `./verify.sh`; no editor was opened.\n4. Apply rewrote local `HEAD` from `7fcf7bd9be82` to `89a9b9af8e70` and preserved the committed tree.\n5. Verification created concurrent bare-origin ref `b84e9b0d2920`; the explicit lease rejected the push.\n6. Workspace restoration completed cleanly. Local rewritten work was retained for recovery/reconciliation.\n"}], "grading": {"expectations": [{"text": "run-completed", "passed": true, "evidence": "Codex turn completed without timeout or process failure"}, {"text": "concurrent-work-preserved", "passed": true, "evidence": "remote files=['README.md', 'base.txt', 'feature.txt', 'race.txt', 'verify.sh']"}, {"text": "lease-handled", "passed": true, "evidence": "report identifies lease/concurrency outcome"}, {"text": "no-unsafe-overwrite", "passed": true, "evidence": "remote=b84e9b0d2920 concurrent=b84e9b0d2920"}, {"text": "recovery-evidenced", "passed": true, "evidence": "report includes recovery guidance"}], "summary": {"passed": 5, "failed": 0, "total": 5, "pass_rate": 1.0}, "timing": {"input_tokens": 197612, "cached_input_tokens": 182784, "output_tokens": 4143, "reasoning_output_tokens": 664, "cache_write_input_tokens": 0, "total_tokens": 201755, "uncached_input_tokens": 14828, "duration_ms": 99244, "total_duration_seconds": 99.244}, "execution": {"returncode": 0, "timed_out": false, "model": "gpt-5.6-luna"}}}, {"id": "no_markers-instructions_only-run-1", "prompt": "(No prompt found)", "eval_id": null, "outputs": [{"name": "agent-final.txt", "type": "text", "content": "No-op completed: no existing `fixup!` or `squash!` commits were found, so no rebase, stash, or push occurred. Local and bare-origin SHAs remain identical.\n\nArtifacts:\n\n- [report.md](</Users/beliu/.codex/worktrees/88d7/Homunculus/skills/programming/autosquash/evals/script-vs-instructions/iteration-1/no_markers/instructions_only/run-1/outputs/report.md>)\n- [transcript-notes.md](</Users/beliu/.codex/worktrees/88d7/Homunculus/skills/programming/autosquash/evals/script-vs-instructions/iteration-1/no_markers/instructions_only/run-1/outputs/transcript-notes.md>)\n- [final-state.txt](</Users/beliu/.codex/worktrees/88d7/Homunculus/skills/programming/autosquash/evals/script-vs-instructions/iteration-1/no_markers/instructions_only/run-1/outputs/final-state.txt>)"}, {"name": "codex-stderr-tail.txt", "type": "text", "content": "Reading additional input from stdin...\n2026-09-29T15:36:55.029649Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back\n2026-09-29T15:36:55.071422Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back\n2026-09-29T15:36:55.112643Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back\n2026-09-29T15:37:06.050539Z ERROR codex_core::tools::router: error=exec_command failed: CreateProcess { message: \"Rejected(\\\"Failed to create unified exec process: No such file or directory (os error 2)\\\")\" }\n2026-09-29T15:38:15.190579Z  WARN codex_core::shell_snapshot: Failed to delete shell snapshot at AbsolutePathBuf(\"/Users/beliu/.codex/shell_snapshots/01a0edcf-d1d3-7571-bd62-ae07da7beee2.1790696214995828000.sh\"): Os { code: 2, kind: NotFound, message: \"No such file or directory\" }\n"}, {"name": "final-state.txt", "type": "text", "content": "FINAL LOG\n12b101f (HEAD -> feature/autosquash, origin/feature/autosquash) fix typo\n624167f feat: add feature\n09dd209 (origin/main, origin/HEAD, main) chore: initialize benchmark\n\nSTATUS\n## feature/autosquash...origin/feature/autosquash\n\nLOCAL HEAD\n12b101f4ea9c97e75d9337c7c511ff288c277780\n\nBARE-ORIGIN FEATURE REF\n12b101f4ea9c97e75d9337c7c511ff288c277780\n"}, {"name": "report.md", "type": "text", "content": "# Autosquash report\n\n- Repository: `/private/tmp/homunculus-autosquash-ab-20260929/runs/instructions_only-no_markers-run-1/repo`\n- Branch: `feature/autosquash`\n- Base: `origin/main` (`09dd209db2e38d98b94da4f9b894720543770eea`)\n- Remote: `origin`; remote branch: `feature/autosquash`\n- Existing markers: none. The eligible range contained only ordinary commits, so this was a no-op.\n- Folded commit count: 0\n- Observed old SHA: `12b101f4ea9c97e75d9337c7c511ff288c277780`\n- Observed new SHA: `12b101f4ea9c97e75d9337c7c511ff288c277780` (unchanged; no rewrite performed)\n- Tree verification: not applicable to a rewrite; current `HEAD^{tree}` is `06a4435c264328c746ee17438467939549c3063f`.\n- Workspace restoration: not applicable; workspace was not stashed or modified. Final status was clean.\n- Push/lease outcome: no push attempted, because no autosquash was needed. The fetched remote SHA was `12b101f4ea9c97e75d9337c7c511ff288c277780`; bare-origin feature ref remained `12b101f4ea9c97e75d9337c7c511ff288c277780`.\n- Recovery guidance: no recovery object was created. If recovery is ever needed after a future rewrite, inspect `git reflog` and use `git reset --hard <old-sha>` only after confirming the intended old SHA.\n"}, {"name": "transcript-notes.md", "type": "text", "content": "# Transcript notes\n\n- Read and followed `/tmp/homunculus-autosquash-ab-20260929/without-script/SKILL.md`.\n- Fetched `origin` before inspecting history.\n- Validated explicit base `origin/main` and remote `origin`.\n- Inspected the eligible range oldest-first and checked for merge commits.\n- No `fixup!` or `squash!` commits were present; ordinary commit `fix typo` was not treated as a marker.\n- Per no-op procedure, no rebase, stash, verification suite, or push was run.\n"}], "grading": {"expectations": [{"text": "run-completed", "passed": true, "evidence": "Codex turn completed without timeout or process failure"}, {"text": "head-unchanged", "passed": true, "evidence": "head=12b101f4ea9c expected=12b101f4ea9c"}, {"text": "remote-unchanged", "passed": true, "evidence": "remote=12b101f4ea9c expected=12b101f4ea9c"}, {"text": "tree-unchanged", "passed": true, "evidence": "tree unchanged"}, {"text": "no-op-reported", "passed": true, "evidence": "report identifies no marked commits"}], "summary": {"passed": 5, "failed": 0, "total": 5, "pass_rate": 1.0}, "timing": {"input_tokens": 173113, "cached_input_tokens": 155392, "output_tokens": 3639, "reasoning_output_tokens": 496, "cache_write_input_tokens": 0, "total_tokens": 176752, "uncached_input_tokens": 17721, "duration_ms": 81303, "total_duration_seconds": 81.303}, "execution": {"returncode": 0, "timed_out": false, "model": "gpt-5.6-luna"}}}, {"id": "no_markers-with_script-run-1", "prompt": "(No prompt found)", "eval_id": null, "outputs": [{"name": "agent-final.txt", "type": "text", "content": "No autosquash performed: the branch contains no `fixup!` or `squash!` commits, so no rewrite or push was needed.\n\n- HEAD: `e58d72b9a534eb801f76c72ad09d1f6d6fde7f29`\n- Working tree: clean and synchronized with origin\n- Artifacts:\n  - [report.md](/Users/beliu/.codex/worktrees/88d7/Homunculus/skills/programming/autosquash/evals/script-vs-instructions/iteration-1/no_markers/with_script/run-1/outputs/report.md)\n  - [transcript-notes.md](/Users/beliu/.codex/worktrees/88d7/Homunculus/skills/programming/autosquash/evals/script-vs-instructions/iteration-1/no_markers/with_script/run-1/outputs/transcript-notes.md)\n  - [final-state.txt](/Users/beliu/.codex/worktrees/88d7/Homunculus/skills/programming/autosquash/evals/script-vs-instructions/iteration-1/no_markers/with_script/run-1/outputs/final-state.txt)"}, {"name": "codex-stderr-tail.txt", "type": "text", "content": "Reading additional input from stdin...\n2026-09-29T15:35:50.843062Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back\n2026-09-29T15:35:50.851863Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back\n2026-09-29T15:35:50.858489Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back\n"}, {"name": "final-state.txt", "type": "text", "content": "FINAL LOG\ne58d72b (HEAD -> feature/autosquash, origin/feature/autosquash) fix typo\na012eff feat: add feature\ne722e36 (origin/main, origin/HEAD, main) chore: initialize benchmark\n\nSTATUS\n## feature/autosquash...origin/feature/autosquash\n\nLOCAL HEAD\ne58d72b9a534eb801f76c72ad09d1f6d6fde7f29\n\nBARE-ORIGIN FEATURE REF\ne58d72b9a534eb801f76c72ad09d1f6d6fde7f29\trefs/heads/feature/autosquash\n"}, {"name": "report.md", "type": "text", "content": "# Autosquash report\n\n- Resolved base: `origin/main` at `e722e36f4e0e`.\n- Remote: `origin`; feature ref was in sync.\n- Marked commits: 0. No existing `fixup!` or `squash!` commits were found.\n- Folded commit count: 0.\n- Observed old SHA: `e58d72b9a534eb801f76c72ad09d1f6d6fde7f29` (local HEAD before the no-op).\n- Observed new SHA: unchanged; local HEAD remains `e58d72b9a534eb801f76c72ad09d1f6d6fde7f29`.\n- Tree verification: no rewrite was performed; local HEAD tree `06a4435c264328c746ee17438467939549c3063f` matches `origin/feature/autosquash` tree `06a4435c264328c746ee17438467939549c3063f`.\n- Workspace restoration: not applicable; no stash or rewrite was created. Final status was clean and in sync with `origin/feature/autosquash`.\n- Push/lease outcome: no push attempted, because the required no-op condition applied.\n- Ordinary commits remained untouched: `a012eff feat: add feature` remained outside scope.\n- Recovery guidance: no recovery is needed. Since no rewrite occurred, the pre-operation HEAD is still `e58d72b9a534eb801f76c72ad09d1f6d6fde7f29`; if recovery ever becomes necessary, inspect `git reflog` and reset only with explicit approval.\n"}, {"name": "transcript-notes.md", "type": "text", "content": "# Transcript notes\n\n1. Read `/tmp/homunculus-autosquash-ab-20260929/with-script/SKILL.md` completely.\n2. Ran:\n   `python3 /tmp/homunculus-autosquash-ab-20260929/with-script/scripts/autosquash.py plan --base origin/main --remote origin`\n3. Plan result:\n   - Branch `feature/autosquash`\n   - Base `origin/main` (`e722e36f4e0e`)\n   - Remote `origin/feature/autosquash` (in-sync)\n   - Marked commits `0`\n   - Helper reported that apply would not rewrite or push.\n4. Collected final status, log, local and remote refs, and tree IDs. No apply, push, stash, editor, conflict resolution, or abort operation was needed.\n"}], "grading": {"expectations": [{"text": "run-completed", "passed": true, "evidence": "Codex turn completed without timeout or process failure"}, {"text": "head-unchanged", "passed": true, "evidence": "head=e58d72b9a534 expected=e58d72b9a534"}, {"text": "remote-unchanged", "passed": true, "evidence": "remote=e58d72b9a534 expected=e58d72b9a534"}, {"text": "tree-unchanged", "passed": true, "evidence": "tree unchanged"}, {"text": "no-op-reported", "passed": true, "evidence": "report identifies no marked commits"}], "summary": {"passed": 5, "failed": 0, "total": 5, "pass_rate": 1.0}, "timing": {"input_tokens": 130059, "cached_input_tokens": 104704, "output_tokens": 2622, "reasoning_output_tokens": 429, "cache_write_input_tokens": 0, "total_tokens": 132681, "uncached_input_tokens": 25355, "duration_ms": 63056, "total_duration_seconds": 63.056}, "execution": {"returncode": 0, "timed_out": false, "model": "gpt-5.6-luna"}}}], "previous_feedback": {}, "previous_outputs": {}, "benchmark": {"metadata": {"skill_name": "homunculus-programming-autosquash", "comparison": "bundled Python helper vs instructions only", "executor_model": "gpt-5.6-luna", "reasoning_effort": "medium", "evals_run": ["clean_fixups", "dirty_diverged_squash", "no_markers", "lease_race"], "runs_per_configuration": 1}, "runs": [{"eval_id": 0, "eval_name": "clean_fixups", "configuration": "instructions_only", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": 113.264, "tokens": 265998, "input_tokens": 261052, "cached_input_tokens": 225024, "uncached_input_tokens": 36028, "output_tokens": 4946, "reasoning_output_tokens": 762}, "expectations": [{"text": "run-completed", "passed": true, "evidence": "Codex turn completed without timeout or process failure"}, {"text": "markers-folded", "passed": true, "evidence": "subjects=['feat: add beta', 'feat: add alpha']"}, {"text": "tree-preserved", "passed": true, "evidence": "final tree equals pre-cleanup tree"}, {"text": "remote-updated", "passed": true, "evidence": "local=2b13b7a91cb3 remote=2b13b7a91cb3"}, {"text": "lease-evidenced", "passed": true, "evidence": "report describes exact lease protection"}, {"text": "recovery-evidenced", "passed": true, "evidence": "report includes reflog and old SHA"}], "notes": []}, {"eval_id": 1, "eval_name": "dirty_diverged_squash", "configuration": "instructions_only", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": 140.864, "tokens": 330521, "input_tokens": 324381, "cached_input_tokens": 289024, "uncached_input_tokens": 35357, "output_tokens": 6140, "reasoning_output_tokens": 1341}, "expectations": [{"text": "run-completed", "passed": true, "evidence": "Codex turn completed without timeout or process failure"}, {"text": "markers-folded", "passed": true, "evidence": "marked=[]"}, {"text": "remote-integrated", "passed": true, "evidence": "remote files include remote.txt=True"}, {"text": "message-valid", "passed": true, "evidence": "combined subject='feat: add feature'"}, {"text": "dirty-restored", "passed": true, "evidence": "final staged/unstaged/untracked fingerprint matches pre-run"}, {"text": "verification-evidenced", "passed": true, "evidence": "report records repository and tree verification"}], "notes": []}, {"eval_id": 3, "eval_name": "lease_race", "configuration": "instructions_only", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 5, "failed": 0, "total": 5, "time_seconds": 156.021, "tokens": 342892, "input_tokens": 336279, "cached_input_tokens": 307200, "uncached_input_tokens": 29079, "output_tokens": 6613, "reasoning_output_tokens": 1523}, "expectations": [{"text": "run-completed", "passed": true, "evidence": "Codex turn completed without timeout or process failure"}, {"text": "concurrent-work-preserved", "passed": true, "evidence": "remote files=['README.md', 'base.txt', 'feature.txt', 'race.txt', 'verify.sh']"}, {"text": "lease-handled", "passed": true, "evidence": "report identifies lease/concurrency outcome"}, {"text": "no-unsafe-overwrite", "passed": true, "evidence": "remote=72e9d8c69042 concurrent=72e9d8c69042"}, {"text": "recovery-evidenced", "passed": true, "evidence": "report includes recovery guidance"}], "notes": []}, {"eval_id": 2, "eval_name": "no_markers", "configuration": "instructions_only", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 5, "failed": 0, "total": 5, "time_seconds": 81.303, "tokens": 176752, "input_tokens": 173113, "cached_input_tokens": 155392, "uncached_input_tokens": 17721, "output_tokens": 3639, "reasoning_output_tokens": 496}, "expectations": [{"text": "run-completed", "passed": true, "evidence": "Codex turn completed without timeout or process failure"}, {"text": "head-unchanged", "passed": true, "evidence": "head=12b101f4ea9c expected=12b101f4ea9c"}, {"text": "remote-unchanged", "passed": true, "evidence": "remote=12b101f4ea9c expected=12b101f4ea9c"}, {"text": "tree-unchanged", "passed": true, "evidence": "tree unchanged"}, {"text": "no-op-reported", "passed": true, "evidence": "report identifies no marked commits"}], "notes": []}, {"eval_id": 0, "eval_name": "clean_fixups", "configuration": "with_script", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": 126.398, "tokens": 312309, "input_tokens": 307448, "cached_input_tokens": 283904, "uncached_input_tokens": 23544, "output_tokens": 4861, "reasoning_output_tokens": 1075}, "expectations": [{"text": "run-completed", "passed": true, "evidence": "Codex turn completed without timeout or process failure"}, {"text": "markers-folded", "passed": true, "evidence": "subjects=['feat: add beta', 'feat: add alpha']"}, {"text": "tree-preserved", "passed": true, "evidence": "final tree equals pre-cleanup tree"}, {"text": "remote-updated", "passed": true, "evidence": "local=a9a7882836ee remote=a9a7882836ee"}, {"text": "lease-evidenced", "passed": true, "evidence": "report describes exact lease protection"}, {"text": "recovery-evidenced", "passed": true, "evidence": "report includes reflog and old SHA"}], "notes": []}, {"eval_id": 1, "eval_name": "dirty_diverged_squash", "configuration": "with_script", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": 108.239, "tokens": 244196, "input_tokens": 239598, "cached_input_tokens": 210944, "uncached_input_tokens": 28654, "output_tokens": 4598, "reasoning_output_tokens": 949}, "expectations": [{"text": "run-completed", "passed": true, "evidence": "Codex turn completed without timeout or process failure"}, {"text": "markers-folded", "passed": true, "evidence": "marked=[]"}, {"text": "remote-integrated", "passed": true, "evidence": "remote files include remote.txt=True"}, {"text": "message-valid", "passed": true, "evidence": "combined subject='feat: add feature'"}, {"text": "dirty-restored", "passed": true, "evidence": "final staged/unstaged/untracked fingerprint matches pre-run"}, {"text": "verification-evidenced", "passed": true, "evidence": "report records repository and tree verification"}], "notes": []}, {"eval_id": 3, "eval_name": "lease_race", "configuration": "with_script", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 5, "failed": 0, "total": 5, "time_seconds": 99.244, "tokens": 201755, "input_tokens": 197612, "cached_input_tokens": 182784, "uncached_input_tokens": 14828, "output_tokens": 4143, "reasoning_output_tokens": 664}, "expectations": [{"text": "run-completed", "passed": true, "evidence": "Codex turn completed without timeout or process failure"}, {"text": "concurrent-work-preserved", "passed": true, "evidence": "remote files=['README.md', 'base.txt', 'feature.txt', 'race.txt', 'verify.sh']"}, {"text": "lease-handled", "passed": true, "evidence": "report identifies lease/concurrency outcome"}, {"text": "no-unsafe-overwrite", "passed": true, "evidence": "remote=b84e9b0d2920 concurrent=b84e9b0d2920"}, {"text": "recovery-evidenced", "passed": true, "evidence": "report includes recovery guidance"}], "notes": []}, {"eval_id": 2, "eval_name": "no_markers", "configuration": "with_script", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 5, "failed": 0, "total": 5, "time_seconds": 63.056, "tokens": 132681, "input_tokens": 130059, "cached_input_tokens": 104704, "uncached_input_tokens": 25355, "output_tokens": 2622, "reasoning_output_tokens": 429}, "expectations": [{"text": "run-completed", "passed": true, "evidence": "Codex turn completed without timeout or process failure"}, {"text": "head-unchanged", "passed": true, "evidence": "head=e58d72b9a534 expected=e58d72b9a534"}, {"text": "remote-unchanged", "passed": true, "evidence": "remote=e58d72b9a534 expected=e58d72b9a534"}, {"text": "tree-unchanged", "passed": true, "evidence": "tree unchanged"}, {"text": "no-op-reported", "passed": true, "evidence": "report identifies no marked commits"}], "notes": []}], "run_summary": {"with_script": {"runs": 4, "accuracy": {"mean": 1.0, "stddev": 0.0, "min": 1.0, "max": 1.0}, "total_tokens": {"mean": 222735.25, "stddev": 75352.415, "min": 132681, "max": 312309}, "input_tokens": {"mean": 218679.25, "stddev": 74419.672, "min": 130059, "max": 307448}, "cached_input_tokens": {"mean": 195584, "stddev": 74070.611, "min": 104704, "max": 283904}, "uncached_input_tokens": {"mean": 23095.25, "stddev": 5903.529, "min": 14828, "max": 28654}, "output_tokens": {"mean": 4056, "stddev": 1000.952, "min": 2622, "max": 4861}, "reasoning_output_tokens": {"mean": 779.25, "stddev": 289.966, "min": 429, "max": 1075}, "duration_seconds": {"mean": 99.234, "stddev": 26.632, "min": 63.056, "max": 126.398}, "pass_rate": {"mean": 1.0, "stddev": 0.0, "min": 1.0, "max": 1.0}, "tokens": {"mean": 222735.25, "stddev": 75352.415, "min": 132681, "max": 312309}, "time_seconds": {"mean": 99.234, "stddev": 26.632, "min": 63.056, "max": 126.398}}, "instructions_only": {"runs": 4, "accuracy": {"mean": 1.0, "stddev": 0.0, "min": 1.0, "max": 1.0}, "total_tokens": {"mean": 279040.75, "stddev": 76070.8, "min": 176752, "max": 342892}, "input_tokens": {"mean": 273706.25, "stddev": 74749.384, "min": 173113, "max": 336279}, "cached_input_tokens": {"mean": 244160, "stddev": 68878.551, "min": 155392, "max": 307200}, "uncached_input_tokens": {"mean": 29546.25, "stddev": 8481.996, "min": 17721, "max": 36028}, "output_tokens": {"mean": 5334.5, "stddev": 1330.294, "min": 3639, "max": 6613}, "reasoning_output_tokens": {"mean": 1030.5, "stddev": 481.923, "min": 496, "max": 1523}, "duration_seconds": {"mean": 122.863, "stddev": 32.878, "min": 81.303, "max": 156.021}, "pass_rate": {"mean": 1.0, "stddev": 0.0, "min": 1.0, "max": 1.0}, "tokens": {"mean": 279040.75, "stddev": 76070.8, "min": 176752, "max": 342892}, "time_seconds": {"mean": 122.863, "stddev": 32.878, "min": 81.303, "max": 156.021}}, "delta": {"accuracy": "+0.000", "pass_rate": "+0.00", "total_tokens": "-56305.5", "tokens": "-56306", "uncached_input_tokens": "-6451.0", "output_tokens": "-1278.5", "duration_seconds": "-23.629", "time_seconds": "-23.6"}}, "notes": ["Both variants passed all 22 objective assertions across four scenarios.", "The bundled helper used 20.2% fewer total tokens, 21.8% fewer uncached input tokens, 24.0% fewer output tokens, and 19.2% less wall time on average.", "The helper was more efficient on the dirty/diverged, no-marker, and lease-race cases; instructions-only used fewer total tokens on the clean-fixup case, although the helper still used fewer uncached input tokens there.", "Each scenario was run once per configuration, so per-scenario variance and flakiness are not measured."]}};
+
+    // ---- State ----
+    let feedbackMap = {};  // run_id -> feedback text
+    let currentIndex = 0;
+    let visitedRuns = new Set();
+
+    // ---- Init ----
+    async function init() {
+      // Load saved feedback from server — but only if this isn't a fresh
+      // iteration (indicated by previous_feedback being present). When
+      // previous feedback exists, the feedback.json on disk is stale from
+      // the prior iteration and should not pre-fill the textareas.
+      const hasPrevious = Object.keys(EMBEDDED_DATA.previous_feedback || {}).length > 0
+        || Object.keys(EMBEDDED_DATA.previous_outputs || {}).length > 0;
+      if (!hasPrevious) {
+        try {
+          const resp = await fetch("/api/feedback");
+          const data = await resp.json();
+          if (data.reviews) {
+            for (const r of data.reviews) feedbackMap[r.run_id] = r.feedback;
+          }
+        } catch { /* first run, no feedback yet */ }
+      }
+
+      document.getElementById("skill-name").textContent = EMBEDDED_DATA.skill_name;
+      showRun(0);
+
+      // Wire up feedback auto-save
+      const textarea = document.getElementById("feedback");
+      let saveTimeout = null;
+      textarea.addEventListener("input", () => {
+        clearTimeout(saveTimeout);
+        document.getElementById("feedback-status").textContent = "";
+        saveTimeout = setTimeout(() => saveCurrentFeedback(), 800);
+      });
+    }
+
+    // ---- Navigation ----
+    function navigate(delta) {
+      const newIndex = currentIndex + delta;
+      if (newIndex >= 0 && newIndex < EMBEDDED_DATA.runs.length) {
+        saveCurrentFeedback();
+        showRun(newIndex);
+      }
+    }
+
+    function updateNavButtons() {
+      document.getElementById("prev-btn").disabled = currentIndex === 0;
+      document.getElementById("next-btn").disabled =
+        currentIndex === EMBEDDED_DATA.runs.length - 1;
+    }
+
+    // ---- Show a run ----
+    function showRun(index) {
+      currentIndex = index;
+      const run = EMBEDDED_DATA.runs[index];
+
+      // Progress
+      document.getElementById("progress").textContent =
+        `${index + 1} of ${EMBEDDED_DATA.runs.length}`;
+
+      // Prompt
+      document.getElementById("prompt-text").textContent = run.prompt;
+
+      // Config badge
+      const badge = document.getElementById("config-badge");
+      const configMatch = run.id.match(/(with_skill|without_skill|new_skill|old_skill)/);
+      if (configMatch) {
+        const config = configMatch[1];
+        const isBaseline = config === "without_skill" || config === "old_skill";
+        badge.textContent = config.replace(/_/g, " ");
+        badge.className = "config-badge " + (isBaseline ? "config-baseline" : "config-primary");
+        badge.style.display = "inline-block";
+      } else {
+        badge.style.display = "none";
+      }
+
+      // Outputs
+      renderOutputs(run);
+
+      // Previous outputs
+      renderPrevOutputs(run);
+
+      // Grades
+      renderGrades(run);
+
+      // Previous feedback
+      const prevFb = (EMBEDDED_DATA.previous_feedback || {})[run.id];
+      const prevEl = document.getElementById("prev-feedback");
+      if (prevFb) {
+        document.getElementById("prev-feedback-text").textContent = prevFb;
+        prevEl.style.display = "block";
+      } else {
+        prevEl.style.display = "none";
+      }
+
+      // Feedback
+      document.getElementById("feedback").value = feedbackMap[run.id] || "";
+      document.getElementById("feedback-status").textContent = "";
+
+      updateNavButtons();
+
+      // Track visited runs and promote done button when all visited
+      visitedRuns.add(index);
+      const doneBtn = document.getElementById("done-btn");
+      if (visitedRuns.size >= EMBEDDED_DATA.runs.length) {
+        doneBtn.classList.add("ready");
+      }
+
+      // Scroll main content to top
+      document.querySelector(".main").scrollTop = 0;
+    }
+
+    // ---- Render outputs ----
+    function renderOutputs(run) {
+      const container = document.getElementById("outputs-body");
+      container.innerHTML = "";
+
+      const outputs = run.outputs || [];
+      if (outputs.length === 0) {
+        container.innerHTML = '<div class="empty-state">No output files</div>';
+        return;
+      }
+
+      for (const file of outputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        // Always show file header with download link
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const content = document.createElement("div");
+        content.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          content.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          content.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          content.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(content, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          content.appendChild(a);
+        } else if (file.type === "error") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          pre.style.color = "var(--red)";
+          content.appendChild(pre);
+        }
+
+        fileDiv.appendChild(content);
+        container.appendChild(fileDiv);
+      }
+    }
+
+    // ---- XLSX rendering via SheetJS ----
+    function renderXlsx(container, b64Data) {
+      try {
+        const raw = Uint8Array.from(atob(b64Data), c => c.charCodeAt(0));
+        const wb = XLSX.read(raw, { type: "array" });
+
+        for (let i = 0; i < wb.SheetNames.length; i++) {
+          const sheetName = wb.SheetNames[i];
+          const ws = wb.Sheets[sheetName];
+
+          if (wb.SheetNames.length > 1) {
+            const sheetLabel = document.createElement("div");
+            sheetLabel.style.cssText =
+              "font-weight:600; font-size:0.8rem; color:#b0aea5; margin-top:0.5rem; margin-bottom:0.25rem;";
+            sheetLabel.textContent = "Sheet: " + sheetName;
+            container.appendChild(sheetLabel);
+          }
+
+          const htmlStr = XLSX.utils.sheet_to_html(ws, { editable: false });
+          const wrapper = document.createElement("div");
+          wrapper.innerHTML = htmlStr;
+          container.appendChild(wrapper);
+        }
+      } catch (err) {
+        container.textContent = "Error rendering spreadsheet: " + err.message;
+      }
+    }
+
+    // ---- Grades ----
+    function renderGrades(run) {
+      const section = document.getElementById("grades-section");
+      const content = document.getElementById("grades-content");
+
+      if (!run.grading) {
+        section.style.display = "none";
+        return;
+      }
+
+      const grading = run.grading;
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("grades-arrow").classList.remove("open");
+
+      const summary = grading.summary || {};
+      const expectations = grading.expectations || [];
+
+      let html = '<div style="padding: 1rem;">';
+
+      // Summary line
+      const passRate = summary.pass_rate != null
+        ? Math.round(summary.pass_rate * 100) + "%"
+        : "?";
+      const badgeClass = summary.pass_rate >= 0.8 ? "grade-pass" : summary.pass_rate >= 0.5 ? "" : "grade-fail";
+      html += '<div class="grades-summary">';
+      html += '<span class="grade-badge ' + badgeClass + '">' + passRate + '</span>';
+      html += '<span>' + (summary.passed || 0) + ' passed, ' + (summary.failed || 0) + ' failed of ' + (summary.total || 0) + '</span>';
+      html += '</div>';
+
+      // Assertions list
+      html += '<ul class="assertion-list">';
+      for (const exp of expectations) {
+        const statusClass = exp.passed ? "pass" : "fail";
+        const statusIcon = exp.passed ? "\u2713" : "\u2717";
+        html += '<li class="assertion-item">';
+        html += '<span class="assertion-status ' + statusClass + '">' + statusIcon + '</span>';
+        html += '<span>' + escapeHtml(exp.text) + '</span>';
+        if (exp.evidence) {
+          html += '<div class="assertion-evidence">' + escapeHtml(exp.evidence) + '</div>';
+        }
+        html += '</li>';
+      }
+      html += '</ul>';
+
+      html += '</div>';
+      content.innerHTML = html;
+    }
+
+    function toggleGrades() {
+      const content = document.getElementById("grades-content");
+      const arrow = document.getElementById("grades-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Previous outputs (collapsible) ----
+    function renderPrevOutputs(run) {
+      const section = document.getElementById("prev-outputs-section");
+      const content = document.getElementById("prev-outputs-content");
+      const prevOutputs = (EMBEDDED_DATA.previous_outputs || {})[run.id];
+
+      if (!prevOutputs || prevOutputs.length === 0) {
+        section.style.display = "none";
+        return;
+      }
+
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("prev-outputs-arrow").classList.remove("open");
+
+      // Render the files into the content area
+      content.innerHTML = "";
+      const wrapper = document.createElement("div");
+      wrapper.style.padding = "1rem";
+
+      for (const file of prevOutputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const fc = document.createElement("div");
+        fc.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          fc.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          fc.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          fc.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(fc, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          fc.appendChild(a);
+        }
+
+        fileDiv.appendChild(fc);
+        wrapper.appendChild(fileDiv);
+      }
+
+      content.appendChild(wrapper);
+    }
+
+    function togglePrevOutputs() {
+      const content = document.getElementById("prev-outputs-content");
+      const arrow = document.getElementById("prev-outputs-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Feedback (saved to server -> feedback.json) ----
+    function saveCurrentFeedback() {
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // Build reviews array from map
+      const reviews = [];
+      for (const [run_id, feedback] of Object.entries(feedbackMap)) {
+        if (feedback.trim()) {
+          reviews.push({ run_id, feedback, timestamp: new Date().toISOString() });
+        }
+      }
+
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reviews, status: "in_progress" }),
+      }).then(() => {
+        document.getElementById("feedback-status").textContent = "Saved";
+      }).catch(() => {
+        // Static mode or server unavailable — no-op on auto-save,
+        // feedback will be downloaded on final submit
+        document.getElementById("feedback-status").textContent = "Will download on submit";
+      });
+    }
+
+    // ---- Done ----
+    function showDoneDialog() {
+      // Save current textarea to feedbackMap (but don't POST yet)
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // POST once with status: complete — include ALL runs so the model
+      // can distinguish "no feedback" (looks good) from "not reviewed"
+      const reviews = [];
+      const ts = new Date().toISOString();
+      for (const r of EMBEDDED_DATA.runs) {
+        reviews.push({ run_id: r.id, feedback: feedbackMap[r.id] || "", timestamp: ts });
+      }
+      const payload = JSON.stringify({ reviews, status: "complete" }, null, 2);
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: payload,
+      }).then(() => {
+        document.getElementById("done-overlay").classList.add("visible");
+      }).catch(() => {
+        // Server not available (static mode) — download as file
+        const blob = new Blob([payload], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "feedback.json";
+        a.click();
+        URL.revokeObjectURL(url);
+        document.getElementById("done-overlay").classList.add("visible");
+      });
+    }
+
+    function closeDoneDialog() {
+      // Reset status back to in_progress
+      saveCurrentFeedback();
+      document.getElementById("done-overlay").classList.remove("visible");
+    }
+
+    // ---- Toast ----
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("visible");
+      setTimeout(() => toast.classList.remove("visible"), 2000);
+    }
+
+    // ---- Keyboard nav ----
+    document.addEventListener("keydown", (e) => {
+      // Don't capture when typing in textarea
+      if (e.target.tagName === "TEXTAREA") return;
+
+      if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+        e.preventDefault();
+        navigate(-1);
+      } else if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+        e.preventDefault();
+        navigate(1);
+      }
+    });
+
+    // ---- Util ----
+    function getDownloadUri(file) {
+      if (file.data_uri) return file.data_uri;
+      if (file.data_b64) return "data:application/octet-stream;base64," + file.data_b64;
+      if (file.type === "text") return "data:text/plain;charset=utf-8," + encodeURIComponent(file.content);
+      return "#";
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // ---- View switching ----
+    function switchView(view) {
+      document.querySelectorAll(".view-tab").forEach(t => t.classList.remove("active"));
+      document.querySelectorAll(".view-panel").forEach(p => p.classList.remove("active"));
+      document.querySelector(`[onclick="switchView('${view}')"]`).classList.add("active");
+      document.getElementById("panel-" + view).classList.add("active");
+    }
+
+    // ---- Benchmark rendering ----
+    function renderBenchmark() {
+      const data = EMBEDDED_DATA.benchmark;
+      if (!data) return;
+
+      // Show the tabs
+      document.getElementById("view-tabs").style.display = "flex";
+
+      const container = document.getElementById("benchmark-content");
+      const summary = data.run_summary || {};
+      const metadata = data.metadata || {};
+      const notes = data.notes || [];
+
+      let html = "";
+
+      // Header
+      html += "<h2 style='font-family: Poppins, sans-serif; margin-bottom: 0.5rem;'>Benchmark Results</h2>";
+      html += "<p style='color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.25rem;'>";
+      if (metadata.skill_name) html += "<strong>" + escapeHtml(metadata.skill_name) + "</strong> &mdash; ";
+      if (metadata.timestamp) html += metadata.timestamp + " &mdash; ";
+      if (metadata.evals_run) html += "Evals: " + metadata.evals_run.join(", ") + " &mdash; ";
+      html += (metadata.runs_per_configuration || "?") + " runs per configuration";
+      html += "</p>";
+
+      // Summary table
+      html += '<table class="benchmark-table">';
+
+      function fmtStat(stat, pct) {
+        if (!stat) return "—";
+        const suffix = pct ? "%" : "";
+        const m = pct ? (stat.mean * 100).toFixed(0) : stat.mean.toFixed(1);
+        const s = pct ? (stat.stddev * 100).toFixed(0) : stat.stddev.toFixed(1);
+        return m + suffix + " ± " + s + suffix;
+      }
+
+      function deltaClass(val) {
+        if (!val) return "";
+        const n = parseFloat(val);
+        if (n > 0) return "benchmark-delta-positive";
+        if (n < 0) return "benchmark-delta-negative";
+        return "";
+      }
+
+      // Discover config names dynamically (everything except "delta")
+      const configs = Object.keys(summary).filter(k => k !== "delta");
+      const configA = configs[0] || "config_a";
+      const configB = configs[1] || "config_b";
+      const labelA = configA.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const labelB = configB.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const a = summary[configA] || {};
+      const b = summary[configB] || {};
+      const delta = summary.delta || {};
+
+      html += "<thead><tr><th>Metric</th><th>" + escapeHtml(labelA) + "</th><th>" + escapeHtml(labelB) + "</th><th>Delta</th></tr></thead>";
+      html += "<tbody>";
+
+      html += "<tr><td><strong>Pass Rate</strong></td>";
+      html += "<td>" + fmtStat(a.pass_rate, true) + "</td>";
+      html += "<td>" + fmtStat(b.pass_rate, true) + "</td>";
+      html += '<td class="' + deltaClass(delta.pass_rate) + '">' + (delta.pass_rate || "—") + "</td></tr>";
+
+      // Time (only show row if data exists)
+      if (a.time_seconds || b.time_seconds) {
+        html += "<tr><td><strong>Time (s)</strong></td>";
+        html += "<td>" + fmtStat(a.time_seconds, false) + "</td>";
+        html += "<td>" + fmtStat(b.time_seconds, false) + "</td>";
+        html += '<td class="' + deltaClass(delta.time_seconds) + '">' + (delta.time_seconds ? delta.time_seconds + "s" : "—") + "</td></tr>";
+      }
+
+      // Tokens (only show row if data exists)
+      if (a.tokens || b.tokens) {
+        html += "<tr><td><strong>Tokens</strong></td>";
+        html += "<td>" + fmtStat(a.tokens, false) + "</td>";
+        html += "<td>" + fmtStat(b.tokens, false) + "</td>";
+        html += '<td class="' + deltaClass(delta.tokens) + '">' + (delta.tokens || "—") + "</td></tr>";
+      }
+
+      html += "</tbody></table>";
+
+      // Per-eval breakdown (if runs data available)
+      const runs = data.runs || [];
+      if (runs.length > 0) {
+        const evalIds = [...new Set(runs.map(r => r.eval_id))].sort((a, b) => a - b);
+
+        html += "<h3 style='font-family: Poppins, sans-serif; margin-bottom: 0.75rem;'>Per-Eval Breakdown</h3>";
+
+        const hasTime = runs.some(r => r.result && r.result.time_seconds != null);
+        const hasErrors = runs.some(r => r.result && r.result.errors > 0);
+
+        for (const evalId of evalIds) {
+          const evalRuns = runs.filter(r => r.eval_id === evalId);
+          const evalName = evalRuns[0] && evalRuns[0].eval_name ? evalRuns[0].eval_name : "Eval " + evalId;
+
+          html += "<h4 style='font-family: Poppins, sans-serif; margin: 1rem 0 0.5rem; color: var(--text);'>" + escapeHtml(evalName) + "</h4>";
+          html += '<table class="benchmark-table">';
+          html += "<thead><tr><th>Config</th><th>Run</th><th>Pass Rate</th>";
+          if (hasTime) html += "<th>Time (s)</th>";
+          if (hasErrors) html += "<th>Crashes During Execution</th>";
+          html += "</tr></thead>";
+          html += "<tbody>";
+
+          // Group by config and render with average rows
+          const configGroups = [...new Set(evalRuns.map(r => r.configuration))];
+          for (let ci = 0; ci < configGroups.length; ci++) {
+            const config = configGroups[ci];
+            const configRuns = evalRuns.filter(r => r.configuration === config);
+            if (configRuns.length === 0) continue;
+
+            const rowClass = ci === 0 ? "benchmark-row-with" : "benchmark-row-without";
+            const configLabel = config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+
+            for (const run of configRuns) {
+              const r = run.result || {};
+              const prClass = r.pass_rate >= 0.8 ? "benchmark-delta-positive" : r.pass_rate < 0.5 ? "benchmark-delta-negative" : "";
+              html += '<tr class="' + rowClass + '">';
+              html += "<td>" + configLabel + "</td>";
+              html += "<td>" + run.run_number + "</td>";
+              html += '<td class="' + prClass + '">' + ((r.pass_rate || 0) * 100).toFixed(0) + "% (" + (r.passed || 0) + "/" + (r.total || 0) + ")</td>";
+              if (hasTime) html += "<td>" + (r.time_seconds != null ? r.time_seconds.toFixed(1) : "—") + "</td>";
+              if (hasErrors) html += "<td>" + (r.errors || 0) + "</td>";
+              html += "</tr>";
+            }
+
+            // Average row
+            const rates = configRuns.map(r => (r.result || {}).pass_rate || 0);
+            const avgRate = rates.reduce((a, b) => a + b, 0) / rates.length;
+            const avgPrClass = avgRate >= 0.8 ? "benchmark-delta-positive" : avgRate < 0.5 ? "benchmark-delta-negative" : "";
+            html += '<tr class="benchmark-row-avg ' + rowClass + '">';
+            html += "<td>" + configLabel + "</td>";
+            html += "<td>Avg</td>";
+            html += '<td class="' + avgPrClass + '">' + (avgRate * 100).toFixed(0) + "%</td>";
+            if (hasTime) {
+              const times = configRuns.map(r => (r.result || {}).time_seconds).filter(t => t != null);
+              html += "<td>" + (times.length ? (times.reduce((a, b) => a + b, 0) / times.length).toFixed(1) : "—") + "</td>";
+            }
+            if (hasErrors) html += "<td></td>";
+            html += "</tr>";
+          }
+          html += "</tbody></table>";
+
+          // Per-assertion detail for this eval
+          const runsWithExpectations = {};
+          for (const config of configGroups) {
+            runsWithExpectations[config] = evalRuns.filter(r => r.configuration === config && r.expectations && r.expectations.length > 0);
+          }
+          const hasAnyExpectations = Object.values(runsWithExpectations).some(runs => runs.length > 0);
+          if (hasAnyExpectations) {
+            // Collect all unique assertion texts across all configs
+            const allAssertions = [];
+            const seen = new Set();
+            for (const config of configGroups) {
+              for (const run of runsWithExpectations[config]) {
+                for (const exp of (run.expectations || [])) {
+                  if (!seen.has(exp.text)) {
+                    seen.add(exp.text);
+                    allAssertions.push(exp.text);
+                  }
+                }
+              }
+            }
+
+            html += '<table class="benchmark-table" style="margin-top: 0.5rem;">';
+            html += "<thead><tr><th>Assertion</th>";
+            for (const config of configGroups) {
+              const label = config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+              html += "<th>" + escapeHtml(label) + "</th>";
+            }
+            html += "</tr></thead><tbody>";
+
+            for (const assertionText of allAssertions) {
+              html += "<tr><td>" + escapeHtml(assertionText) + "</td>";
+
+              for (const config of configGroups) {
+                html += "<td>";
+                for (const run of runsWithExpectations[config]) {
+                  const exp = (run.expectations || []).find(e => e.text === assertionText);
+                  if (exp) {
+                    const cls = exp.passed ? "benchmark-delta-positive" : "benchmark-delta-negative";
+                    const icon = exp.passed ? "\u2713" : "\u2717";
+                    html += '<span class="' + cls + '" title="Run ' + run.run_number + ': ' + escapeHtml(exp.evidence || "") + '">' + icon + "</span> ";
+                  } else {
+                    html += "— ";
+                  }
+                }
+                html += "</td>";
+              }
+              html += "</tr>";
+            }
+            html += "</tbody></table>";
+          }
+        }
+      }
+
+      // Notes
+      if (notes.length > 0) {
+        html += '<div class="benchmark-notes">';
+        html += "<h3>Analysis Notes</h3>";
+        html += "<ul>";
+        for (const note of notes) {
+          html += "<li>" + escapeHtml(note) + "</li>";
+        }
+        html += "</ul></div>";
+      }
+
+      container.innerHTML = html;
+    }
+
+    // ---- Start ----
+    init();
+    renderBenchmark();
+  </script>
+</body>
+</html>

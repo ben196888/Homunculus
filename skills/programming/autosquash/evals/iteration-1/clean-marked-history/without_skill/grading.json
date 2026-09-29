@@ -1,0 +1,11 @@
+{
+  "expectations": [
+    {"text": "marked-only-folding: the final log contains neither fixup! nor squash! commits and retains both logical target commits", "passed": true, "evidence": "final-log.txt contains the two target subjects and no marked subjects."},
+    {"text": "tree-preserved: the report records that the committed tree was identical before and after autosquash", "passed": false, "evidence": "The report checks filenames and commit count but records no before/after tree IDs."},
+    {"text": "leased-push: the report shows an explicit fetched-SHA force-with-lease push", "passed": false, "evidence": "The transcript uses generic `--force-with-lease` and never records the expected fetched SHA."},
+    {"text": "recovery-reported: the report includes old and new SHAs plus a reflog recovery command", "passed": false, "evidence": "The report lists final refs only and provides no old tip or reflog recovery command."}
+  ],
+  "summary": {"passed": 1, "failed": 3, "total": 4, "pass_rate": 0.25},
+  "claims": [{"claim": "The cleaned local and remote tips match", "type": "factual", "verified": true, "evidence": "The report and bare-ref evidence show 811aa3b for both."}],
+  "eval_feedback": {"suggestions": [], "overall": "The assertions distinguish history cleanup from safety evidence."}
+}

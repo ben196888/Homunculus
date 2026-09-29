@@ -1,0 +1,6 @@
+Reading additional input from stdin...
+2026-09-29T15:36:55.029649Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-29T15:36:55.071422Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-29T15:36:55.112643Z  WARN codex_rollout::list: state db discrepancy during find_thread_path_by_id_str_in_subdir: falling_back
+2026-09-29T15:37:06.050539Z ERROR codex_core::tools::router: error=exec_command failed: CreateProcess { message: "Rejected(\"Failed to create unified exec process: No such file or directory (os error 2)\")" }
+2026-09-29T15:38:15.190579Z  WARN codex_core::shell_snapshot: Failed to delete shell snapshot at AbsolutePathBuf("/Users/beliu/.codex/shell_snapshots/01a0edcf-d1d3-7571-bd62-ae07da7beee2.1790696214995828000.sh"): Os { code: 2, kind: NotFound, message: "No such file or directory" }

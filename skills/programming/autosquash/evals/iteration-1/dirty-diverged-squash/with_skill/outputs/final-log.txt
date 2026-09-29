@@ -1,0 +1,13 @@
+* c239bca (HEAD -> feature/autosquash, origin/feature/autosquash) docs: add remote branch note
+* e9a6579 feat: add feature and squashed markers
+* e5bc6bb (origin/main, origin/HEAD, main) chore: initialize fixture
+
+Feature range subjects:
+e9a65796e2e17b036960dba8b1078192ba84bfa2 feat: add feature and squashed markers
+c239bcaa26f5dcc4ce81de4879adf12554e5e46f docs: add remote branch note
+
+Remote equality:
+c239bcaa26f5dcc4ce81de4879adf12554e5e46f
+c239bcaa26f5dcc4ce81de4879adf12554e5e46f refs/heads/feature/autosquash
+
+Marked commit count: 0

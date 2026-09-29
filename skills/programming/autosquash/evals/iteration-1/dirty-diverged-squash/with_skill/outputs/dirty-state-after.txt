@@ -1,0 +1,41 @@
+git status --short:
+M  README.md
+ M app.txt
+?? scratch.txt
+
+git status --branch --short:
+## feature/autosquash...origin/feature/autosquash
+M  README.md
+ M app.txt
+?? scratch.txt
+
+staged diff:
+diff --git a/README.md b/README.md
+index 730f012..5dbefaf 100644
+--- a/README.md
++++ b/README.md
+@@ -1,3 +1,5 @@
+ # Autosquash fixture
+
+ Run the fast repository check with `sh test.sh`.
++
++staged workspace note
+
+unstaged diff:
+diff --git a/app.txt b/app.txt
+index 18f70b9..8f0fddc 100644
+--- a/app.txt
++++ b/app.txt
+@@ -1,3 +1,4 @@
+ base
+ feature
+ squashed-change
++unstaged workspace note
+
+untracked files and blob hashes:
+scratch.txt
+5f5702c89a8de56b1512a7b7e2e0a845523e4841 scratch.txt
+
+HEAD=c239bcaa26f5dcc4ce81de4879adf12554e5e46f
+REMOTE=c239bcaa26f5dcc4ce81de4879adf12554e5e46f
+VERIFY=PASS

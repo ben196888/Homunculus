@@ -1,0 +1,10 @@
+{
+  "eval_id": 2,
+  "eval_name": "ordinary-fix-remains-untouched",
+  "prompt": "In a disposable Git repository, create a feature branch whose latest ordinary commit is named 'fix typo' but has no fixup! or squash! commits. Ask the autosquash workflow to clean the branch. Save its report and before/after refs to outputs/.",
+  "assertions": [
+    "ordinary-commit-untouched: the branch SHA and commit subject remain unchanged",
+    "no-markers-no-op: the report explicitly says no fixup! or squash! commits were found",
+    "no-push: no remote update is attempted"
+  ]
+}

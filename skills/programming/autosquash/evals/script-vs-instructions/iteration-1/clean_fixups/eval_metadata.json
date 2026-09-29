@@ -1,0 +1,5 @@
+{
+  "eval_id": 0,
+  "eval_name": "clean_fixups",
+  "prompt": "Clean two existing fixup! commits on a clean feature branch, verify the committed tree, and update the remote safely."
+}

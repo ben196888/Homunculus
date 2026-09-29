@@ -1,0 +1,13 @@
+Autosquash completed successfully.
+
+- Folded 2 `fixup!` commits.
+- `./verify.sh` passed.
+- Workspace is clean and restored.
+- Force-with-lease push succeeded.
+- Local HEAD and bare-origin ref: `a9a7882836eee0b69aba427146ce40ec1b6da8d0`.
+
+Artifacts:
+
+- [report.md](/Users/beliu/.codex/worktrees/88d7/Homunculus/skills/programming/autosquash/evals/script-vs-instructions/iteration-1/clean_fixups/with_script/run-1/outputs/report.md)
+- [transcript-notes.md](/Users/beliu/.codex/worktrees/88d7/Homunculus/skills/programming/autosquash/evals/script-vs-instructions/iteration-1/clean_fixups/with_script/run-1/outputs/transcript-notes.md)
+- [final-state.txt](/Users/beliu/.codex/worktrees/88d7/Homunculus/skills/programming/autosquash/evals/script-vs-instructions/iteration-1/clean_fixups/with_script/run-1/outputs/final-state.txt)

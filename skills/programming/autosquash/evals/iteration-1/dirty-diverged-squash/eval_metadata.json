@@ -1,0 +1,11 @@
+{
+  "eval_id": 1,
+  "eval_name": "dirty-diverged-squash",
+  "prompt": "In a disposable Git repository with a bare origin, create a feature branch that has diverged from its remote, contains a squash! commit, and has dirty staged, unstaged, and untracked files. Use the autosquash skill to reconcile, clean, verify, and push it. Save a report, final log, and before/after dirty-state evidence to outputs/.",
+  "assertions": [
+    "remote-integrated: the final branch contains the remote-only and local work",
+    "squash-message-valid: the combined target has a Conventional Commit subject under 72 characters",
+    "dirty-state-restored: staged, unstaged, and untracked state match the before snapshot",
+    "verification-before-push: a relevant check and committed-tree identity pass before the leased push"
+  ]
+}

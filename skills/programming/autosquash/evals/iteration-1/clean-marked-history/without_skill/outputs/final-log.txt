@@ -1,0 +1,3 @@
+* 811aa3b (HEAD -> feature/clean-marked-history, origin/feature/clean-marked-history) feat: add beta marker
+* 967b832 feat: add alpha marker
+* ca36a79 (origin/main, main) chore: initialize repository

@@ -1,0 +1,5 @@
+{
+  "eval_id": 3,
+  "eval_name": "lease_race",
+  "prompt": "Autosquash a fixup while verification advances the remote concurrently; preserve the remote commit and handle the exact lease rejection safely."
+}

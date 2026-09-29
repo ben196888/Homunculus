@@ -1,0 +1,11 @@
+{
+  "input_tokens": 307448,
+  "cached_input_tokens": 283904,
+  "output_tokens": 4861,
+  "reasoning_output_tokens": 1075,
+  "cache_write_input_tokens": 0,
+  "total_tokens": 312309,
+  "uncached_input_tokens": 23544,
+  "duration_ms": 126398,
+  "total_duration_seconds": 126.398
+}

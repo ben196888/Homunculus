@@ -1,0 +1,11 @@
+{
+  "expectations": [
+    {"text": "remote-integrated: the final branch contains the remote-only and local work", "passed": true, "evidence": "final-log.txt retains both remote and local commits."},
+    {"text": "squash-message-valid: the combined target has a Conventional Commit subject under 72 characters", "passed": true, "evidence": "The target subject is `feat: add feature value`, a valid Conventional Commit subject under 72 characters."},
+    {"text": "dirty-state-restored: staged, unstaged, and untracked state match the before snapshot", "passed": false, "evidence": "Before evidence shows staged, unstaged, and untracked changes; after evidence is clean because the run committed them as `chore: preserve local worktree changes`."},
+    {"text": "verification-before-push: a relevant check and committed-tree identity pass before the leased push", "passed": false, "evidence": "No committed-tree identity comparison is recorded, and the listed verification occurs after the push."}
+  ],
+  "summary": {"passed": 2, "failed": 2, "total": 4, "pass_rate": 0.5},
+  "claims": [{"claim": "Dirty changes were restored", "type": "quality", "verified": false, "evidence": "They were committed into branch history rather than restored to their original staged/unstaged/untracked state."}],
+  "eval_feedback": {"suggestions": [], "overall": "The dirty-state assertion clearly catches a plausible but destructive baseline workaround."}
+}

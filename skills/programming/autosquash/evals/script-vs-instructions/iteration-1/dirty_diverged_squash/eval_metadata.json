@@ -1,0 +1,5 @@
+{
+  "eval_id": 1,
+  "eval_name": "dirty_diverged_squash",
+  "prompt": "Reconcile a diverged feature branch, fold an existing squash! commit, and preserve staged, unstaged, and untracked work exactly."
+}

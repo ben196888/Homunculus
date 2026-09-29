@@ -1,0 +1,16 @@
+Final log:
+29a8395 (HEAD -> feature/autosquash, origin/feature/autosquash) docs: add remote work
+0c80802 feat: add feature
+e722e36 (origin/main, origin/HEAD, main) chore: initialize benchmark
+
+Final status:
+## feature/autosquash...origin/feature/autosquash
+ M README.md
+A  staged.txt
+?? scratch.txt
+
+Local HEAD:
+29a8395c005082b9fc8e235d9e1f81427b7735a3
+
+Bare-origin feature ref:
+29a8395c005082b9fc8e235d9e1f81427b7735a3 refs/heads/feature/autosquash

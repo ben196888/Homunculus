@@ -1,0 +1,11 @@
+{
+  "expectations": [
+    {"text": "remote-integrated: the final branch contains the remote-only and local work", "passed": true, "evidence": "final-log.txt contains the remote docs commit and the combined local feature commit."},
+    {"text": "squash-message-valid: the combined target has a Conventional Commit subject under 72 characters", "passed": true, "evidence": "The combined target is `feat: add feature and squashed markers`, a 40-character Conventional Commit subject."},
+    {"text": "dirty-state-restored: staged, unstaged, and untracked state match the before snapshot", "passed": true, "evidence": "dirty-state-before.txt and dirty-state-after.txt show identical status entries, diffs, and untracked-file hash."},
+    {"text": "verification-before-push: a relevant check and committed-tree identity pass before the leased push", "passed": true, "evidence": "report.md records `sh test.sh` and tree identity passing while dirty work was isolated, followed by the exact leased push."}
+  ],
+  "summary": {"passed": 4, "failed": 0, "total": 4, "pass_rate": 1.0},
+  "claims": [{"claim": "Divergence was reconciled without consuming dirty work", "type": "quality", "verified": true, "evidence": "The final log retains remote work and dirty-state evidence is identical before and after."}],
+  "eval_feedback": {"suggestions": [], "overall": "The scenario exercises the skill's most important safety behavior."}
+}

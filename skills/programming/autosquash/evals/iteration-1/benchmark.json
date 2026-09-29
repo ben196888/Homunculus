@@ -1,0 +1,290 @@
+{
+  "metadata": {
+    "skill_name": "homunculus-programming-autosquash",
+    "skill_path": "/Users/beliu/.codex/worktrees/88d7/Homunculus/skills/programming/autosquash",
+    "executor_model": "gpt-5",
+    "analyzer_model": "gpt-5",
+    "timestamp": "2026-09-22T08:24:05Z",
+    "evals_run": [
+      0,
+      1,
+      2
+    ],
+    "runs_per_configuration": 1
+  },
+  "runs": [
+    {
+      "eval_id": 0,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 4,
+        "failed": 0,
+        "total": 4,
+        "time_seconds": 0.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "marked-only-folding: the final log contains neither fixup! nor squash! commits and retains both logical target commits",
+          "passed": true,
+          "evidence": "final-log.txt contains exactly the two target subjects above main and no marked subject."
+        },
+        {
+          "text": "tree-preserved: the report records that the committed tree was identical before and after autosquash",
+          "passed": true,
+          "evidence": "report.md states that the committed-tree identity check passed."
+        },
+        {
+          "text": "leased-push: the report shows an explicit fetched-SHA force-with-lease push",
+          "passed": true,
+          "evidence": "report.md and transcript-notes.md record the helper's exact force-with-lease push and matching remote tip."
+        },
+        {
+          "text": "recovery-reported: the report includes old and new SHAs plus a reflog recovery command",
+          "passed": true,
+          "evidence": "report.md includes both full tips and `git reflog; git reset --hard <old-sha>`."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 4,
+        "failed": 0,
+        "total": 4,
+        "time_seconds": 0.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "remote-integrated: the final branch contains the remote-only and local work",
+          "passed": true,
+          "evidence": "final-log.txt contains the remote docs commit and the combined local feature commit."
+        },
+        {
+          "text": "squash-message-valid: the combined target has a Conventional Commit subject under 72 characters",
+          "passed": true,
+          "evidence": "The combined target is `feat: add feature and squashed markers`, a 40-character Conventional Commit subject."
+        },
+        {
+          "text": "dirty-state-restored: staged, unstaged, and untracked state match the before snapshot",
+          "passed": true,
+          "evidence": "dirty-state-before.txt and dirty-state-after.txt show identical status entries, diffs, and untracked-file hash."
+        },
+        {
+          "text": "verification-before-push: a relevant check and committed-tree identity pass before the leased push",
+          "passed": true,
+          "evidence": "report.md records `sh test.sh` and tree identity passing while dirty work was isolated, followed by the exact leased push."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 3,
+        "failed": 0,
+        "total": 3,
+        "time_seconds": 0.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "ordinary-commit-untouched: the branch SHA and commit subject remain unchanged",
+          "passed": true,
+          "evidence": "refs-before.txt and refs-after.txt have identical HEAD, tree, local, tracking, and bare-remote refs; report.md retains `fix typo`."
+        },
+        {
+          "text": "no-markers-no-op: the report explicitly says no fixup! or squash! commits were found",
+          "passed": true,
+          "evidence": "report.md includes planner output reporting zero marked commits and an apply no-op."
+        },
+        {
+          "text": "no-push: no remote update is attempted",
+          "passed": true,
+          "evidence": "report.md states `Push result: not attempted`, and all before/after remote refs match."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 0,
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.25,
+        "passed": 1,
+        "failed": 3,
+        "total": 4,
+        "time_seconds": 0.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "marked-only-folding: the final log contains neither fixup! nor squash! commits and retains both logical target commits",
+          "passed": true,
+          "evidence": "final-log.txt contains the two target subjects and no marked subjects."
+        },
+        {
+          "text": "tree-preserved: the report records that the committed tree was identical before and after autosquash",
+          "passed": false,
+          "evidence": "The report checks filenames and commit count but records no before/after tree IDs."
+        },
+        {
+          "text": "leased-push: the report shows an explicit fetched-SHA force-with-lease push",
+          "passed": false,
+          "evidence": "The transcript uses generic `--force-with-lease` and never records the expected fetched SHA."
+        },
+        {
+          "text": "recovery-reported: the report includes old and new SHAs plus a reflog recovery command",
+          "passed": false,
+          "evidence": "The report lists final refs only and provides no old tip or reflog recovery command."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.5,
+        "passed": 2,
+        "failed": 2,
+        "total": 4,
+        "time_seconds": 0.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "remote-integrated: the final branch contains the remote-only and local work",
+          "passed": true,
+          "evidence": "final-log.txt retains both remote and local commits."
+        },
+        {
+          "text": "squash-message-valid: the combined target has a Conventional Commit subject under 72 characters",
+          "passed": true,
+          "evidence": "The target subject is `feat: add feature value`, a valid Conventional Commit subject under 72 characters."
+        },
+        {
+          "text": "dirty-state-restored: staged, unstaged, and untracked state match the before snapshot",
+          "passed": false,
+          "evidence": "Before evidence shows staged, unstaged, and untracked changes; after evidence is clean because the run committed them as `chore: preserve local worktree changes`."
+        },
+        {
+          "text": "verification-before-push: a relevant check and committed-tree identity pass before the leased push",
+          "passed": false,
+          "evidence": "No committed-tree identity comparison is recorded, and the listed verification occurs after the push."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 3,
+        "failed": 0,
+        "total": 3,
+        "time_seconds": 0.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "ordinary-commit-untouched: the branch SHA and commit subject remain unchanged",
+          "passed": true,
+          "evidence": "refs-before.txt and refs-after.txt are identical and retain `fix typo`."
+        },
+        {
+          "text": "no-markers-no-op: the report explicitly says no fixup! or squash! commits were found",
+          "passed": true,
+          "evidence": "report.md states that neither feature commit had a fixup! or squash! subject and Git left both unchanged."
+        },
+        {
+          "text": "no-push: no remote update is attempted",
+          "passed": true,
+          "evidence": "The fixture has no remote and the transcript records no push command."
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "time_seconds": {
+        "mean": 0.0,
+        "stddev": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "tokens": {
+        "mean": 0.0,
+        "stddev": 0.0,
+        "min": 0,
+        "max": 0
+      }
+    },
+    "without_skill": {
+      "pass_rate": {
+        "mean": 0.5833,
+        "stddev": 0.3819,
+        "min": 0.25,
+        "max": 1.0
+      },
+      "time_seconds": {
+        "mean": 0.0,
+        "stddev": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "tokens": {
+        "mean": 0.0,
+        "stddev": 0.0,
+        "min": 0,
+        "max": 0
+      }
+    },
+    "delta": {
+      "pass_rate": "+0.42",
+      "time_seconds": "+0.0",
+      "tokens": "+0"
+    }
+  },
+  "notes": [
+    "Five of the 11 distinct expectations differentiate the configurations: with-skill passes and without-skill fails tree-preserved, leased-push, and recovery-reported in clean-marked-history, plus dirty-state-restored and verification-before-push in dirty-diverged-squash.",
+    "Six expectations pass in both configurations: the core history result in clean-marked-history, remote integration and the combined commit message in dirty-diverged-squash, and all three no-op expectations in ordinary-fix-remains-untouched.",
+    "Both configurations clean marked history, but only the with-skill evidence records committed-tree identity, an explicit fetched-SHA lease, and old/new tips with a reflog recovery command.",
+    "In dirty-diverged-squash, the without-skill run commits the staged, unstaged, and untracked changes; the with-skill run restores their original fingerprint exactly.",
+    "The no-marker scenario is stable across configurations: the skill stops after planning, while the baseline runs an unnecessary no-op rebase.",
+    "Timing, token, and tool-call telemetry was unavailable, so resource-cost comparisons are omitted."
+  ]
+}

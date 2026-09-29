@@ -1,0 +1,15 @@
+Completed successfully.
+
+- Reconciled diverged branch onto `origin/feature/autosquash`
+- Folded 1 `squash!` commit
+- Preserved dirty staged, unstaged, and untracked work
+- `./verify.sh` passed
+- Tree remained unchanged
+- Lease-protected force push succeeded
+- Local and bare-origin refs now match at `c432a942...`
+
+Artifacts:
+
+- [report.md](</Users/beliu/.codex/worktrees/88d7/Homunculus/skills/programming/autosquash/evals/script-vs-instructions/iteration-1/dirty_diverged_squash/instructions_only/run-1/outputs/report.md>)
+- [transcript-notes.md](</Users/beliu/.codex/worktrees/88d7/Homunculus/skills/programming/autosquash/evals/script-vs-instructions/iteration-1/dirty_diverged_squash/instructions_only/run-1/outputs/transcript-notes.md>)
+- [final-state.txt](</Users/beliu/.codex/worktrees/88d7/Homunculus/skills/programming/autosquash/evals/script-vs-instructions/iteration-1/dirty_diverged_squash/instructions_only/run-1/outputs/final-state.txt>)

@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eval Review</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" integrity="sha384-EnyY0/GSHQGSxSgMwaIPzSESbqoOLSexfnSMN2AP+39Ckmn92stwABZynq1JyzdT" crossorigin="anonymous"></script>
+  <style>
+    :root {
+      --bg: #faf9f5;
+      --surface: #ffffff;
+      --border: #e8e6dc;
+      --text: #141413;
+      --text-muted: #b0aea5;
+      --accent: #d97757;
+      --accent-hover: #c4613f;
+      --green: #788c5d;
+      --green-bg: #eef2e8;
+      --red: #c44;
+      --red-bg: #fceaea;
+      --header-bg: #141413;
+      --header-text: #faf9f5;
+      --radius: 6px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Lora', Georgia, serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ---- Header ---- */
+    .header {
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .header h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    .header .instructions {
+      font-size: 0.8rem;
+      opacity: 0.7;
+      margin-top: 0.25rem;
+    }
+    .header .progress {
+      font-size: 0.875rem;
+      opacity: 0.8;
+      text-align: right;
+    }
+
+    /* ---- Main content ---- */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* ---- Sections ---- */
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      flex-shrink: 0;
+    }
+    .section-header {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.75rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .section-body {
+      padding: 1rem;
+    }
+
+    /* ---- Config badge ---- */
+    .config-badge {
+      display: inline-block;
+      padding: 0.2rem 0.625rem;
+      border-radius: 9999px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      margin-left: 0.75rem;
+      vertical-align: middle;
+    }
+    .config-badge.config-primary {
+      background: rgba(33, 150, 243, 0.12);
+      color: #1976d2;
+    }
+    .config-badge.config-baseline {
+      background: rgba(255, 193, 7, 0.15);
+      color: #f57f17;
+    }
+
+    /* ---- Prompt ---- */
+    .prompt-text {
+      white-space: pre-wrap;
+      font-size: 0.9375rem;
+      line-height: 1.6;
+    }
+
+    /* ---- Outputs ---- */
+    .output-file {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .output-file + .output-file {
+      margin-top: 1rem;
+    }
+    .output-file-header {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .output-file-header .dl-btn {
+      font-size: 0.7rem;
+      color: var(--accent);
+      text-decoration: none;
+      cursor: pointer;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-weight: 500;
+      opacity: 0.8;
+    }
+    .output-file-header .dl-btn:hover {
+      opacity: 1;
+      text-decoration: underline;
+    }
+    .output-file-content {
+      padding: 0.75rem;
+      overflow-x: auto;
+    }
+    .output-file-content pre {
+      font-size: 0.8125rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+    }
+    .output-file-content img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+    }
+    .output-file-content iframe {
+      width: 100%;
+      height: 600px;
+      border: none;
+    }
+    .output-file-content table {
+      border-collapse: collapse;
+      font-size: 0.8125rem;
+      width: 100%;
+    }
+    .output-file-content table td,
+    .output-file-content table th {
+      border: 1px solid var(--border);
+      padding: 0.375rem 0.5rem;
+      text-align: left;
+    }
+    .output-file-content table th {
+      background: var(--bg);
+      font-weight: 600;
+    }
+    .output-file-content .download-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.875rem;
+      cursor: pointer;
+    }
+    .output-file-content .download-link:hover {
+      background: var(--border);
+    }
+    .empty-state {
+      color: var(--text-muted);
+      font-style: italic;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    /* ---- Feedback ---- */
+    .prev-feedback {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.625rem 0.75rem;
+      margin-top: 0.75rem;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .prev-feedback-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.25rem;
+      color: var(--text-muted);
+    }
+    .feedback-textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.9375rem;
+      line-height: 1.5;
+      resize: vertical;
+      color: var(--text);
+    }
+    .feedback-textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    .feedback-status {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+      min-height: 1.1em;
+    }
+
+    /* ---- Grades (collapsible) ---- */
+    .grades-toggle {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+    .grades-toggle:hover {
+      color: var(--accent);
+    }
+    .grades-toggle .arrow {
+      margin-right: 0.5rem;
+      transition: transform 0.15s;
+      font-size: 0.75rem;
+    }
+    .grades-toggle .arrow.open {
+      transform: rotate(90deg);
+    }
+    .grades-content {
+      display: none;
+      margin-top: 0.75rem;
+    }
+    .grades-content.open {
+      display: block;
+    }
+    .grades-summary {
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .grade-badge {
+      display: inline-block;
+      padding: 0.125rem 0.5rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .grade-pass { background: var(--green-bg); color: var(--green); }
+    .grade-fail { background: var(--red-bg); color: var(--red); }
+    .assertion-list {
+      list-style: none;
+    }
+    .assertion-item {
+      padding: 0.625rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.8125rem;
+    }
+    .assertion-item:last-child { border-bottom: none; }
+    .assertion-status {
+      font-weight: 600;
+      margin-right: 0.5rem;
+    }
+    .assertion-status.pass { color: var(--green); }
+    .assertion-status.fail { color: var(--red); }
+    .assertion-evidence {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      margin-top: 0.25rem;
+      padding-left: 1.5rem;
+    }
+
+    /* ---- View tabs ---- */
+    .view-tabs {
+      display: flex;
+      gap: 0;
+      padding: 0 2rem;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .view-tab {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.625rem 1.25rem;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: var(--text-muted);
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+    }
+    .view-tab:hover { color: var(--text); }
+    .view-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+    .view-panel { display: none; }
+    .view-panel.active { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+
+    /* ---- Benchmark view ---- */
+    .benchmark-view {
+      padding: 1.5rem 2rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .benchmark-table {
+      border-collapse: collapse;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.8125rem;
+      width: 100%;
+      margin-bottom: 1.5rem;
+    }
+    .benchmark-table th, .benchmark-table td {
+      padding: 0.625rem 0.75rem;
+      text-align: left;
+      border: 1px solid var(--border);
+    }
+    .benchmark-table th {
+      font-family: 'Poppins', sans-serif;
+      background: var(--header-bg);
+      color: var(--header-text);
+      font-weight: 500;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .benchmark-table tr:hover { background: var(--bg); }
+    .benchmark-table tr.benchmark-row-with { background: rgba(33, 150, 243, 0.06); }
+    .benchmark-table tr.benchmark-row-without { background: rgba(255, 193, 7, 0.06); }
+    .benchmark-table tr.benchmark-row-with:hover { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-without:hover { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-table tr.benchmark-row-avg { font-weight: 600; border-top: 2px solid var(--border); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-with { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-without { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-delta-positive { color: var(--green); font-weight: 600; }
+    .benchmark-delta-negative { color: var(--red); font-weight: 600; }
+    .benchmark-notes {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+    }
+    .benchmark-notes h3 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+    }
+    .benchmark-notes ul {
+      list-style: disc;
+      padding-left: 1.25rem;
+    }
+    .benchmark-notes li {
+      font-size: 0.8125rem;
+      line-height: 1.6;
+      margin-bottom: 0.375rem;
+    }
+    .benchmark-empty {
+      color: var(--text-muted);
+      font-style: italic;
+      text-align: center;
+      padding: 3rem;
+    }
+
+    /* ---- Navigation ---- */
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      flex-shrink: 0;
+    }
+    .nav-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text);
+      transition: all 0.15s;
+    }
+    .nav-btn:hover:not(:disabled) {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .nav-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .done-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.5rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+    .done-btn:hover {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .done-btn.ready {
+      border: none;
+      background: var(--accent);
+      color: white;
+      font-weight: 600;
+    }
+    .done-btn.ready:hover {
+      background: var(--accent-hover);
+    }
+    /* ---- Done overlay ---- */
+    .done-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+    .done-overlay.visible {
+      display: flex;
+    }
+    .done-card {
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 2rem 3rem;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 500px;
+    }
+    .done-card h2 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .done-card p {
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+    .done-card .btn-row {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+    .done-card button {
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+    }
+    .done-card button:hover {
+      background: var(--bg);
+    }
+    /* ---- Toast ---- */
+    .toast {
+      position: fixed;
+      bottom: 5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 0.625rem 1.25rem;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      z-index: 200;
+    }
+    .toast.visible {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div id="app" style="height:100vh; display:flex; flex-direction:column;">
+    <div class="header">
+      <div>
+        <h1>Eval Review: <span id="skill-name"></span></h1>
+        <div class="instructions">Review each output and leave feedback below. Navigate with arrow keys or buttons. When done, copy feedback and paste into Claude Code.</div>
+      </div>
+      <div class="progress" id="progress"></div>
+    </div>
+
+    <!-- View tabs (only shown when benchmark data exists) -->
+    <div class="view-tabs" id="view-tabs" style="display:none;">
+      <button class="view-tab active" onclick="switchView('outputs')">Outputs</button>
+      <button class="view-tab" onclick="switchView('benchmark')">Benchmark</button>
+    </div>
+
+    <!-- Outputs panel (qualitative review) -->
+    <div class="view-panel active" id="panel-outputs">
+    <div class="main">
+      <!-- Prompt -->
+      <div class="section">
+        <div class="section-header">Prompt <span class="config-badge" id="config-badge" style="display:none;"></span></div>
+        <div class="section-body">
+          <div class="prompt-text" id="prompt-text"></div>
+        </div>
+      </div>
+
+      <!-- Outputs -->
+      <div class="section">
+        <div class="section-header">Output</div>
+        <div class="section-body" id="outputs-body">
+          <div class="empty-state">No output files found</div>
+        </div>
+      </div>
+
+      <!-- Previous Output (collapsible) -->
+      <div class="section" id="prev-outputs-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="togglePrevOutputs()">
+            <span class="arrow" id="prev-outputs-arrow">&#9654;</span>
+            Previous Output
+          </div>
+        </div>
+        <div class="grades-content" id="prev-outputs-content"></div>
+      </div>
+
+      <!-- Grades (collapsible) -->
+      <div class="section" id="grades-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="toggleGrades()">
+            <span class="arrow" id="grades-arrow">&#9654;</span>
+            Formal Grades
+          </div>
+        </div>
+        <div class="grades-content" id="grades-content"></div>
+      </div>
+
+      <!-- Feedback -->
+      <div class="section">
+        <div class="section-header">Your Feedback</div>
+        <div class="section-body">
+          <textarea
+            class="feedback-textarea"
+            id="feedback"
+            placeholder="What do you think of this output? Any issues, suggestions, or things that look great?"
+          ></textarea>
+          <div class="feedback-status" id="feedback-status"></div>
+          <div class="prev-feedback" id="prev-feedback" style="display:none;">
+            <div class="prev-feedback-label">Previous feedback</div>
+            <div id="prev-feedback-text"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav" id="outputs-nav">
+      <button class="nav-btn" id="prev-btn" onclick="navigate(-1)">&#8592; Previous</button>
+      <button class="done-btn" id="done-btn" onclick="showDoneDialog()">Submit All Reviews</button>
+      <button class="nav-btn" id="next-btn" onclick="navigate(1)">Next &#8594;</button>
+    </div>
+    </div><!-- end panel-outputs -->
+
+    <!-- Benchmark panel (quantitative stats) -->
+    <div class="view-panel" id="panel-benchmark">
+      <div class="benchmark-view" id="benchmark-content">
+        <div class="benchmark-empty">No benchmark data available. Run a benchmark to see quantitative results here.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Done overlay -->
+  <div class="done-overlay" id="done-overlay">
+    <div class="done-card">
+      <h2>Review Complete</h2>
+      <p>Your feedback has been saved. Go back to your Claude Code session and tell Claude you're done reviewing.</p>
+      <div class="btn-row">
+        <button onclick="closeDoneDialog()">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ---- Embedded data (injected by generate_review.py) ----
+    const EMBEDDED_DATA = {"skill_name": "homunculus-programming-autosquash", "runs": [{"id": "clean-marked-history-with_skill", "prompt": "In a disposable Git repository, create a feature branch with two normal commits and two later fixup! commits targeting them. Add a bare origin with main and the feature branch, then use the autosquash skill to clean and push the branch. Save a concise report and the final git log to outputs/.", "eval_id": 0, "outputs": [{"name": "final-log.txt", "type": "text", "content": "* 2ce96d3 (HEAD -> feature/autosquash-eval, origin/feature/autosquash-eval) feat: add beta value\n* 23ca29e feat: add alpha value\n* 4a2d82a (origin/main, origin/HEAD, main) chore: initialize evaluation fixture\n"}, {"name": "report.md", "type": "text", "content": "# Autosquash evaluation report\n\n- Result: pass\n- Disposable repository: `/tmp/autosquash-eval.rECmE7/repo`\n- Resolved base: `origin/main` at `4a2d82aba6e1`\n- Remote branch: `origin/feature/autosquash-eval`\n- Marked commits folded: 2\n- Old feature tip: `bbba196bbf3c3bfe119411c8784b1cd0fcc9e6f6`\n- New feature tip: `2ce96d3824d938cd59b94e1da058f036c53c6291`\n- Verification: `./verify.sh` passed; committed-tree identity check passed\n- Workspace restoration: yes (clean before and after)\n- Push: succeeded with an exact force-with-lease; local HEAD equals the remote feature ref\n- Final history: two ordinary feature commits remain and no `fixup!` or `squash!` subjects remain\n- Unmarked commits: the two feature commits and the base commit remained in scope only as their original commits; none were folded together\n- Recovery: `git reflog; git reset --hard bbba196bbf3c3bfe119411c8784b1cd0fcc9e6f6`\n"}, {"name": "transcript-notes.md", "type": "text", "content": "# Transcript notes\n\n1. Created disposable working and bare repositories with `git init -b main repo` and `git init --bare origin.git`.\n2. Committed the fixture on `main` as `4a2d82a` and pushed it to `origin/main`.\n3. Created `feature/autosquash-eval` with ordinary commits `1cb6ccc feat: add alpha value` and `04cdffb feat: add beta value`.\n4. Used `git commit --fixup` to create `fff8780` targeting `1cb6ccc` and `bbba196` targeting `04cdffb`, then pushed the feature branch.\n5. Ran the skill plan command:\n\n   `python3 <skill>/scripts/autosquash.py plan --base origin/main --remote origin`\n\n   Evidence: the plan reported an in-sync remote and exactly two unambiguous fixups mapped to the intended targets.\n\n6. Ran the skill apply command:\n\n   `python3 <skill>/scripts/autosquash.py apply --base origin/main --remote origin --verify './verify.sh'`\n\n   Evidence: the helper reported `bbba196bbf3c -> 2ce96d3824d9`, two folded commits, one passing verification command, restored workspace, and a force-with-lease push.\n\n7. Post-run checks fetched the remote, reran `./verify.sh`, compared `HEAD` with `origin/feature/autosquash-eval`, searched feature subjects for marked commits, checked clean status, and enumerated bare-origin refs.\n\n   Evidence: all checks exited zero; the bare origin contains `main` at `4a2d82a...` and `feature/autosquash-eval` at `2ce96d3...`; the final log contains only the base and two ordinary feature commits.\n"}], "grading": {"expectations": [{"text": "marked-only-folding: the final log contains neither fixup! nor squash! commits and retains both logical target commits", "passed": true, "evidence": "final-log.txt contains exactly the two target subjects above main and no marked subject."}, {"text": "tree-preserved: the report records that the committed tree was identical before and after autosquash", "passed": true, "evidence": "report.md states that the committed-tree identity check passed."}, {"text": "leased-push: the report shows an explicit fetched-SHA force-with-lease push", "passed": true, "evidence": "report.md and transcript-notes.md record the helper's exact force-with-lease push and matching remote tip."}, {"text": "recovery-reported: the report includes old and new SHAs plus a reflog recovery command", "passed": true, "evidence": "report.md includes both full tips and `git reflog; git reset --hard <old-sha>`."}], "summary": {"passed": 4, "failed": 0, "total": 4, "pass_rate": 1.0}, "claims": [{"claim": "Both marked commits were folded and the remote matches local HEAD", "type": "factual", "verified": true, "evidence": "The final log has two feature commits and the report records remote equality."}], "eval_feedback": {"suggestions": [], "overall": "Assertions are concrete and distinguish the helper's safety behavior."}}}, {"id": "clean-marked-history-without_skill", "prompt": "In a disposable Git repository, create a feature branch with two normal commits and two later fixup! commits targeting them. Add a bare origin with main and the feature branch, then use the autosquash skill to clean and push the branch. Save a concise report and the final git log to outputs/.", "eval_id": 0, "outputs": [{"name": "final-log.txt", "type": "text", "content": "* 811aa3b (HEAD -> feature/clean-marked-history, origin/feature/clean-marked-history) feat: add beta marker\n* 967b832 feat: add alpha marker\n* ca36a79 (origin/main, main) chore: initialize repository\n\n"}, {"name": "report.md", "type": "text", "content": "# Clean marked history evaluation\n\nResult: passed.\n\n- Created an isolated working repository and a bare `origin` under `/tmp/autosquash-eval.Tua78q/`.\n- Created and pushed `main`, then created `feature/clean-marked-history` with two normal commits and two later `fixup!` commits targeting them.\n- Cleaned the feature history with an interactive autosquash rebase onto `main`.\n- Updated the remote feature branch with `git push --force-with-lease`.\n- Verified that the local and remote feature tips match, the feature contains exactly two commits above `main`, no `fixup!` subjects remain, and the expected renamed files are present.\n\nFinal refs:\n\n- `main`: `ca36a7948947f206136f58c132dd15f9bbde9b70`\n- `feature/clean-marked-history`: `811aa3bb72e2c9dfe065d1e08516cb6b8682168c`\n\n"}, {"name": "transcript-notes.md", "type": "text", "content": "# Transcript notes\n\nDisposable paths:\n\n- Working repository: `/tmp/autosquash-eval.Tua78q/work`\n- Bare origin: `/tmp/autosquash-eval.Tua78q/origin.git`\n\nKey commands executed:\n\n```text\ngit init --bare origin.git\ngit init -b main work\ngit -C work commit --allow-empty -m 'chore: initialize repository'\ngit -C work remote add origin ../origin.git\ngit -C work push -u origin main\ngit -C work switch -c feature/clean-marked-history\ngit -C work commit -m 'feat: add alpha marker'\ngit -C work commit -m 'feat: add beta marker'\ngit -C work commit --fixup 035d828ee9cea15b010f93aa30a734cd4965f475\ngit -C work commit --fixup 9a9fb01ce13577f784c12a247e39bc07fe0a289a\ngit -C work push -u origin feature/clean-marked-history\nGIT_SEQUENCE_EDITOR=: git rebase -i --autosquash main\ngit push --force-with-lease origin feature/clean-marked-history\ngit --git-dir=../origin.git symbolic-ref HEAD refs/heads/main\n```\n\nHistory before cleanup:\n\n```text\n* c9d9f67 fixup! feat: add beta marker\n* 0065990 fixup! feat: add alpha marker\n* 9a9fb01 feat: add beta marker\n* 035d828 feat: add alpha marker\n* ca36a79 chore: initialize repository\n```\n\nPush evidence:\n\n```text\n+ c9d9f67...811aa3b feature/clean-marked-history -> feature/clean-marked-history (forced update)\n```\n\nVerification evidence:\n\n```text\ngit rev-list --count main..feature/clean-marked-history                         # 2\ngit log --format=%s main..feature/clean-marked-history | rg -c '^fixup!'        # 0\ngit rev-parse feature/clean-marked-history == git rev-parse origin/feature/clean-marked-history\nalpha-marker.txt and beta-marker.txt exist; the original filenames do not\nbare origin HEAD -> refs/heads/main\nverification=passed\n```\n\nBare origin refs:\n\n```text\n811aa3bb72e2c9dfe065d1e08516cb6b8682168c refs/heads/feature/clean-marked-history\nca36a7948947f206136f58c132dd15f9bbde9b70 refs/heads/main\n```\n"}], "grading": {"expectations": [{"text": "marked-only-folding: the final log contains neither fixup! nor squash! commits and retains both logical target commits", "passed": true, "evidence": "final-log.txt contains the two target subjects and no marked subjects."}, {"text": "tree-preserved: the report records that the committed tree was identical before and after autosquash", "passed": false, "evidence": "The report checks filenames and commit count but records no before/after tree IDs."}, {"text": "leased-push: the report shows an explicit fetched-SHA force-with-lease push", "passed": false, "evidence": "The transcript uses generic `--force-with-lease` and never records the expected fetched SHA."}, {"text": "recovery-reported: the report includes old and new SHAs plus a reflog recovery command", "passed": false, "evidence": "The report lists final refs only and provides no old tip or reflog recovery command."}], "summary": {"passed": 1, "failed": 3, "total": 4, "pass_rate": 0.25}, "claims": [{"claim": "The cleaned local and remote tips match", "type": "factual", "verified": true, "evidence": "The report and bare-ref evidence show 811aa3b for both."}], "eval_feedback": {"suggestions": [], "overall": "The assertions distinguish history cleanup from safety evidence."}}}, {"id": "dirty-diverged-squash-with_skill", "prompt": "In a disposable Git repository with a bare origin, create a feature branch that has diverged from its remote, contains a squash! commit, and has dirty staged, unstaged, and untracked files. Use the autosquash skill to reconcile, clean, verify, and push it. Save a report, final log, and before/after dirty-state evidence to outputs/.", "eval_id": 1, "outputs": [{"name": "dirty-state-after.txt", "type": "text", "content": "git status --short:\nM  README.md\n M app.txt\n?? scratch.txt\n\ngit status --branch --short:\n## feature/autosquash...origin/feature/autosquash\nM  README.md\n M app.txt\n?? scratch.txt\n\nstaged diff:\ndiff --git a/README.md b/README.md\nindex 730f012..5dbefaf 100644\n--- a/README.md\n+++ b/README.md\n@@ -1,3 +1,5 @@\n # Autosquash fixture\n \n Run the fast repository check with `sh test.sh`.\n+\n+staged workspace note\n\nunstaged diff:\ndiff --git a/app.txt b/app.txt\nindex 18f70b9..8f0fddc 100644\n--- a/app.txt\n+++ b/app.txt\n@@ -1,3 +1,4 @@\n base\n feature\n squashed-change\n+unstaged workspace note\n\nuntracked files and blob hashes:\nscratch.txt\n5f5702c89a8de56b1512a7b7e2e0a845523e4841 scratch.txt\n\nHEAD=c239bcaa26f5dcc4ce81de4879adf12554e5e46f\nREMOTE=c239bcaa26f5dcc4ce81de4879adf12554e5e46f\nVERIFY=PASS\n"}, {"name": "dirty-state-before.txt", "type": "text", "content": "git status --short:\nM  README.md\n M app.txt\n?? scratch.txt\n\ngit status --branch --short (before the plan fetch):\n## feature/autosquash...origin/feature/autosquash [ahead 1]\nM  README.md\n M app.txt\n?? scratch.txt\n\nstaged diff:\ndiff --git a/README.md b/README.md\nindex 730f012..5dbefaf 100644\n--- a/README.md\n+++ b/README.md\n@@ -1,3 +1,5 @@\n # Autosquash fixture\n \n Run the fast repository check with `sh test.sh`.\n+\n+staged workspace note\n\nunstaged diff:\ndiff --git a/app.txt b/app.txt\nindex 18f70b9..8f0fddc 100644\n--- a/app.txt\n+++ b/app.txt\n@@ -1,3 +1,4 @@\n base\n feature\n squashed-change\n+unstaged workspace note\n\nuntracked files and blob hashes:\nscratch.txt\n5f5702c89a8de56b1512a7b7e2e0a845523e4841 scratch.txt\n"}, {"name": "final-log.txt", "type": "text", "content": "* c239bca (HEAD -> feature/autosquash, origin/feature/autosquash) docs: add remote branch note\n* e9a6579 feat: add feature and squashed markers\n* e5bc6bb (origin/main, origin/HEAD, main) chore: initialize fixture\n\nFeature range subjects:\ne9a65796e2e17b036960dba8b1078192ba84bfa2 feat: add feature and squashed markers\nc239bcaa26f5dcc4ce81de4879adf12554e5e46f docs: add remote branch note\n\nRemote equality:\nc239bcaa26f5dcc4ce81de4879adf12554e5e46f\nc239bcaa26f5dcc4ce81de4879adf12554e5e46f refs/heads/feature/autosquash\n\nMarked commit count: 0\n"}, {"name": "report.md", "type": "text", "content": "# Autosquash evaluation report\n\nResult: PASS\n\n- Disposable repository: `/tmp/autosquash-eval.EW9Gor/work`\n- Bare origin: `/tmp/autosquash-eval.EW9Gor/origin.git`\n- Branch: `feature/autosquash`\n- Resolved base: `origin/main` at `e5bc6bb32a7d`\n- Resolved remote: `origin/feature/autosquash`\n- Initial branch relationship after fetch: diverged\n- Marked commits folded: 1 `squash!` commit\n- Old local SHA: `2e2bd4d392bb9f7636540b928852065f3cfea671`\n- New local SHA: `c239bcaa26f5dcc4ce81de4879adf12554e5e46f`\n- Synthesized target message: `feat: add feature and squashed markers`\n- Verification: `sh test.sh` passed while dirty work was isolated\n- Committed-tree identity check: passed (reported by the helper)\n- Workspace restoration: passed; staged, unstaged, and untracked fingerprints match the before evidence\n- Push: passed with exact force-with-lease to `origin/feature/autosquash`\n- Remote verification: remote SHA equals local HEAD at `c239bcaa26f5dcc4ce81de4879adf12554e5e46f`\n- Remaining marked commits in `origin/main..HEAD`: 0\n- Ordinary unmarked remote commit retained: `docs: add remote branch note`\n- Reflog recovery: `git reflog; git reset --hard 2e2bd4d392bb9f7636540b928852065f3cfea671`\n\nThe pre-plan short branch status used the stale tracking ref and displayed only `ahead 1`; the skill plan fetched origin and correctly reported the branch as diverged before applying any rewrite.\n"}, {"name": "transcript-notes.md", "type": "text", "content": "# Transcript notes\n\nAll Git operations set up for this evaluation were run in the disposable tree under `/tmp/autosquash-eval.EW9Gor`; all helper operations used `GIT_TERMINAL_PROMPT=0`.\n\n1. Initialized bare origin with default branch `main`, cloned it to `work`, and configured a local evaluation identity.\n2. Created an initial commit containing `README.md`, `app.txt`, and `test.sh`, then pushed `main`.\n3. Created `feature/autosquash`, committed `feat: add feature marker` (`74eee979088980a816369b4ed39e235d5b398cfa`), and pushed it.\n4. Cloned a second disposable actor, committed `docs: add remote branch note` on the remote feature branch, and pushed it.\n5. In the original clone, committed `squash! feat: add feature marker` (`2e2bd4d392bb9f7636540b928852065f3cfea671`), creating divergence.\n6. Added a staged README edit, an unstaged `app.txt` edit, and untracked `scratch.txt`; captured the before fingerprint.\n7. Ran the skill plan:\n\n   `python3 .../scripts/autosquash.py plan --base origin/main --remote origin`\n\n   It reported base `origin/main`, remote `origin/feature/autosquash (diverged)`, and one squash commit targeting `74eee9790889`.\n\n8. Inspected the fixture README and used its smallest relevant check, `sh test.sh`.\n9. Ran the skill apply command non-interactively with:\n\n   `--squash-message '74eee979088980a816369b4ed39e235d5b398cfa=feat: add feature and squashed markers' --verify 'sh test.sh'`\n\n10. Helper result:\n\n    `Autosquash complete: 2e2bd4d392bb -> c239bcaa26f5`\n\n    It also reported one folded commit, diverged reconciliation, one passed verification, restored workspace, exact force-with-lease push, and the reflog recovery command.\n11. Independently verified local/remote SHA equality, zero marked commits in the feature range, the final log, `sh test.sh`, and the restored dirty-state fingerprint.\n"}], "grading": {"expectations": [{"text": "remote-integrated: the final branch contains the remote-only and local work", "passed": true, "evidence": "final-log.txt contains the remote docs commit and the combined local feature commit."}, {"text": "squash-message-valid: the combined target has a Conventional Commit subject under 72 characters", "passed": true, "evidence": "The combined target is `feat: add feature and squashed markers`, a 40-character Conventional Commit subject."}, {"text": "dirty-state-restored: staged, unstaged, and untracked state match the before snapshot", "passed": true, "evidence": "dirty-state-before.txt and dirty-state-after.txt show identical status entries, diffs, and untracked-file hash."}, {"text": "verification-before-push: a relevant check and committed-tree identity pass before the leased push", "passed": true, "evidence": "report.md records `sh test.sh` and tree identity passing while dirty work was isolated, followed by the exact leased push."}], "summary": {"passed": 4, "failed": 0, "total": 4, "pass_rate": 1.0}, "claims": [{"claim": "Divergence was reconciled without consuming dirty work", "type": "quality", "verified": true, "evidence": "The final log retains remote work and dirty-state evidence is identical before and after."}], "eval_feedback": {"suggestions": [], "overall": "The scenario exercises the skill's most important safety behavior."}}}, {"id": "dirty-diverged-squash-without_skill", "prompt": "In a disposable Git repository with a bare origin, create a feature branch that has diverged from its remote, contains a squash! commit, and has dirty staged, unstaged, and untracked files. Use the autosquash skill to reconcile, clean, verify, and push it. Save a report, final log, and before/after dirty-state evidence to outputs/.", "eval_id": 1, "outputs": [{"name": "dirty-state-after.txt", "type": "text", "content": "Post-reconciliation dirty-state evidence\n\n$ git status --short --branch\n## feature/reconcile...origin/feature/reconcile\n\n$ git diff --quiet\nexit 0\n\n$ git diff --cached --quiet\nexit 0\n\n$ test -z \"$(git ls-files --others --exclude-standard)\"\nexit 0\n\nResult: no staged, unstaged, untracked, or unmerged paths remain.\n"}, {"name": "dirty-state-before.txt", "type": "text", "content": "Pre-reconciliation dirty-state evidence\n\n$ git status --short --branch\n## feature/reconcile...origin/feature/reconcile [ahead 2, behind 1]\n M README.md\nA  staged-change.txt\n?? untracked-scratch.txt\n\n$ git diff --cached --name-status\nA\tstaged-change.txt\n\n$ git diff --name-status\nM\tREADME.md\n\n$ git ls-files --others --exclude-standard\nuntracked-scratch.txt\n\n$ git log --oneline --decorate --graph --all -8\n* a3835f4 (HEAD -> feature/reconcile) squash! feat: add feature value\n* 801ecca docs: add local feature note\n| * 62bb6ab (origin/feature/reconcile) docs: add remote peer note\n|/\n* 10b7f67 feat: add feature value\n* e77256a (origin/main, origin/HEAD, main) chore: initialize disposable repository\n"}, {"name": "final-log.txt", "type": "text", "content": "* 4ed2c51 (HEAD -> feature/reconcile, origin/feature/reconcile) chore: preserve local worktree changes\n* 3c1b9c6 docs: add local feature note\n* 3ff702e docs: add remote peer note\n* f9dff3f feat: add feature value\n* e77256a (origin/main, origin/HEAD, main) chore: initialize disposable repository\n"}, {"name": "report.md", "type": "text", "content": "# Dirty, diverged autosquash evaluation report\n\n## Result\n\nThe disposable `feature/reconcile` branch was reconciled, autosquashed, cleaned, verified, and pushed to its bare origin. Local `HEAD` and `origin/feature/reconcile` both resolve to `4ed2c51`. The final worktree is clean and contains no `fixup!` or `squash!` subjects.\n\n## Initial state\n\n- Bare origin: `/tmp/codex-autosquash-eval.lrOsxH/origin.git`\n- Working clone: `/tmp/codex-autosquash-eval.lrOsxH/work`\n- Branch: `feature/reconcile`\n- Divergence: two local commits ahead and one remote commit behind\n- Autosquash marker: `a3835f4 squash! feat: add feature value`\n- Staged change: `staged-change.txt`\n- Unstaged change: `README.md`\n- Untracked file: `untracked-scratch.txt`\n\n## Reconciliation\n\n1. Saved tracked and untracked dirty state with `git stash push --include-untracked`.\n2. Rebased the local commits onto `origin/feature/reconcile` non-interactively.\n3. Ran `GIT_SEQUENCE_EDITOR=:` and `GIT_EDITOR=true` with `git rebase -i --autosquash origin/main`.\n4. Restored the stash. `README.md` conflicted because both the remote peer and the saved local work changed it; the resolution retained both lines.\n5. Committed the restored staged, unstaged, and untracked content as `4ed2c51 chore: preserve local worktree changes`, then dropped the retained stash.\n6. Updated the rewritten remote branch with `git push --force-with-lease origin feature/reconcile`.\n\n## Verification\n\n- `git status --short --branch` shows no path entries and no ahead/behind counts.\n- `git diff --quiet` and `git diff --cached --quiet` returned exit code 0.\n- `git ls-files --others --exclude-standard` returned no files.\n- `HEAD` equals `origin/feature/reconcile`.\n- No subject under `origin/main..HEAD` starts with `fixup!` or `squash!`.\n- `git fsck --no-dangling` completed successfully.\n- `app.txt` contains `feature value: final`.\n- `README.md` contains both `Remote peer update.` and `Unstaged local work.`.\n- The final history preserves the remote peer note, local feature note, squashed feature result, and recovered dirty changes.\n"}, {"name": "transcript-notes.md", "type": "text", "content": "# Transcript notes\n\nAll work was confined to the disposable repository rooted at `/tmp/codex-autosquash-eval.lrOsxH` and the requested `outputs/` directory. No autosquash skill or project source was read or edited.\n\n## Scenario construction\n\n- Initialized a bare origin and cloned it to `work`.\n- Created and pushed `main` at `e77256a`.\n- Created and pushed `feature/reconcile` with target commit `10b7f67 feat: add feature value`.\n- Used a second disposable clone to push `62bb6ab docs: add remote peer note`.\n- Kept a local-only documentation commit and created `a3835f4 squash! feat: add feature value`.\n- Added one staged file, one unstaged modification, and one untracked file.\n- Fetched the peer update, producing `[ahead 2, behind 1]`.\n\n## Commands and non-interactive controls\n\nThe main reconciliation commands were:\n\n```text\ngit stash push --include-untracked -m 'eval: preserve dirty worktree'\nGIT_EDITOR=true git rebase origin/feature/reconcile\nGIT_SEQUENCE_EDITOR=: GIT_EDITOR=true git rebase -i --autosquash origin/main\ngit stash pop\ngit add README.md staged-change.txt untracked-scratch.txt\ngit commit -m 'chore: preserve local worktree changes'\ngit stash drop stash@{0}\ngit push --force-with-lease origin feature/reconcile\n```\n\n`git stash pop` reported a content conflict in `README.md`. The stash was retained automatically. The conflict was resolved by keeping both the upstream remote note and local unstaged note. After committing all recovered dirty content, the retained stash was explicitly dropped.\n\nNo interactive editor, credential prompt, or interactive rebase editor was used. `GIT_EDITOR=true`, `GIT_SEQUENCE_EDITOR=:`, explicit commit messages, and a local filesystem remote kept the run non-interactive.\n\n## Final verification commands\n\n```text\ngit fetch origin\ngit status --short --branch\ngit diff --quiet\ngit diff --cached --quiet\ntest -z \"$(git ls-files --others --exclude-standard)\"\ntest \"$(git rev-parse HEAD)\" = \"$(git rev-parse origin/feature/reconcile)\"\ntest -z \"$(git log --format=%s origin/main..HEAD | rg '^(fixup|squash)!' || true)\"\ngit fsck --no-dangling\n```\n\nEvery verification succeeded.\n"}], "grading": {"expectations": [{"text": "remote-integrated: the final branch contains the remote-only and local work", "passed": true, "evidence": "final-log.txt retains both remote and local commits."}, {"text": "squash-message-valid: the combined target has a Conventional Commit subject under 72 characters", "passed": true, "evidence": "The target subject is `feat: add feature value`, a valid Conventional Commit subject under 72 characters."}, {"text": "dirty-state-restored: staged, unstaged, and untracked state match the before snapshot", "passed": false, "evidence": "Before evidence shows staged, unstaged, and untracked changes; after evidence is clean because the run committed them as `chore: preserve local worktree changes`."}, {"text": "verification-before-push: a relevant check and committed-tree identity pass before the leased push", "passed": false, "evidence": "No committed-tree identity comparison is recorded, and the listed verification occurs after the push."}], "summary": {"passed": 2, "failed": 2, "total": 4, "pass_rate": 0.5}, "claims": [{"claim": "Dirty changes were restored", "type": "quality", "verified": false, "evidence": "They were committed into branch history rather than restored to their original staged/unstaged/untracked state."}], "eval_feedback": {"suggestions": [], "overall": "The dirty-state assertion clearly catches a plausible but destructive baseline workaround."}}}, {"id": "ordinary-fix-remains-untouched-with_skill", "prompt": "In a disposable Git repository, create a feature branch whose latest ordinary commit is named 'fix typo' but has no fixup! or squash! commits. Ask the autosquash workflow to clean the branch. Save its report and before/after refs to outputs/.", "eval_id": 2, "outputs": [{"name": "refs-after.txt", "type": "text", "content": "# Snapshot after the autosquash workflow stopped at its required no-op\nHEAD 885cd845fbe6f9b4ce635bc25eb616f440496469\nHEAD^{tree} dd8d73efae22f4fe7e09758278a6b1bbaf2cc18c\nrefs/heads/feature/ordinary-fix 885cd845fbe6f9b4ce635bc25eb616f440496469\nrefs/remotes/origin/feature/ordinary-fix 885cd845fbe6f9b4ce635bc25eb616f440496469\nbare-remote:refs/heads/feature/ordinary-fix 885cd845fbe6f9b4ce635bc25eb616f440496469\nrefs/remotes/origin/main bceda20bc9115753e463be7731eb0c424b74bc41\nbare-remote:refs/heads/main bceda20bc9115753e463be7731eb0c424b74bc41\n"}, {"name": "refs-before.txt", "type": "text", "content": "# Snapshot immediately before invoking the autosquash planner\nHEAD 885cd845fbe6f9b4ce635bc25eb616f440496469\nHEAD^{tree} dd8d73efae22f4fe7e09758278a6b1bbaf2cc18c\nrefs/heads/feature/ordinary-fix 885cd845fbe6f9b4ce635bc25eb616f440496469\nrefs/remotes/origin/feature/ordinary-fix 885cd845fbe6f9b4ce635bc25eb616f440496469\nbare-remote:refs/heads/feature/ordinary-fix 885cd845fbe6f9b4ce635bc25eb616f440496469\nrefs/remotes/origin/main bceda20bc9115753e463be7731eb0c424b74bc41\nbare-remote:refs/heads/main bceda20bc9115753e463be7731eb0c424b74bc41\n"}, {"name": "report.md", "type": "text", "content": "# Autosquash report\n\n- Result: no-op; the branch was not rewritten or pushed.\n- Branch: `feature/ordinary-fix`\n- Resolved base: `origin/main` at `bceda20bc9115753e463be7731eb0c424b74bc41`\n- Resolved remote branch: `origin/feature/ordinary-fix`, in sync at `885cd845fbe6f9b4ce635bc25eb616f440496469`\n- Marked commits found: 0\n- Folded commit count: 0\n- Old SHA: `885cd845fbe6f9b4ce635bc25eb616f440496469`\n- New SHA: `885cd845fbe6f9b4ce635bc25eb616f440496469`\n- Committed tree before/after: `dd8d73efae22f4fe7e09758278a6b1bbaf2cc18c`\n- Workspace restoration: not needed; the worktree was clean and no stash was created.\n- Push result: not attempted, as required for a plan with no marked commits.\n- Project verification: no project check was available in the disposable fixture. The successful planner result plus exact local, tracking, bare-remote, commit, and tree identity checks verify the no-op.\n- Recovery: no rewrite occurred. If recovery were nevertheless needed, the original tip is recoverable with `git reset --hard 885cd845fbe6f9b4ce635bc25eb616f440496469` (the same SHA also remains in the reflog).\n\nThe latest ordinary commit, `fix typo`, remained visibly out of scope because its subject does not begin with `fixup! ` or `squash! `.\n\n## Planner output\n\n```text\nBranch: feature/ordinary-fix\nBase: origin/main (bceda20bc911)\nRemote: origin/feature/ordinary-fix (in-sync)\nMarked commits: 0\nNo fixup! or squash! commits found; apply would not rewrite or push.\n```\n\nPlanner exit status: 0.\n"}, {"name": "transcript-notes.md", "type": "text", "content": "# Transcript notes\n\n## Fixture\n\nCreated a disposable bare remote and clone under `/tmp/autosquash-ordinary-fix.rZOgOa`. The remote default branch was `main`, and the checked-out feature branch tracked `origin/feature/ordinary-fix`.\n\nFeature-only history before the workflow:\n\n```text\n885cd845fbe6f9b4ce635bc25eb616f440496469 fix typo\n1699a76af6294edf94af1d441b76c75db6619e8d feat: extend story\n```\n\nThe latest commit deliberately had the ordinary subject `fix typo`; neither feature commit had a `fixup! ` or `squash! ` prefix. The worktree was clean.\n\n## Workflow invocation\n\nFrom the disposable clone, invoked:\n\n```sh\npython3 /Users/beliu/.codex/worktrees/88d7/Homunculus/skills/programming/autosquash/scripts/autosquash.py plan --base origin/main\n```\n\nObserved output:\n\n```text\nBranch: feature/ordinary-fix\nBase: origin/main (bceda20bc911)\nRemote: origin/feature/ordinary-fix (in-sync)\nMarked commits: 0\nNo fixup! or squash! commits found; apply would not rewrite or push.\n```\n\nExit status was 0. In accordance with the skill's explicit no-marked-commits instruction, `apply` was not invoked and no push was attempted.\n\n## Verification\n\nAfter the planner completed:\n\n- local `HEAD`, local branch, remote-tracking branch, and the bare remote feature ref all remained `885cd845fbe6f9b4ce635bc25eb616f440496469`;\n- the committed tree remained `dd8d73efae22f4fe7e09758278a6b1bbaf2cc18c`;\n- `origin/main` and the bare remote `main` remained `bceda20bc9115753e463be7731eb0c424b74bc41`;\n- the worktree remained clean; and\n- the reflog's newest entry remained `commit: fix typo`, confirming that no rebase or reset occurred.\n"}], "grading": {"expectations": [{"text": "ordinary-commit-untouched: the branch SHA and commit subject remain unchanged", "passed": true, "evidence": "refs-before.txt and refs-after.txt have identical HEAD, tree, local, tracking, and bare-remote refs; report.md retains `fix typo`."}, {"text": "no-markers-no-op: the report explicitly says no fixup! or squash! commits were found", "passed": true, "evidence": "report.md includes planner output reporting zero marked commits and an apply no-op."}, {"text": "no-push: no remote update is attempted", "passed": true, "evidence": "report.md states `Push result: not attempted`, and all before/after remote refs match."}], "summary": {"passed": 3, "failed": 0, "total": 3, "pass_rate": 1.0}, "claims": [{"claim": "The ordinary fix commit stayed out of scope", "type": "factual", "verified": true, "evidence": "All refs and the tree are identical before and after."}], "eval_feedback": {"suggestions": [{"reason": "This case passes in both configurations, so it is a useful regression guard but does not measure the skill's added value."}], "overall": "Solid safety regression; intentionally non-discriminating."}}}, {"id": "ordinary-fix-remains-untouched-without_skill", "prompt": "In a disposable Git repository, create a feature branch whose latest ordinary commit is named 'fix typo' but has no fixup! or squash! commits. Ask the autosquash workflow to clean the branch. Save its report and before/after refs to outputs/.", "eval_id": 2, "outputs": [{"name": "refs-after.txt", "type": "text", "content": "repository: /tmp/autosquash-ordinary.6a8TWy\nHEAD: ba5cd9705c06d80acfd7bc453fbc7664ce0a2f65\nrefs/heads/feature/ordinary-fix: ba5cd9705c06d80acfd7bc453fbc7664ce0a2f65\nrefs/heads/main: c6e2f13d0424931ff24c47981babf62501a48659\n\nmain..feature/ordinary-fix:\nba5cd9705c06d80acfd7bc453fbc7664ce0a2f65\tfix typo\nc777330193ea92b6c782f9a36e30d093f54b836d\tadd feature\n\n"}, {"name": "refs-before.txt", "type": "text", "content": "repository: /tmp/autosquash-ordinary.6a8TWy\nHEAD: ba5cd9705c06d80acfd7bc453fbc7664ce0a2f65\nrefs/heads/feature/ordinary-fix: ba5cd9705c06d80acfd7bc453fbc7664ce0a2f65\nrefs/heads/main: c6e2f13d0424931ff24c47981babf62501a48659\n\nmain..feature/ordinary-fix:\nba5cd9705c06d80acfd7bc453fbc7664ce0a2f65\tfix typo\nc777330193ea92b6c782f9a36e30d093f54b836d\tadd feature\n\n"}, {"name": "report.md", "type": "text", "content": "# Autosquash evaluation report\n\nResult: **PASS**\n\nA disposable repository was created at `/tmp/autosquash-ordinary.6a8TWy` with\n`main` and `feature/ordinary-fix`. The feature branch contained two ordinary\ncommits, ending with a commit whose exact subject was `fix typo`.\n\nThe branch was cleaned with:\n\n```sh\nGIT_SEQUENCE_EDITOR=true git rebase -i --autosquash main\n```\n\nBecause neither feature commit had a `fixup!` or `squash!` subject, autosquash\nleft both commits and their object IDs unchanged. Verification confirmed:\n\n- the feature tip is still `ba5cd9705c06d80acfd7bc453fbc7664ce0a2f65`;\n- its exact subject is still `fix typo`;\n- the feature range contains no `fixup!` or `squash!` commit;\n- the worktree is clean after the operation.\n\n"}, {"name": "transcript-notes.md", "type": "text", "content": "# Transcript notes\n\n1. Created `/tmp/autosquash-ordinary.6a8TWy` with `git init -b main`.\n2. Configured a repository-local evaluation identity and disabled commit signing.\n3. Committed `chore: initial commit` on `main`.\n4. Created `feature/ordinary-fix` and committed `add feature`.\n5. Added a final ordinary commit with the exact subject `fix typo`.\n6. Captured branch refs, `HEAD`, and the `main..HEAD` commit list.\n7. Ran `GIT_SEQUENCE_EDITOR=true git rebase -i --autosquash main`.\n8. Git reported: `Successfully rebased and updated refs/heads/feature/ordinary-fix.`\n9. Captured the same evidence after cleanup. Before and after refs match exactly.\n10. Searched feature subjects for `^(fixup!|squash!)`; none were found.\n11. Confirmed the tip subject equals `fix typo` and the worktree is clean.\n\nNo project source or autosquash skill files were read or modified. Only the\ndisposable repository and this output directory were used.\n"}], "grading": {"expectations": [{"text": "ordinary-commit-untouched: the branch SHA and commit subject remain unchanged", "passed": true, "evidence": "refs-before.txt and refs-after.txt are identical and retain `fix typo`."}, {"text": "no-markers-no-op: the report explicitly says no fixup! or squash! commits were found", "passed": true, "evidence": "report.md states that neither feature commit had a fixup! or squash! subject and Git left both unchanged."}, {"text": "no-push: no remote update is attempted", "passed": true, "evidence": "The fixture has no remote and the transcript records no push command."}], "summary": {"passed": 3, "failed": 0, "total": 3, "pass_rate": 1.0}, "claims": [{"claim": "Autosquash left the ordinary commit unchanged", "type": "factual", "verified": true, "evidence": "The before and after branch SHA is ba5cd970."}], "eval_feedback": {"suggestions": [{"reason": "This case passes in both configurations, so retain it as a safety regression rather than evidence of uplift."}], "overall": "Solid no-marker regression case."}}}], "previous_feedback": {}, "previous_outputs": {}, "benchmark": {"metadata": {"skill_name": "homunculus-programming-autosquash", "skill_path": "/Users/beliu/.codex/worktrees/88d7/Homunculus/skills/programming/autosquash", "executor_model": "gpt-5", "analyzer_model": "gpt-5", "timestamp": "2026-09-22T08:24:05Z", "evals_run": [0, 1, 2], "runs_per_configuration": 1}, "runs": [{"eval_id": 0, "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 4, "failed": 0, "total": 4, "time_seconds": 0.0, "tokens": 0, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "marked-only-folding: the final log contains neither fixup! nor squash! commits and retains both logical target commits", "passed": true, "evidence": "final-log.txt contains exactly the two target subjects above main and no marked subject."}, {"text": "tree-preserved: the report records that the committed tree was identical before and after autosquash", "passed": true, "evidence": "report.md states that the committed-tree identity check passed."}, {"text": "leased-push: the report shows an explicit fetched-SHA force-with-lease push", "passed": true, "evidence": "report.md and transcript-notes.md record the helper's exact force-with-lease push and matching remote tip."}, {"text": "recovery-reported: the report includes old and new SHAs plus a reflog recovery command", "passed": true, "evidence": "report.md includes both full tips and `git reflog; git reset --hard <old-sha>`."}], "notes": []}, {"eval_id": 1, "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 4, "failed": 0, "total": 4, "time_seconds": 0.0, "tokens": 0, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "remote-integrated: the final branch contains the remote-only and local work", "passed": true, "evidence": "final-log.txt contains the remote docs commit and the combined local feature commit."}, {"text": "squash-message-valid: the combined target has a Conventional Commit subject under 72 characters", "passed": true, "evidence": "The combined target is `feat: add feature and squashed markers`, a 40-character Conventional Commit subject."}, {"text": "dirty-state-restored: staged, unstaged, and untracked state match the before snapshot", "passed": true, "evidence": "dirty-state-before.txt and dirty-state-after.txt show identical status entries, diffs, and untracked-file hash."}, {"text": "verification-before-push: a relevant check and committed-tree identity pass before the leased push", "passed": true, "evidence": "report.md records `sh test.sh` and tree identity passing while dirty work was isolated, followed by the exact leased push."}], "notes": []}, {"eval_id": 2, "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 3, "failed": 0, "total": 3, "time_seconds": 0.0, "tokens": 0, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "ordinary-commit-untouched: the branch SHA and commit subject remain unchanged", "passed": true, "evidence": "refs-before.txt and refs-after.txt have identical HEAD, tree, local, tracking, and bare-remote refs; report.md retains `fix typo`."}, {"text": "no-markers-no-op: the report explicitly says no fixup! or squash! commits were found", "passed": true, "evidence": "report.md includes planner output reporting zero marked commits and an apply no-op."}, {"text": "no-push: no remote update is attempted", "passed": true, "evidence": "report.md states `Push result: not attempted`, and all before/after remote refs match."}], "notes": []}, {"eval_id": 0, "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 0.25, "passed": 1, "failed": 3, "total": 4, "time_seconds": 0.0, "tokens": 0, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "marked-only-folding: the final log contains neither fixup! nor squash! commits and retains both logical target commits", "passed": true, "evidence": "final-log.txt contains the two target subjects and no marked subjects."}, {"text": "tree-preserved: the report records that the committed tree was identical before and after autosquash", "passed": false, "evidence": "The report checks filenames and commit count but records no before/after tree IDs."}, {"text": "leased-push: the report shows an explicit fetched-SHA force-with-lease push", "passed": false, "evidence": "The transcript uses generic `--force-with-lease` and never records the expected fetched SHA."}, {"text": "recovery-reported: the report includes old and new SHAs plus a reflog recovery command", "passed": false, "evidence": "The report lists final refs only and provides no old tip or reflog recovery command."}], "notes": []}, {"eval_id": 1, "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 0.5, "passed": 2, "failed": 2, "total": 4, "time_seconds": 0.0, "tokens": 0, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "remote-integrated: the final branch contains the remote-only and local work", "passed": true, "evidence": "final-log.txt retains both remote and local commits."}, {"text": "squash-message-valid: the combined target has a Conventional Commit subject under 72 characters", "passed": true, "evidence": "The target subject is `feat: add feature value`, a valid Conventional Commit subject under 72 characters."}, {"text": "dirty-state-restored: staged, unstaged, and untracked state match the before snapshot", "passed": false, "evidence": "Before evidence shows staged, unstaged, and untracked changes; after evidence is clean because the run committed them as `chore: preserve local worktree changes`."}, {"text": "verification-before-push: a relevant check and committed-tree identity pass before the leased push", "passed": false, "evidence": "No committed-tree identity comparison is recorded, and the listed verification occurs after the push."}], "notes": []}, {"eval_id": 2, "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 3, "failed": 0, "total": 3, "time_seconds": 0.0, "tokens": 0, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "ordinary-commit-untouched: the branch SHA and commit subject remain unchanged", "passed": true, "evidence": "refs-before.txt and refs-after.txt are identical and retain `fix typo`."}, {"text": "no-markers-no-op: the report explicitly says no fixup! or squash! commits were found", "passed": true, "evidence": "report.md states that neither feature commit had a fixup! or squash! subject and Git left both unchanged."}, {"text": "no-push: no remote update is attempted", "passed": true, "evidence": "The fixture has no remote and the transcript records no push command."}], "notes": []}], "run_summary": {"with_skill": {"pass_rate": {"mean": 1.0, "stddev": 0.0, "min": 1.0, "max": 1.0}, "time_seconds": {"mean": 0.0, "stddev": 0.0, "min": 0.0, "max": 0.0}, "tokens": {"mean": 0.0, "stddev": 0.0, "min": 0, "max": 0}}, "without_skill": {"pass_rate": {"mean": 0.5833, "stddev": 0.3819, "min": 0.25, "max": 1.0}, "time_seconds": {"mean": 0.0, "stddev": 0.0, "min": 0.0, "max": 0.0}, "tokens": {"mean": 0.0, "stddev": 0.0, "min": 0, "max": 0}}, "delta": {"pass_rate": "+0.42", "time_seconds": "+0.0", "tokens": "+0"}}, "notes": ["Five of the 11 distinct expectations differentiate the configurations: with-skill passes and without-skill fails tree-preserved, leased-push, and recovery-reported in clean-marked-history, plus dirty-state-restored and verification-before-push in dirty-diverged-squash.", "Six expectations pass in both configurations: the core history result in clean-marked-history, remote integration and the combined commit message in dirty-diverged-squash, and all three no-op expectations in ordinary-fix-remains-untouched.", "Both configurations clean marked history, but only the with-skill evidence records committed-tree identity, an explicit fetched-SHA lease, and old/new tips with a reflog recovery command.", "In dirty-diverged-squash, the without-skill run commits the staged, unstaged, and untracked changes; the with-skill run restores their original fingerprint exactly.", "The no-marker scenario is stable across configurations: the skill stops after planning, while the baseline runs an unnecessary no-op rebase.", "Timing, token, and tool-call telemetry was unavailable, so resource-cost comparisons are omitted."]}};
+
+    // ---- State ----
+    let feedbackMap = {};  // run_id -> feedback text
+    let currentIndex = 0;
+    let visitedRuns = new Set();
+
+    // ---- Init ----
+    async function init() {
+      // Load saved feedback from server — but only if this isn't a fresh
+      // iteration (indicated by previous_feedback being present). When
+      // previous feedback exists, the feedback.json on disk is stale from
+      // the prior iteration and should not pre-fill the textareas.
+      const hasPrevious = Object.keys(EMBEDDED_DATA.previous_feedback || {}).length > 0
+        || Object.keys(EMBEDDED_DATA.previous_outputs || {}).length > 0;
+      if (!hasPrevious) {
+        try {
+          const resp = await fetch("/api/feedback");
+          const data = await resp.json();
+          if (data.reviews) {
+            for (const r of data.reviews) feedbackMap[r.run_id] = r.feedback;
+          }
+        } catch { /* first run, no feedback yet */ }
+      }
+
+      document.getElementById("skill-name").textContent = EMBEDDED_DATA.skill_name;
+      showRun(0);
+
+      // Wire up feedback auto-save
+      const textarea = document.getElementById("feedback");
+      let saveTimeout = null;
+      textarea.addEventListener("input", () => {
+        clearTimeout(saveTimeout);
+        document.getElementById("feedback-status").textContent = "";
+        saveTimeout = setTimeout(() => saveCurrentFeedback(), 800);
+      });
+    }
+
+    // ---- Navigation ----
+    function navigate(delta) {
+      const newIndex = currentIndex + delta;
+      if (newIndex >= 0 && newIndex < EMBEDDED_DATA.runs.length) {
+        saveCurrentFeedback();
+        showRun(newIndex);
+      }
+    }
+
+    function updateNavButtons() {
+      document.getElementById("prev-btn").disabled = currentIndex === 0;
+      document.getElementById("next-btn").disabled =
+        currentIndex === EMBEDDED_DATA.runs.length - 1;
+    }
+
+    // ---- Show a run ----
+    function showRun(index) {
+      currentIndex = index;
+      const run = EMBEDDED_DATA.runs[index];
+
+      // Progress
+      document.getElementById("progress").textContent =
+        `${index + 1} of ${EMBEDDED_DATA.runs.length}`;
+
+      // Prompt
+      document.getElementById("prompt-text").textContent = run.prompt;
+
+      // Config badge
+      const badge = document.getElementById("config-badge");
+      const configMatch = run.id.match(/(with_skill|without_skill|new_skill|old_skill)/);
+      if (configMatch) {
+        const config = configMatch[1];
+        const isBaseline = config === "without_skill" || config === "old_skill";
+        badge.textContent = config.replace(/_/g, " ");
+        badge.className = "config-badge " + (isBaseline ? "config-baseline" : "config-primary");
+        badge.style.display = "inline-block";
+      } else {
+        badge.style.display = "none";
+      }
+
+      // Outputs
+      renderOutputs(run);
+
+      // Previous outputs
+      renderPrevOutputs(run);
+
+      // Grades
+      renderGrades(run);
+
+      // Previous feedback
+      const prevFb = (EMBEDDED_DATA.previous_feedback || {})[run.id];
+      const prevEl = document.getElementById("prev-feedback");
+      if (prevFb) {
+        document.getElementById("prev-feedback-text").textContent = prevFb;
+        prevEl.style.display = "block";
+      } else {
+        prevEl.style.display = "none";
+      }
+
+      // Feedback
+      document.getElementById("feedback").value = feedbackMap[run.id] || "";
+      document.getElementById("feedback-status").textContent = "";
+
+      updateNavButtons();
+
+      // Track visited runs and promote done button when all visited
+      visitedRuns.add(index);
+      const doneBtn = document.getElementById("done-btn");
+      if (visitedRuns.size >= EMBEDDED_DATA.runs.length) {
+        doneBtn.classList.add("ready");
+      }
+
+      // Scroll main content to top
+      document.querySelector(".main").scrollTop = 0;
+    }
+
+    // ---- Render outputs ----
+    function renderOutputs(run) {
+      const container = document.getElementById("outputs-body");
+      container.innerHTML = "";
+
+      const outputs = run.outputs || [];
+      if (outputs.length === 0) {
+        container.innerHTML = '<div class="empty-state">No output files</div>';
+        return;
+      }
+
+      for (const file of outputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        // Always show file header with download link
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const content = document.createElement("div");
+        content.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          content.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          content.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          content.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(content, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          content.appendChild(a);
+        } else if (file.type === "error") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          pre.style.color = "var(--red)";
+          content.appendChild(pre);
+        }
+
+        fileDiv.appendChild(content);
+        container.appendChild(fileDiv);
+      }
+    }
+
+    // ---- XLSX rendering via SheetJS ----
+    function renderXlsx(container, b64Data) {
+      try {
+        const raw = Uint8Array.from(atob(b64Data), c => c.charCodeAt(0));
+        const wb = XLSX.read(raw, { type: "array" });
+
+        for (let i = 0; i < wb.SheetNames.length; i++) {
+          const sheetName = wb.SheetNames[i];
+          const ws = wb.Sheets[sheetName];
+
+          if (wb.SheetNames.length > 1) {
+            const sheetLabel = document.createElement("div");
+            sheetLabel.style.cssText =
+              "font-weight:600; font-size:0.8rem; color:#b0aea5; margin-top:0.5rem; margin-bottom:0.25rem;";
+            sheetLabel.textContent = "Sheet: " + sheetName;
+            container.appendChild(sheetLabel);
+          }
+
+          const htmlStr = XLSX.utils.sheet_to_html(ws, { editable: false });
+          const wrapper = document.createElement("div");
+          wrapper.innerHTML = htmlStr;
+          container.appendChild(wrapper);
+        }
+      } catch (err) {
+        container.textContent = "Error rendering spreadsheet: " + err.message;
+      }
+    }
+
+    // ---- Grades ----
+    function renderGrades(run) {
+      const section = document.getElementById("grades-section");
+      const content = document.getElementById("grades-content");
+
+      if (!run.grading) {
+        section.style.display = "none";
+        return;
+      }
+
+      const grading = run.grading;
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("grades-arrow").classList.remove("open");
+
+      const summary = grading.summary || {};
+      const expectations = grading.expectations || [];
+
+      let html = '<div style="padding: 1rem;">';
+
+      // Summary line
+      const passRate = summary.pass_rate != null
+        ? Math.round(summary.pass_rate * 100) + "%"
+        : "?";
+      const badgeClass = summary.pass_rate >= 0.8 ? "grade-pass" : summary.pass_rate >= 0.5 ? "" : "grade-fail";
+      html += '<div class="grades-summary">';
+      html += '<span class="grade-badge ' + badgeClass + '">' + passRate + '</span>';
+      html += '<span>' + (summary.passed || 0) + ' passed, ' + (summary.failed || 0) + ' failed of ' + (summary.total || 0) + '</span>';
+      html += '</div>';
+
+      // Assertions list
+      html += '<ul class="assertion-list">';
+      for (const exp of expectations) {
+        const statusClass = exp.passed ? "pass" : "fail";
+        const statusIcon = exp.passed ? "\u2713" : "\u2717";
+        html += '<li class="assertion-item">';
+        html += '<span class="assertion-status ' + statusClass + '">' + statusIcon + '</span>';
+        html += '<span>' + escapeHtml(exp.text) + '</span>';
+        if (exp.evidence) {
+          html += '<div class="assertion-evidence">' + escapeHtml(exp.evidence) + '</div>';
+        }
+        html += '</li>';
+      }
+      html += '</ul>';
+
+      html += '</div>';
+      content.innerHTML = html;
+    }
+
+    function toggleGrades() {
+      const content = document.getElementById("grades-content");
+      const arrow = document.getElementById("grades-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Previous outputs (collapsible) ----
+    function renderPrevOutputs(run) {
+      const section = document.getElementById("prev-outputs-section");
+      const content = document.getElementById("prev-outputs-content");
+      const prevOutputs = (EMBEDDED_DATA.previous_outputs || {})[run.id];
+
+      if (!prevOutputs || prevOutputs.length === 0) {
+        section.style.display = "none";
+        return;
+      }
+
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("prev-outputs-arrow").classList.remove("open");
+
+      // Render the files into the content area
+      content.innerHTML = "";
+      const wrapper = document.createElement("div");
+      wrapper.style.padding = "1rem";
+
+      for (const file of prevOutputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const fc = document.createElement("div");
+        fc.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          fc.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          fc.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          fc.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(fc, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          fc.appendChild(a);
+        }
+
+        fileDiv.appendChild(fc);
+        wrapper.appendChild(fileDiv);
+      }
+
+      content.appendChild(wrapper);
+    }
+
+    function togglePrevOutputs() {
+      const content = document.getElementById("prev-outputs-content");
+      const arrow = document.getElementById("prev-outputs-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Feedback (saved to server -> feedback.json) ----
+    function saveCurrentFeedback() {
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // Build reviews array from map
+      const reviews = [];
+      for (const [run_id, feedback] of Object.entries(feedbackMap)) {
+        if (feedback.trim()) {
+          reviews.push({ run_id, feedback, timestamp: new Date().toISOString() });
+        }
+      }
+
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reviews, status: "in_progress" }),
+      }).then(() => {
+        document.getElementById("feedback-status").textContent = "Saved";
+      }).catch(() => {
+        // Static mode or server unavailable — no-op on auto-save,
+        // feedback will be downloaded on final submit
+        document.getElementById("feedback-status").textContent = "Will download on submit";
+      });
+    }
+
+    // ---- Done ----
+    function showDoneDialog() {
+      // Save current textarea to feedbackMap (but don't POST yet)
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // POST once with status: complete — include ALL runs so the model
+      // can distinguish "no feedback" (looks good) from "not reviewed"
+      const reviews = [];
+      const ts = new Date().toISOString();
+      for (const r of EMBEDDED_DATA.runs) {
+        reviews.push({ run_id: r.id, feedback: feedbackMap[r.id] || "", timestamp: ts });
+      }
+      const payload = JSON.stringify({ reviews, status: "complete" }, null, 2);
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: payload,
+      }).then(() => {
+        document.getElementById("done-overlay").classList.add("visible");
+      }).catch(() => {
+        // Server not available (static mode) — download as file
+        const blob = new Blob([payload], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "feedback.json";
+        a.click();
+        URL.revokeObjectURL(url);
+        document.getElementById("done-overlay").classList.add("visible");
+      });
+    }
+
+    function closeDoneDialog() {
+      // Reset status back to in_progress
+      saveCurrentFeedback();
+      document.getElementById("done-overlay").classList.remove("visible");
+    }
+
+    // ---- Toast ----
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("visible");
+      setTimeout(() => toast.classList.remove("visible"), 2000);
+    }
+
+    // ---- Keyboard nav ----
+    document.addEventListener("keydown", (e) => {
+      // Don't capture when typing in textarea
+      if (e.target.tagName === "TEXTAREA") return;
+
+      if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+        e.preventDefault();
+        navigate(-1);
+      } else if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+        e.preventDefault();
+        navigate(1);
+      }
+    });
+
+    // ---- Util ----
+    function getDownloadUri(file) {
+      if (file.data_uri) return file.data_uri;
+      if (file.data_b64) return "data:application/octet-stream;base64," + file.data_b64;
+      if (file.type === "text") return "data:text/plain;charset=utf-8," + encodeURIComponent(file.content);
+      return "#";
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // ---- View switching ----
+    function switchView(view) {
+      document.querySelectorAll(".view-tab").forEach(t => t.classList.remove("active"));
+      document.querySelectorAll(".view-panel").forEach(p => p.classList.remove("active"));
+      document.querySelector(`[onclick="switchView('${view}')"]`).classList.add("active");
+      document.getElementById("panel-" + view).classList.add("active");
+    }
+
+    // ---- Benchmark rendering ----
+    function renderBenchmark() {
+      const data = EMBEDDED_DATA.benchmark;
+      if (!data) return;
+
+      // Show the tabs
+      document.getElementById("view-tabs").style.display = "flex";
+
+      const container = document.getElementById("benchmark-content");
+      const summary = data.run_summary || {};
+      const metadata = data.metadata || {};
+      const notes = data.notes || [];
+
+      let html = "";
+
+      // Header
+      html += "<h2 style='font-family: Poppins, sans-serif; margin-bottom: 0.5rem;'>Benchmark Results</h2>";
+      html += "<p style='color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.25rem;'>";
+      if (metadata.skill_name) html += "<strong>" + escapeHtml(metadata.skill_name) + "</strong> &mdash; ";
+      if (metadata.timestamp) html += metadata.timestamp + " &mdash; ";
+      if (metadata.evals_run) html += "Evals: " + metadata.evals_run.join(", ") + " &mdash; ";
+      html += (metadata.runs_per_configuration || "?") + " runs per configuration";
+      html += "</p>";
+
+      // Summary table
+      html += '<table class="benchmark-table">';
+
+      function fmtStat(stat, pct) {
+        if (!stat) return "—";
+        const suffix = pct ? "%" : "";
+        const m = pct ? (stat.mean * 100).toFixed(0) : stat.mean.toFixed(1);
+        const s = pct ? (stat.stddev * 100).toFixed(0) : stat.stddev.toFixed(1);
+        return m + suffix + " ± " + s + suffix;
+      }
+
+      function deltaClass(val) {
+        if (!val) return "";
+        const n = parseFloat(val);
+        if (n > 0) return "benchmark-delta-positive";
+        if (n < 0) return "benchmark-delta-negative";
+        return "";
+      }
+
+      // Discover config names dynamically (everything except "delta")
+      const configs = Object.keys(summary).filter(k => k !== "delta");
+      const configA = configs[0] || "config_a";
+      const configB = configs[1] || "config_b";
+      const labelA = configA.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const labelB = configB.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const a = summary[configA] || {};
+      const b = summary[configB] || {};
+      const delta = summary.delta || {};
+
+      html += "<thead><tr><th>Metric</th><th>" + escapeHtml(labelA) + "</th><th>" + escapeHtml(labelB) + "</th><th>Delta</th></tr></thead>";
+      html += "<tbody>";
+
+      html += "<tr><td><strong>Pass Rate</strong></td>";
+      html += "<td>" + fmtStat(a.pass_rate, true) + "</td>";
+      html += "<td>" + fmtStat(b.pass_rate, true) + "</td>";
+      html += '<td class="' + deltaClass(delta.pass_rate) + '">' + (delta.pass_rate || "—") + "</td></tr>";
+
+      // Time (only show row if data exists)
+      if (a.time_seconds || b.time_seconds) {
+        html += "<tr><td><strong>Time (s)</strong></td>";
+        html += "<td>" + fmtStat(a.time_seconds, false) + "</td>";
+        html += "<td>" + fmtStat(b.time_seconds, false) + "</td>";
+        html += '<td class="' + deltaClass(delta.time_seconds) + '">' + (delta.time_seconds ? delta.time_seconds + "s" : "—") + "</td></tr>";
+      }
+
+      // Tokens (only show row if data exists)
+      if (a.tokens || b.tokens) {
+        html += "<tr><td><strong>Tokens</strong></td>";
+        html += "<td>" + fmtStat(a.tokens, false) + "</td>";
+        html += "<td>" + fmtStat(b.tokens, false) + "</td>";
+        html += '<td class="' + deltaClass(delta.tokens) + '">' + (delta.tokens || "—") + "</td></tr>";
+      }
+
+      html += "</tbody></table>";
+
+      // Per-eval breakdown (if runs data available)
+      const runs = data.runs || [];
+      if (runs.length > 0) {
+        const evalIds = [...new Set(runs.map(r => r.eval_id))].sort((a, b) => a - b);
+
+        html += "<h3 style='font-family: Poppins, sans-serif; margin-bottom: 0.75rem;'>Per-Eval Breakdown</h3>";
+
+        const hasTime = runs.some(r => r.result && r.result.time_seconds != null);
+        const hasErrors = runs.some(r => r.result && r.result.errors > 0);
+
+        for (const evalId of evalIds) {
+          const evalRuns = runs.filter(r => r.eval_id === evalId);
+          const evalName = evalRuns[0] && evalRuns[0].eval_name ? evalRuns[0].eval_name : "Eval " + evalId;
+
+          html += "<h4 style='font-family: Poppins, sans-serif; margin: 1rem 0 0.5rem; color: var(--text);'>" + escapeHtml(evalName) + "</h4>";
+          html += '<table class="benchmark-table">';
+          html += "<thead><tr><th>Config</th><th>Run</th><th>Pass Rate</th>";
+          if (hasTime) html += "<th>Time (s)</th>";
+          if (hasErrors) html += "<th>Crashes During Execution</th>";
+          html += "</tr></thead>";
+          html += "<tbody>";
+
+          // Group by config and render with average rows
+          const configGroups = [...new Set(evalRuns.map(r => r.configuration))];
+          for (let ci = 0; ci < configGroups.length; ci++) {
+            const config = configGroups[ci];
+            const configRuns = evalRuns.filter(r => r.configuration === config);
+            if (configRuns.length === 0) continue;
+
+            const rowClass = ci === 0 ? "benchmark-row-with" : "benchmark-row-without";
+            const configLabel = config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+
+            for (const run of configRuns) {
+              const r = run.result || {};
+              const prClass = r.pass_rate >= 0.8 ? "benchmark-delta-positive" : r.pass_rate < 0.5 ? "benchmark-delta-negative" : "";
+              html += '<tr class="' + rowClass + '">';
+              html += "<td>" + configLabel + "</td>";
+              html += "<td>" + run.run_number + "</td>";
+              html += '<td class="' + prClass + '">' + ((r.pass_rate || 0) * 100).toFixed(0) + "% (" + (r.passed || 0) + "/" + (r.total || 0) + ")</td>";
+              if (hasTime) html += "<td>" + (r.time_seconds != null ? r.time_seconds.toFixed(1) : "—") + "</td>";
+              if (hasErrors) html += "<td>" + (r.errors || 0) + "</td>";
+              html += "</tr>";
+            }
+
+            // Average row
+            const rates = configRuns.map(r => (r.result || {}).pass_rate || 0);
+            const avgRate = rates.reduce((a, b) => a + b, 0) / rates.length;
+            const avgPrClass = avgRate >= 0.8 ? "benchmark-delta-positive" : avgRate < 0.5 ? "benchmark-delta-negative" : "";
+            html += '<tr class="benchmark-row-avg ' + rowClass + '">';
+            html += "<td>" + configLabel + "</td>";
+            html += "<td>Avg</td>";
+            html += '<td class="' + avgPrClass + '">' + (avgRate * 100).toFixed(0) + "%</td>";
+            if (hasTime) {
+              const times = configRuns.map(r => (r.result || {}).time_seconds).filter(t => t != null);
+              html += "<td>" + (times.length ? (times.reduce((a, b) => a + b, 0) / times.length).toFixed(1) : "—") + "</td>";
+            }
+            if (hasErrors) html += "<td></td>";
+            html += "</tr>";
+          }
+          html += "</tbody></table>";
+
+          // Per-assertion detail for this eval
+          const runsWithExpectations = {};
+          for (const config of configGroups) {
+            runsWithExpectations[config] = evalRuns.filter(r => r.configuration === config && r.expectations && r.expectations.length > 0);
+          }
+          const hasAnyExpectations = Object.values(runsWithExpectations).some(runs => runs.length > 0);
+          if (hasAnyExpectations) {
+            // Collect all unique assertion texts across all configs
+            const allAssertions = [];
+            const seen = new Set();
+            for (const config of configGroups) {
+              for (const run of runsWithExpectations[config]) {
+                for (const exp of (run.expectations || [])) {
+                  if (!seen.has(exp.text)) {
+                    seen.add(exp.text);
+                    allAssertions.push(exp.text);
+                  }
+                }
+              }
+            }
+
+            html += '<table class="benchmark-table" style="margin-top: 0.5rem;">';
+            html += "<thead><tr><th>Assertion</th>";
+            for (const config of configGroups) {
+              const label = config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+              html += "<th>" + escapeHtml(label) + "</th>";
+            }
+            html += "</tr></thead><tbody>";
+
+            for (const assertionText of allAssertions) {
+              html += "<tr><td>" + escapeHtml(assertionText) + "</td>";
+
+              for (const config of configGroups) {
+                html += "<td>";
+                for (const run of runsWithExpectations[config]) {
+                  const exp = (run.expectations || []).find(e => e.text === assertionText);
+                  if (exp) {
+                    const cls = exp.passed ? "benchmark-delta-positive" : "benchmark-delta-negative";
+                    const icon = exp.passed ? "\u2713" : "\u2717";
+                    html += '<span class="' + cls + '" title="Run ' + run.run_number + ': ' + escapeHtml(exp.evidence || "") + '">' + icon + "</span> ";
+                  } else {
+                    html += "— ";
+                  }
+                }
+                html += "</td>";
+              }
+              html += "</tr>";
+            }
+            html += "</tbody></table>";
+          }
+        }
+      }
+
+      // Notes
+      if (notes.length > 0) {
+        html += '<div class="benchmark-notes">';
+        html += "<h3>Analysis Notes</h3>";
+        html += "<ul>";
+        for (const note of notes) {
+          html += "<li>" + escapeHtml(note) + "</li>";
+        }
+        html += "</ul></div>";
+      }
+
+      container.innerHTML = html;
+    }
+
+    // ---- Start ----
+    init();
+    renderBenchmark();
+  </script>
+</body>
+</html>

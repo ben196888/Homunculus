@@ -1,0 +1,43 @@
+{
+  "skill_name": "homunculus-programming-autosquash",
+  "evals": [
+    {
+      "id": 0,
+      "name": "clean-marked-history",
+      "prompt": "In a disposable Git repository, create a feature branch with two normal commits and two later fixup! commits targeting them. Add a bare origin with main and the feature branch, then use the autosquash skill to clean and push the branch. Save a concise report and the final git log to outputs/.",
+      "expected_output": "Only the marked commits are folded, the final tree is unchanged, the remote is updated through an explicit lease, and the report includes old/new SHAs and recovery guidance.",
+      "files": [],
+      "assertions": [
+        "marked-only-folding: the final log contains neither fixup! nor squash! commits and retains both logical target commits",
+        "tree-preserved: the report records that the committed tree was identical before and after autosquash",
+        "leased-push: the report shows an explicit fetched-SHA force-with-lease push",
+        "recovery-reported: the report includes old and new SHAs plus a reflog recovery command"
+      ]
+    },
+    {
+      "id": 1,
+      "name": "dirty-diverged-squash",
+      "prompt": "In a disposable Git repository with a bare origin, create a feature branch that has diverged from its remote, contains a squash! commit, and has dirty staged, unstaged, and untracked files. Use the autosquash skill to reconcile, clean, verify, and push it. Save a report, final log, and before/after dirty-state evidence to outputs/.",
+      "expected_output": "Remote work is integrated, the squash target gets a valid combined Conventional Commit message, dirty state is restored exactly before a leased push, and verification evidence is recorded.",
+      "files": [],
+      "assertions": [
+        "remote-integrated: the final branch contains the remote-only and local work",
+        "squash-message-valid: the combined target has a Conventional Commit subject under 72 characters",
+        "dirty-state-restored: staged, unstaged, and untracked state match the before snapshot",
+        "verification-before-push: a relevant check and committed-tree identity pass before the leased push"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "ordinary-fix-remains-untouched",
+      "prompt": "In a disposable Git repository, create a feature branch whose latest ordinary commit is named 'fix typo' but has no fixup! or squash! commits. Ask the autosquash workflow to clean the branch. Save its report and before/after refs to outputs/.",
+      "expected_output": "The workflow reports a no-op, does not reinterpret the ordinary commit, and performs no rewrite or push.",
+      "files": [],
+      "assertions": [
+        "ordinary-commit-untouched: the branch SHA and commit subject remain unchanged",
+        "no-markers-no-op: the report explicitly says no fixup! or squash! commits were found",
+        "no-push: no remote update is attempted"
+      ]
+    }
+  ]
+}

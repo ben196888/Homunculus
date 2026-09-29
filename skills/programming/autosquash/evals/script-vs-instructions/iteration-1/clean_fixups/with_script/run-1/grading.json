@@ -1,0 +1,56 @@
+{
+  "expectations": [
+    {
+      "text": "run-completed",
+      "passed": true,
+      "evidence": "Codex turn completed without timeout or process failure"
+    },
+    {
+      "text": "markers-folded",
+      "passed": true,
+      "evidence": "subjects=['feat: add beta', 'feat: add alpha']"
+    },
+    {
+      "text": "tree-preserved",
+      "passed": true,
+      "evidence": "final tree equals pre-cleanup tree"
+    },
+    {
+      "text": "remote-updated",
+      "passed": true,
+      "evidence": "local=a9a7882836ee remote=a9a7882836ee"
+    },
+    {
+      "text": "lease-evidenced",
+      "passed": true,
+      "evidence": "report describes exact lease protection"
+    },
+    {
+      "text": "recovery-evidenced",
+      "passed": true,
+      "evidence": "report includes reflog and old SHA"
+    }
+  ],
+  "summary": {
+    "passed": 6,
+    "failed": 0,
+    "total": 6,
+    "pass_rate": 1.0
+  },
+  "timing": {
+    "input_tokens": 307448,
+    "cached_input_tokens": 283904,
+    "output_tokens": 4861,
+    "reasoning_output_tokens": 1075,
+    "cache_write_input_tokens": 0,
+    "total_tokens": 312309,
+    "uncached_input_tokens": 23544,
+    "duration_ms": 126398,
+    "total_duration_seconds": 126.398
+  },
+  "execution": {
+    "returncode": 0,
+    "timed_out": false,
+    "model": "gpt-5.6-luna"
+  }
+}

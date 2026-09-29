@@ -1,0 +1,5 @@
+* 4ed2c51 (HEAD -> feature/reconcile, origin/feature/reconcile) chore: preserve local worktree changes
+* 3c1b9c6 docs: add local feature note
+* 3ff702e docs: add remote peer note
+* f9dff3f feat: add feature value
+* e77256a (origin/main, origin/HEAD, main) chore: initialize disposable repository
