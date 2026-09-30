@@ -238,10 +238,10 @@ def untracked_hashes(cwd: Path) -> dict[str, str]:
     result: dict[str, str] = {}
     for name in filter(None, output.split("\0")):
         path = cwd / name
-        if path.is_file():
-            result[name] = hashlib.sha256(path.read_bytes()).hexdigest()
-        elif path.is_symlink():
+        if path.is_symlink():
             result[name] = hashlib.sha256(os.readlink(path).encode()).hexdigest()
+        elif path.is_file():
+            result[name] = hashlib.sha256(path.read_bytes()).hexdigest()
     return result
 
 
@@ -295,9 +295,16 @@ def restore_workspace(cwd: Path, state: dict[str, Any], *, drop: bool = True) ->
 
 
 def remove_saved_untracked(cwd: Path, state: dict[str, Any]) -> None:
-    for name in state.get("workspace", {}).get("untracked", {}):
+    saved = state.get("workspace", {}).get("untracked", {})
+    current = untracked_hashes(cwd)
+    for name in saved:
+        if name in current and current[name] != saved[name]:
+            raise AutosquashError(
+                f"untracked file {name!r} changed during autosquash; abort stopped without deleting it"
+            )
+    for name in saved:
         path = cwd / name
-        if path.is_file() or path.is_symlink():
+        if name in current and (path.is_file() or path.is_symlink()):
             path.unlink()
 
 
@@ -325,20 +332,20 @@ def parse_messages(values: list[str], plan: list[dict[str, str]]) -> dict[str, s
     if missing:
         short = ", ".join(sha[:12] for sha in missing)
         raise AutosquashError(f"squash targets require synthesized messages: {short}")
-    return parsed
+    by_subject: dict[str, str] = {}
+    for sha, message in parsed.items():
+        subject = by_target[sha]["target_subject"]
+        if subject in by_subject:
+            raise AutosquashError(f"duplicate squash target subject cannot be edited safely: {subject!r}")
+        by_subject[subject] = message
+    return by_subject
 
 
-def message_editor(cwd: Path, messages: dict[str, str]) -> tuple[tempfile.TemporaryDirectory[str], dict[str, str]]:
+def message_editor(messages: dict[str, str]) -> tuple[tempfile.TemporaryDirectory[str], dict[str, str]]:
     temp = tempfile.TemporaryDirectory(prefix="homunculus-autosquash-")
     root = Path(temp.name)
-    subjects: dict[str, str] = {}
-    for sha, message in messages.items():
-        subject = git(cwd, "show", "-s", "--format=%s", sha)
-        if subject in subjects:
-            raise AutosquashError(f"duplicate squash target subject cannot be edited safely: {subject!r}")
-        subjects[subject] = message
     plan_path = root / "messages.json"
-    plan_path.write_text(json.dumps(subjects), encoding="utf-8")
+    plan_path.write_text(json.dumps(messages), encoding="utf-8")
     editor = root / "editor.py"
     editor.write_text(
         """#!/usr/bin/env python3
@@ -347,9 +354,8 @@ path = pathlib.Path(sys.argv[1])
 lines = path.read_text().splitlines()
 subject = next((line for line in lines if line.strip() and not line.startswith('#')), None)
 messages = json.loads(pathlib.Path(os.environ['HOMUNCULUS_MESSAGE_PLAN']).read_text())
-if subject not in messages:
-    raise SystemExit(f'No synthesized message for squash target: {subject!r}')
-path.write_text(messages[subject].rstrip() + '\\n')
+if subject in messages:
+    path.write_text(messages[subject].rstrip() + '\\n')
 """,
         encoding="utf-8",
     )
@@ -397,9 +403,10 @@ def inspect_plan(cwd: Path, base: str | None, remote: str | None, *, do_fetch: b
     remote_ref = f"refs/remotes/{selected_remote}/{remote_branch}"
     remote_sha = resolve(root, remote_ref) if ref_exists(root, remote_ref) else None
     tips = ["HEAD"] + ([remote_ref] if remote_sha and remote_sha != resolve(root, "HEAD") else [])
-    if any(has_merge(root, base_sha, tip) for tip in tips):
+    fork_points = [git(root, "merge-base", base_sha, tip) for tip in tips]
+    if any(has_merge(root, fork, tip) for fork, tip in zip(fork_points, tips)):
         raise AutosquashError("rewrite range contains merge commits; merge-preserving autosquash is outside v1")
-    histories = [commits(root, base_sha, tip) for tip in tips]
+    histories = [commits(root, fork, tip) for fork, tip in zip(fork_points, tips)]
     markers: list[dict[str, str]] = []
     seen: set[str] = set()
     for history in histories:
@@ -472,19 +479,23 @@ def rebase_in_progress(cwd: Path) -> bool:
 
 
 def start_autosquash(cwd: Path, state: dict[str, Any]) -> bool:
-    history = commits(cwd, state["base_sha"])
+    rewrite_base = git(cwd, "merge-base", state["base_sha"], "HEAD")
+    history = commits(cwd, rewrite_base)
     plan = marker_plan(history)
     if not plan:
         raise AutosquashError("marked commits disappeared after remote reconciliation")
-    messages = parse_messages(state["message_args"], plan)
+    messages = state["squash_messages"]
+    if {item["target_subject"] for item in plan if item["kind"] == "squash"} != set(messages):
+        raise AutosquashError("squash targets changed after remote reconciliation; no rewrite occurred")
     state["tree_before"] = git(cwd, "rev-parse", "HEAD^{tree}")
     state["phase"] = "autosquash"
     state["markers"] = plan
+    state["rewrite_base"] = rewrite_base
     save_state(cwd, state)
-    temp, env = message_editor(cwd, messages)
+    temp, env = message_editor(messages)
     try:
         result = run(
-            ["git", "rebase", "-i", "--autosquash", state["base_sha"]],
+            ["git", "rebase", "-i", "--autosquash", rewrite_base],
             cwd,
             check=False,
             env=env,
@@ -500,8 +511,7 @@ def start_autosquash(cwd: Path, state: dict[str, Any]) -> bool:
 
 def continue_rebase(cwd: Path, state: dict[str, Any]) -> bool:
     if state["phase"] == "autosquash":
-        messages = parse_messages(state["message_args"], state.get("markers", []))
-        temp, env = message_editor(cwd, messages)
+        temp, env = message_editor(state["squash_messages"])
         try:
             result = run(["git", "rebase", "--continue"], cwd, check=False, env=env)
         finally:
@@ -520,6 +530,12 @@ def continue_rebase(cwd: Path, state: dict[str, Any]) -> bool:
 
 
 def finalize(cwd: Path, state: dict[str, Any]) -> dict[str, Any]:
+    subjects = {commit.subject for commit in commits(cwd, state["rewrite_base"])}
+    if any(MARKER.match(subject) for subject in subjects):
+        raise AutosquashError("marked commits remain after autosquash; no push occurred")
+    for message in state["squash_messages"].values():
+        if message.splitlines()[0] not in subjects:
+            raise AutosquashError("a synthesized squash message was not applied; no push occurred")
     if git(cwd, "rev-parse", "HEAD^{tree}") != state["tree_before"]:
         raise AutosquashError("autosquash changed the committed tree; no push occurred")
     checks = run_verification(cwd, state["verify"])
@@ -587,6 +603,7 @@ def apply(args: argparse.Namespace) -> dict[str, Any]:
     plan = inspect_plan(cwd, args.base, args.remote, do_fetch=True)
     if not plan["markers"]:
         return {**plan, "status": "no-op", "push": "not attempted"}
+    squash_messages = parse_messages(args.squash_message, plan["markers"])
     root = Path(plan["root"])
     workspace = workspace_fingerprint(root)
     state = {
@@ -595,7 +612,7 @@ def apply(args: argparse.Namespace) -> dict[str, Any]:
         "workspace": workspace,
         "stash_oid": None,
         "verify": args.verify,
-        "message_args": args.squash_message,
+        "squash_messages": squash_messages,
         "phase": "starting",
     }
     state["stash_oid"] = stash_workspace(root, workspace)

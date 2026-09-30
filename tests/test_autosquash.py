@@ -173,6 +173,50 @@ class AutosquashIntegrationTest(unittest.TestCase):
         self.assertTrue((self.repo / "remote.txt").is_file())
         self.assertEqual("diverged", report["reconciliation"])
 
+    def test_squash_message_survives_target_sha_change_during_reconciliation(self):
+        self.write("feature.txt", "local target\n")
+        target = self.commit("feat: add local feature")
+        self.write("feature.txt", "local target\nlocal expansion\n")
+        self.git(self.repo, "add", "feature.txt")
+        self.git(self.repo, "commit", "-m", "squash! feat: add local feature")
+
+        collaborator = self.root / "collaborator"
+        self.git(self.root, "clone", str(self.remote), str(collaborator))
+        self.git(collaborator, "config", "user.email", "collaborator@example.com")
+        self.git(collaborator, "config", "user.name", "Collaborator")
+        self.git(collaborator, "switch", "-c", "feature/test")
+        (collaborator / "remote.txt").write_text("remote\n", encoding="utf-8")
+        self.git(collaborator, "add", "remote.txt")
+        self.git(collaborator, "commit", "-m", "feat: add remote work")
+        self.git(collaborator, "push", "-u", "origin", "feature/test")
+
+        report = json.loads(self.helper(
+            "apply", "--base", "origin/main", "--squash-message",
+            f"{target}=feat: add expanded local feature", "--json",
+        ).stdout)
+        subjects = self.git(self.repo, "log", "--format=%s", "origin/main..HEAD").stdout.splitlines()
+        self.assertEqual(["feat: add expanded local feature", "feat: add remote work"], subjects)
+        self.assertEqual("diverged", report["reconciliation"])
+        self.assertEqual(
+            self.git(self.repo, "rev-parse", "HEAD").stdout.strip(),
+            self.git(self.remote, "rev-parse", "refs/heads/feature/test").stdout.strip(),
+        )
+
+    def test_base_advancement_does_not_change_feature_tree(self):
+        self.make_fixup()
+        original_tree = self.git(self.repo, "rev-parse", "HEAD^{tree}").stdout.strip()
+        self.git(self.repo, "switch", "main")
+        self.write("main.txt", "main advanced\n")
+        self.commit("docs: advance main")
+        self.git(self.repo, "push", "origin", "main")
+        self.git(self.repo, "switch", "feature/test")
+
+        self.helper("apply", "--base", "origin/main")
+        subjects = self.git(self.repo, "log", "--format=%s", "origin/main..HEAD").stdout.splitlines()
+        self.assertEqual(["feat: add feature"], subjects)
+        self.assertEqual(original_tree, self.git(self.repo, "rev-parse", "HEAD^{tree}").stdout.strip())
+        self.assertFalse((self.repo / "main.txt").exists())
+
     def test_concurrent_remote_update_is_rejected_by_exact_lease(self):
         self.make_fixup()
         collaborator = self.clone_remote()
@@ -213,6 +257,32 @@ class AutosquashIntegrationTest(unittest.TestCase):
         self.assertTrue(autosquash.rebase_in_progress(self.repo))
         self.helper("abort")
         self.assertEqual(old_sha, self.git(self.repo, "rev-parse", "HEAD").stdout.strip())
+
+    def test_fixup_conflict_can_continue_without_editor(self):
+        self.write("feature.txt", "a\n")
+        target = self.commit("feat: add feature")
+        self.git(self.repo, "push", "-u", "origin", "feature/test")
+        self.write("feature.txt", "a\nordinary\n")
+        self.commit("feat: expand feature")
+        self.write("feature.txt", "a\nordinary\nfixed\n")
+        self.git(self.repo, "add", "feature.txt")
+        self.git(self.repo, "commit", f"--fixup={target}")
+        original_tree = self.git(self.repo, "rev-parse", "HEAD^{tree}").stdout.strip()
+
+        result = self.helper("apply", "--base", "origin/main", check=False)
+        self.assertNotEqual(0, result.returncode)
+        for _ in range(3):
+            if not autosquash.rebase_in_progress(self.repo):
+                break
+            self.write("feature.txt", "a\nordinary\nfixed\n")
+            self.git(self.repo, "add", "feature.txt")
+            result = self.helper("continue", check=False)
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertEqual(original_tree, self.git(self.repo, "rev-parse", "HEAD^{tree}").stdout.strip())
+        self.assertEqual(
+            self.git(self.repo, "rev-parse", "HEAD").stdout.strip(),
+            self.git(self.remote, "rev-parse", "refs/heads/feature/test").stdout.strip(),
+        )
 
     def test_failed_stash_restore_retains_stash_and_does_not_push(self):
         self.make_fixup()
@@ -279,6 +349,19 @@ class AutosquashIntegrationTest(unittest.TestCase):
         )
         self.helper("abort")
         self.assertFalse(autosquash.state_path(self.repo).exists())
+
+    def test_abort_preserves_untracked_file_changed_after_stash(self):
+        self.make_fixup()
+        self.write("notes.txt", "saved\n")
+        failed = self.helper("apply", "--base", "origin/main", "--verify", "exit 9", check=False)
+        self.assertNotEqual(0, failed.returncode)
+        self.write("notes.txt", "new work\n")
+
+        aborted = self.helper("abort", check=False)
+        self.assertNotEqual(0, aborted.returncode)
+        self.assertIn("abort stopped without deleting it", aborted.stderr)
+        self.assertEqual("new work\n", (self.repo / "notes.txt").read_text())
+        self.assertTrue(self.git(self.repo, "stash", "list").stdout.strip())
 
 
 if __name__ == "__main__":
