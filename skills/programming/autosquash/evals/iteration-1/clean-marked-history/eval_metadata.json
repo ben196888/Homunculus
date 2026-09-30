@@ -1,0 +1,11 @@
+{
+  "eval_id": 0,
+  "eval_name": "clean-marked-history",
+  "prompt": "In a disposable Git repository, create a feature branch with two normal commits and two later fixup! commits targeting them. Add a bare origin with main and the feature branch, then use the autosquash skill to clean and push the branch. Save a concise report and the final git log to outputs/.",
+  "assertions": [
+    "marked-only-folding: the final log contains neither fixup! nor squash! commits and retains both logical target commits",
+    "tree-preserved: the report records that the committed tree was identical before and after autosquash",
+    "leased-push: the report shows an explicit fetched-SHA force-with-lease push",
+    "recovery-reported: the report includes old and new SHAs plus a reflog recovery command"
+  ]
+}

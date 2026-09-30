@@ -1,0 +1,8 @@
+No autosquash performed: the branch contains no `fixup!` or `squash!` commits, so no rewrite or push was needed.
+
+- HEAD: `e58d72b9a534eb801f76c72ad09d1f6d6fde7f29`
+- Working tree: clean and synchronized with origin
+- Artifacts:
+  - [report.md](/Users/beliu/.codex/worktrees/88d7/Homunculus/skills/programming/autosquash/evals/script-vs-instructions/iteration-1/no_markers/with_script/run-1/outputs/report.md)
+  - [transcript-notes.md](/Users/beliu/.codex/worktrees/88d7/Homunculus/skills/programming/autosquash/evals/script-vs-instructions/iteration-1/no_markers/with_script/run-1/outputs/transcript-notes.md)
+  - [final-state.txt](/Users/beliu/.codex/worktrees/88d7/Homunculus/skills/programming/autosquash/evals/script-vs-instructions/iteration-1/no_markers/with_script/run-1/outputs/final-state.txt)

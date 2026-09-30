@@ -1,0 +1,3 @@
+* 2ce96d3 (HEAD -> feature/autosquash-eval, origin/feature/autosquash-eval) feat: add beta value
+* 23ca29e feat: add alpha value
+* 4a2d82a (origin/main, origin/HEAD, main) chore: initialize evaluation fixture

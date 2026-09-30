@@ -1,0 +1,8 @@
+# Snapshot after the autosquash workflow stopped at its required no-op
+HEAD 885cd845fbe6f9b4ce635bc25eb616f440496469
+HEAD^{tree} dd8d73efae22f4fe7e09758278a6b1bbaf2cc18c
+refs/heads/feature/ordinary-fix 885cd845fbe6f9b4ce635bc25eb616f440496469
+refs/remotes/origin/feature/ordinary-fix 885cd845fbe6f9b4ce635bc25eb616f440496469
+bare-remote:refs/heads/feature/ordinary-fix 885cd845fbe6f9b4ce635bc25eb616f440496469
+refs/remotes/origin/main bceda20bc9115753e463be7731eb0c424b74bc41
+bare-remote:refs/heads/main bceda20bc9115753e463be7731eb0c424b74bc41

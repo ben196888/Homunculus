@@ -1,0 +1,56 @@
+{
+  "expectations": [
+    {
+      "text": "run-completed",
+      "passed": true,
+      "evidence": "Codex turn completed without timeout or process failure"
+    },
+    {
+      "text": "markers-folded",
+      "passed": true,
+      "evidence": "marked=[]"
+    },
+    {
+      "text": "remote-integrated",
+      "passed": true,
+      "evidence": "remote files include remote.txt=True"
+    },
+    {
+      "text": "message-valid",
+      "passed": true,
+      "evidence": "combined subject='feat: add feature'"
+    },
+    {
+      "text": "dirty-restored",
+      "passed": true,
+      "evidence": "final staged/unstaged/untracked fingerprint matches pre-run"
+    },
+    {
+      "text": "verification-evidenced",
+      "passed": true,
+      "evidence": "report records repository and tree verification"
+    }
+  ],
+  "summary": {
+    "passed": 6,
+    "failed": 0,
+    "total": 6,
+    "pass_rate": 1.0
+  },
+  "timing": {
+    "input_tokens": 324381,
+    "cached_input_tokens": 289024,
+    "output_tokens": 6140,
+    "reasoning_output_tokens": 1341,
+    "cache_write_input_tokens": 0,
+    "total_tokens": 330521,
+    "uncached_input_tokens": 35357,
+    "duration_ms": 140864,
+    "total_duration_seconds": 140.864
+  },
+  "execution": {
+    "returncode": 0,
+    "timed_out": false,
+    "model": "gpt-5.6-luna"
+  }
+}

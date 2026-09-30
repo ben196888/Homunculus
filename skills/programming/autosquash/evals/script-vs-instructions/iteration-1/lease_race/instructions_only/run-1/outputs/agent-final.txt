@@ -1,0 +1,15 @@
+Completed safely.
+
+- Folded the existing `fixup!` commit.
+- Tree verified unchanged.
+- `./verify.sh` passed.
+- Workspace restored clean.
+- Exact force-with-lease was rejected due to concurrent remote advancement; no overwrite occurred.
+- Final local HEAD: `0794dd2f4694a6f291861e42ec1331e2f21d8e60`
+- Bare-origin feature ref: `72e9d8c690420f58f681708632b9384c5d0c312f`
+
+Artifacts:
+
+- [report.md](/Users/beliu/.codex/worktrees/88d7/Homunculus/skills/programming/autosquash/evals/script-vs-instructions/iteration-1/lease_race/instructions_only/run-1/outputs/report.md)
+- [transcript-notes.md](/Users/beliu/.codex/worktrees/88d7/Homunculus/skills/programming/autosquash/evals/script-vs-instructions/iteration-1/lease_race/instructions_only/run-1/outputs/transcript-notes.md)
+- [final-state.txt](/Users/beliu/.codex/worktrees/88d7/Homunculus/skills/programming/autosquash/evals/script-vs-instructions/iteration-1/lease_race/instructions_only/run-1/outputs/final-state.txt)

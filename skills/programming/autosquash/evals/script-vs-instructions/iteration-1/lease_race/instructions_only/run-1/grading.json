@@ -1,0 +1,51 @@
+{
+  "expectations": [
+    {
+      "text": "run-completed",
+      "passed": true,
+      "evidence": "Codex turn completed without timeout or process failure"
+    },
+    {
+      "text": "concurrent-work-preserved",
+      "passed": true,
+      "evidence": "remote files=['README.md', 'base.txt', 'feature.txt', 'race.txt', 'verify.sh']"
+    },
+    {
+      "text": "lease-handled",
+      "passed": true,
+      "evidence": "report identifies lease/concurrency outcome"
+    },
+    {
+      "text": "no-unsafe-overwrite",
+      "passed": true,
+      "evidence": "remote=72e9d8c69042 concurrent=72e9d8c69042"
+    },
+    {
+      "text": "recovery-evidenced",
+      "passed": true,
+      "evidence": "report includes recovery guidance"
+    }
+  ],
+  "summary": {
+    "passed": 5,
+    "failed": 0,
+    "total": 5,
+    "pass_rate": 1.0
+  },
+  "timing": {
+    "input_tokens": 336279,
+    "cached_input_tokens": 307200,
+    "output_tokens": 6613,
+    "reasoning_output_tokens": 1523,
+    "cache_write_input_tokens": 0,
+    "total_tokens": 342892,
+    "uncached_input_tokens": 29079,
+    "duration_ms": 156021,
+    "total_duration_seconds": 156.021
+  },
+  "execution": {
+    "returncode": 0,
+    "timed_out": false,
+    "model": "gpt-5.6-luna"
+  }
+}

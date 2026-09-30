@@ -1,0 +1,8 @@
+repository: /tmp/autosquash-ordinary.6a8TWy
+HEAD: ba5cd9705c06d80acfd7bc453fbc7664ce0a2f65
+refs/heads/feature/ordinary-fix: ba5cd9705c06d80acfd7bc453fbc7664ce0a2f65
+refs/heads/main: c6e2f13d0424931ff24c47981babf62501a48659
+
+main..feature/ordinary-fix:
+ba5cd9705c06d80acfd7bc453fbc7664ce0a2f65	fix typo
+c777330193ea92b6c782f9a36e30d093f54b836d	add feature

@@ -1,0 +1,51 @@
+{
+  "expectations": [
+    {
+      "text": "run-completed",
+      "passed": true,
+      "evidence": "Codex turn completed without timeout or process failure"
+    },
+    {
+      "text": "head-unchanged",
+      "passed": true,
+      "evidence": "head=e58d72b9a534 expected=e58d72b9a534"
+    },
+    {
+      "text": "remote-unchanged",
+      "passed": true,
+      "evidence": "remote=e58d72b9a534 expected=e58d72b9a534"
+    },
+    {
+      "text": "tree-unchanged",
+      "passed": true,
+      "evidence": "tree unchanged"
+    },
+    {
+      "text": "no-op-reported",
+      "passed": true,
+      "evidence": "report identifies no marked commits"
+    }
+  ],
+  "summary": {
+    "passed": 5,
+    "failed": 0,
+    "total": 5,
+    "pass_rate": 1.0
+  },
+  "timing": {
+    "input_tokens": 130059,
+    "cached_input_tokens": 104704,
+    "output_tokens": 2622,
+    "reasoning_output_tokens": 429,
+    "cache_write_input_tokens": 0,
+    "total_tokens": 132681,
+    "uncached_input_tokens": 25355,
+    "duration_ms": 63056,
+    "total_duration_seconds": 63.056
+  },
+  "execution": {
+    "returncode": 0,
+    "timed_out": false,
+    "model": "gpt-5.6-luna"
+  }
+}

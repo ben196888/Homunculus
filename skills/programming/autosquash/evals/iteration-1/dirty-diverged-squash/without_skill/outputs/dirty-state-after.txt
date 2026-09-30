@@ -1,0 +1,15 @@
+Post-reconciliation dirty-state evidence
+
+$ git status --short --branch
+## feature/reconcile...origin/feature/reconcile
+
+$ git diff --quiet
+exit 0
+
+$ git diff --cached --quiet
+exit 0
+
+$ test -z "$(git ls-files --others --exclude-standard)"
+exit 0
+
+Result: no staged, unstaged, untracked, or unmerged paths remain.

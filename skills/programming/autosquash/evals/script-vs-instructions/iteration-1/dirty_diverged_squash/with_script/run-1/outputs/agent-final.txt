@@ -1,0 +1,15 @@
+Completed successfully.
+
+- Folded 1 `squash!` commit.
+- Old HEAD: `c6bbc48beefd`
+- New HEAD: `29a8395c0050`
+- `./verify.sh` passed.
+- Dirty staged, unstaged, and untracked work restored.
+- Force-with-lease push succeeded; local and bare-origin refs match.
+- Recovery guidance included.
+
+Artifacts:
+
+- [report.md](</Users/beliu/.codex/worktrees/88d7/Homunculus/skills/programming/autosquash/evals/script-vs-instructions/iteration-1/dirty_diverged_squash/with_script/run-1/outputs/report.md>)
+- [transcript-notes.md](</Users/beliu/.codex/worktrees/88d7/Homunculus/skills/programming/autosquash/evals/script-vs-instructions/iteration-1/dirty_diverged_squash/with_script/run-1/outputs/transcript-notes.md>)
+- [final-state.txt](</Users/beliu/.codex/worktrees/88d7/Homunculus/skills/programming/autosquash/evals/script-vs-instructions/iteration-1/dirty_diverged_squash/with_script/run-1/outputs/final-state.txt>)

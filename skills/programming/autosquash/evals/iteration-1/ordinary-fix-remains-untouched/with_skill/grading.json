@@ -1,0 +1,10 @@
+{
+  "expectations": [
+    {"text": "ordinary-commit-untouched: the branch SHA and commit subject remain unchanged", "passed": true, "evidence": "refs-before.txt and refs-after.txt have identical HEAD, tree, local, tracking, and bare-remote refs; report.md retains `fix typo`."},
+    {"text": "no-markers-no-op: the report explicitly says no fixup! or squash! commits were found", "passed": true, "evidence": "report.md includes planner output reporting zero marked commits and an apply no-op."},
+    {"text": "no-push: no remote update is attempted", "passed": true, "evidence": "report.md states `Push result: not attempted`, and all before/after remote refs match."}
+  ],
+  "summary": {"passed": 3, "failed": 0, "total": 3, "pass_rate": 1.0},
+  "claims": [{"claim": "The ordinary fix commit stayed out of scope", "type": "factual", "verified": true, "evidence": "All refs and the tree are identical before and after."}],
+  "eval_feedback": {"suggestions": [{"reason": "This case passes in both configurations, so it is a useful regression guard but does not measure the skill's added value."}], "overall": "Solid safety regression; intentionally non-discriminating."}
+}

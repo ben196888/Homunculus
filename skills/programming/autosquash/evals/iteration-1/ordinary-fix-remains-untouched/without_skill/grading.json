@@ -1,0 +1,10 @@
+{
+  "expectations": [
+    {"text": "ordinary-commit-untouched: the branch SHA and commit subject remain unchanged", "passed": true, "evidence": "refs-before.txt and refs-after.txt are identical and retain `fix typo`."},
+    {"text": "no-markers-no-op: the report explicitly says no fixup! or squash! commits were found", "passed": true, "evidence": "report.md states that neither feature commit had a fixup! or squash! subject and Git left both unchanged."},
+    {"text": "no-push: no remote update is attempted", "passed": true, "evidence": "The fixture has no remote and the transcript records no push command."}
+  ],
+  "summary": {"passed": 3, "failed": 0, "total": 3, "pass_rate": 1.0},
+  "claims": [{"claim": "Autosquash left the ordinary commit unchanged", "type": "factual", "verified": true, "evidence": "The before and after branch SHA is ba5cd970."}],
+  "eval_feedback": {"suggestions": [{"reason": "This case passes in both configurations, so retain it as a safety regression rather than evidence of uplift."}], "overall": "Solid no-marker regression case."}
+}

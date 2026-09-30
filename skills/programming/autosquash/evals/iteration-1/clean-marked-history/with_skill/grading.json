@@ -1,0 +1,11 @@
+{
+  "expectations": [
+    {"text": "marked-only-folding: the final log contains neither fixup! nor squash! commits and retains both logical target commits", "passed": true, "evidence": "final-log.txt contains exactly the two target subjects above main and no marked subject."},
+    {"text": "tree-preserved: the report records that the committed tree was identical before and after autosquash", "passed": true, "evidence": "report.md states that the committed-tree identity check passed."},
+    {"text": "leased-push: the report shows an explicit fetched-SHA force-with-lease push", "passed": true, "evidence": "report.md and transcript-notes.md record the helper's exact force-with-lease push and matching remote tip."},
+    {"text": "recovery-reported: the report includes old and new SHAs plus a reflog recovery command", "passed": true, "evidence": "report.md includes both full tips and `git reflog; git reset --hard <old-sha>`."}
+  ],
+  "summary": {"passed": 4, "failed": 0, "total": 4, "pass_rate": 1.0},
+  "claims": [{"claim": "Both marked commits were folded and the remote matches local HEAD", "type": "factual", "verified": true, "evidence": "The final log has two feature commits and the report records remote equality."}],
+  "eval_feedback": {"suggestions": [], "overall": "Assertions are concrete and distinguish the helper's safety behavior."}
+}

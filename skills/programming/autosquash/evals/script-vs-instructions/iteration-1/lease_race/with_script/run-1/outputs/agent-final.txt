@@ -1,0 +1,15 @@
+Completed the specified autosquash workflow.
+
+- Folded 1 `fixup!` commit.
+- Old SHA: `7fcf7bd9be82…`
+- New SHA: `89a9b9af8e70…`
+- Tree verification passed; workspace restored clean.
+- `./verify.sh` passed, but created a concurrent remote update.
+- Explicit lease rejected the push safely; no remote work was overwritten.
+- Bare-origin feature ref: `b84e9b0d2920…`
+
+Artifacts:
+
+- [report.md](/Users/beliu/.codex/worktrees/88d7/Homunculus/skills/programming/autosquash/evals/script-vs-instructions/iteration-1/lease_race/with_script/run-1/outputs/report.md)
+- [transcript-notes.md](/Users/beliu/.codex/worktrees/88d7/Homunculus/skills/programming/autosquash/evals/script-vs-instructions/iteration-1/lease_race/with_script/run-1/outputs/transcript-notes.md)
+- [final-state.txt](/Users/beliu/.codex/worktrees/88d7/Homunculus/skills/programming/autosquash/evals/script-vs-instructions/iteration-1/lease_race/with_script/run-1/outputs/final-state.txt)

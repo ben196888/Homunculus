@@ -1,0 +1,13 @@
+Completed successfully.
+
+- Folded 2 `fixup!` commits.
+- Tree preserved: `4f688c4…`
+- Verification passed: `./verify.sh`
+- Workspace remained clean.
+- Lease-protected push succeeded; remote now points to `2b13b7a…`
+
+Artifacts:
+
+- [report.md](</Users/beliu/.codex/worktrees/88d7/Homunculus/skills/programming/autosquash/evals/script-vs-instructions/iteration-1/clean_fixups/instructions_only/run-1/outputs/report.md>)
+- [transcript-notes.md](</Users/beliu/.codex/worktrees/88d7/Homunculus/skills/programming/autosquash/evals/script-vs-instructions/iteration-1/clean_fixups/instructions_only/run-1/outputs/transcript-notes.md>)
+- [final-state.txt](</Users/beliu/.codex/worktrees/88d7/Homunculus/skills/programming/autosquash/evals/script-vs-instructions/iteration-1/clean_fixups/instructions_only/run-1/outputs/final-state.txt>)

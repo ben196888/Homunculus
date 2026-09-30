@@ -1,0 +1,24 @@
+Pre-reconciliation dirty-state evidence
+
+$ git status --short --branch
+## feature/reconcile...origin/feature/reconcile [ahead 2, behind 1]
+ M README.md
+A  staged-change.txt
+?? untracked-scratch.txt
+
+$ git diff --cached --name-status
+A	staged-change.txt
+
+$ git diff --name-status
+M	README.md
+
+$ git ls-files --others --exclude-standard
+untracked-scratch.txt
+
+$ git log --oneline --decorate --graph --all -8
+* a3835f4 (HEAD -> feature/reconcile) squash! feat: add feature value
+* 801ecca docs: add local feature note
+| * 62bb6ab (origin/feature/reconcile) docs: add remote peer note
+|/
+* 10b7f67 feat: add feature value
+* e77256a (origin/main, origin/HEAD, main) chore: initialize disposable repository

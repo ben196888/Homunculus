@@ -1,0 +1,11 @@
+[
+  "Every one of the 22 scenario assertions passes in both configurations, so no functional expectation differentiates the bundled helper from instructions-only in this benchmark.",
+  "The lease_race runs reach the same safety outcome through both workflows: verification advances the remote, the exact fetched-SHA lease rejects the subsequent push, the concurrent remote tip remains intact, and the rewritten local history is retained for later reconciliation.",
+  "dirty_diverged_squash is also behaviorally identical at the graded boundary: both variants fold the squash marker, preserve the remote-only commit, restore the exact staged/unstaged/untracked fingerprint, pass repository and tree verification, and update the remote with an exact lease.",
+  "The script's largest per-scenario resource advantage occurs in lease_race: 201,755 versus 342,892 total tokens (41.2% fewer), 4,143 versus 6,613 output tokens (37.3% fewer), and 99.244 versus 156.021 seconds (36.4% faster).",
+  "dirty_diverged_squash shows the next-largest script advantage: 244,196 versus 330,521 total tokens (26.1% fewer) and 108.239 versus 140.864 seconds (23.2% faster), while still preserving the dirty-workspace fingerprint and remote-only commit.",
+  "clean_fixups is the only scenario where the script uses more total tokens and time: 312,309 versus 265,998 tokens and 126.398 versus 113.264 seconds. This reversal is concentrated in cached input (283,904 versus 225,024); the script still uses fewer uncached input tokens (23,544 versus 36,028) and slightly fewer output tokens (4,861 versus 4,946).",
+  "no_markers has the lowest resource usage for both configurations and both stop without rebasing or pushing. The script run uses 24.9% fewer total tokens and 22.4% less time, despite using 43.1% more uncached input tokens; its lower cached-input and output-token counts more than offset that increase.",
+  "Resource cost varies more by scenario than functional outcome: instructions-only peaks on lease_race, whereas with-script peaks on clean_fixups, even though both configurations have perfect assertion results in every scenario.",
+  "Each scenario/configuration pair has only one run, so the observed per-scenario resource differences and perfect assertion results provide no evidence about repeatability, flakiness, or within-scenario variance."
+]
