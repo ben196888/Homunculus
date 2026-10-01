@@ -1,0 +1,23 @@
+{
+  "eval_id": 1,
+  "eval_name": "replacement-refactor-dead-code",
+  "prompt": "can you review PR 423 in ocftw/open-star-ter-village? it swaps a whole mechanism out for another one and i want to know if the old one is really gone and whether it's safe to merge. repo lives at /Users/benliu/WebPrjcts/open-star-ter-village. use ports 3423/3424 if you need to boot servers.",
+  "assertions": [
+    "materialized-pr-head: transcript-notes.md shows the PR head checked out in a worktree or scratch clone, since this diff changes application code the suite covers",
+    "ran-verification-that-exercises-the-change: report.md cites actual observed results of the repo's own gate with real counts or output, not predicted or assumed ones",
+    "both-lenses-applied: report.md contains both correctness findings and over-engineering or deletion findings, answering both halves of the user's question",
+    "execution-contract-read-not-assumed: any claim about the environment the code runs in — package manager era, shell, injected variables, library semantics — is sourced from a file or log the transcript shows being read, not asserted from recall",
+    "per-finding-evidence: every finding in report.md names the specific command, file:line, or experiment that backs it",
+    "deletion-claims-tested-by-deleting: transcript-notes.md shows code actually removed from a scratch tree and the gate re-run for each deletion the review proposes",
+    "valid-vs-rejected-split: report.md explicitly separates findings that survived testing from claims that were killed, or states that nothing was killed after attempting to kill them",
+    "killed-claims-name-the-command: any rejected claim is reported together with the command or observed failure that killed it",
+    "latent-vs-live-stated: each surviving finding says whether it fires today and what input would trigger it",
+    "fix-plus-verify-per-finding: each surviving finding carries a concrete fix and a runnable verification command",
+    "proposed-fix-itself-tested: at least one recommended fix was run against the reproduction, or expressed as a test that fails before it and passes after",
+    "merge-verdict-stated: report.md gives a direct answer on whether the PR is safe to merge, with blocking items separated from follow-ups",
+    "comments-split-thread-vs-inline: thread.md and inline.md both exist, carry disjoint content, and every inline entry has a path:line anchor",
+    "inline-comments-terse-actionable: each inline entry is at most about three lines, states problem then fix, and contains no praise, hedging, or verification narrative",
+    "awaits-post-confirmation: the report states explicitly that nothing was posted and that posting waits on the user",
+    "no-writes-to-repo-or-forge: no push, comment, review, or approval was issued, and the main repository working tree and branches are untouched"
+  ]
+}

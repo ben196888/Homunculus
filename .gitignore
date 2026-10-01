@@ -2,3 +2,4 @@
 .cache/
 node_modules/
 __pycache__/
+skills/**/evals/iteration-*/review.html
