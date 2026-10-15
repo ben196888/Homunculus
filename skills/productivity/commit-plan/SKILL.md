@@ -7,6 +7,14 @@ description: Plan a multi-commit engineering change as an ordered, reviewable se
 
 Before implementing a multi-commit change, inspect the relevant code, existing utilities, checks, and git base. Write the plan in the plan file as an ordered list of commits, with a separate visual section for architecture and data-flow impact. Each step is one intended commit, titled with its final Conventional Commits subject. Present the proposed history and impact diagrams for user review before writing implementation code. An explicit request for a commit plan takes precedence over the usual single-commit skip.
 
+## Example at a glance
+
+The [mock product-cache plan](references/product-cache/plan.md) shows two intended commits with separate architecture and data-flow views. Open it when a worked example would help; it includes a small baseline fixture. Its cache settings and commit count are scenario choices, not requirements for other plans.
+
+![Current and proposed product-lookup components](references/product-cache/lookup-architecture.svg)
+
+![Current and proposed product-lookup data flow](references/product-cache/lookup-data-flow.svg)
+
 ## Plan file
 
 Use this Markdown structure (the headings and list are not YAML):
@@ -43,7 +51,7 @@ Out of scope: <explicit list>
 - Follow-up workflow: review and a draft PR with verification evidence, when appropriate to the task.
 ```
 
-Use the actual branch and base when known. If either is undecided, say so rather than inventing it. Make each step concrete enough to review, without listing every file when a directory pattern is clearer. The number of steps follows the work; do not copy the attached TypeScript migration's ten steps into unrelated plans.
+Use the actual branch and base when known. If either is undecided, say so rather than inventing it. Make each step concrete enough to review, without listing every file when a directory pattern is clearer. The number of steps follows the work; do not copy the example's two steps into unrelated plans.
 
 ## Draw the visualized impact
 
