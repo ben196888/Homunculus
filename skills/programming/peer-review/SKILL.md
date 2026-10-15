@@ -80,6 +80,15 @@ that make it true. Library behavior counts as evidence — read `node_modules`, 
 vendored source, the lockfile. Guessing at a dependency's semantics is how invalid
 findings get written.
 
+The same applies to the environment the code runs in, and it is easier to get wrong
+because the guess feels like knowledge. The shell a CI step runs under, the flags it
+carries, the working directory, the variables the platform injects — all of that is
+printed in the run log or spelled out in the workflow, the Dockerfile, the entrypoint
+script. Read it there. Replaying a shell guard under `-o pipefail` when the runner uses
+plain `-e` still produces a demo, but the demo is of a different system than the one
+under review, and a reviewer who describes it as the real contract has quietly swapped
+evidence for recall.
+
 ### 4. Falsify every finding
 
 A finding that survives an attempt to kill it is worth the author's time. Match the
@@ -111,6 +120,14 @@ same thing as a live break burns the credibility the experiments bought you.
 For each surviving finding give the smallest diff that resolves it, and say how to
 verify it. Prefer a command the user can paste. Name new coverage where none exists:
 if nothing today catches the bug, the fix is not done until something does.
+
+Then put the fix through the same treatment as the finding. You already have the
+scratch tree and the failing case; running your own suggestion against them costs
+one more command and answers the question the author will ask first. Show the matrix:
+the scenario that was broken now passes, and the scenarios that were correctly
+rejected still are. An untested suggestion is the same species of claim as an
+untested finding, and shipping one right after proving the other is how a careful
+review ends on its weakest sentence.
 
 Separate blocking from follow-up. Blocking means the merge is wrong without it.
 A latent defect is rarely blocking; a live one usually is. Everything else is a
