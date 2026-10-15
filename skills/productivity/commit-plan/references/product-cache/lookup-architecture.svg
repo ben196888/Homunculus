@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="1120" viewBox="0 0 1120 1120" role="img" aria-labelledby="lookup-architecture-title lookup-architecture-desc">
+<title id="lookup-architecture-title">Product lookup: component impact</title>
+<desc id="lookup-architecture-desc">The proposed product service adds a local cache dependency while retaining the API, repository, and dictionary database.</desc>
+<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#526176" /></marker></defs>
+<rect width="1120" height="1120" fill="#ffffff" />
+<g font-family="Arial, sans-serif" fill="#172033">
+<text x="44" y="52" font-size="29" font-weight="bold">Product lookup: component impact</text>
+<text x="44" y="105" font-size="18" font-weight="normal">Arrows show component calls or owned dependencies.</text>
+<text x="44" y="168" font-size="20" font-weight="bold">CURRENT — inspected fixture</text>
+<rect x="44" y="204" width="204" height="120" rx="8" fill="#f3f5f8" stroke="#526176" stroke-width="1.4" />
+<text x="58" y="230" font-size="12" font-weight="bold">UNCHANGED</text>
+<text x="58" y="260" font-size="20" font-weight="bold">API</text>
+<text x="58" y="285" font-size="14" font-weight="normal">catalog/api.py</text>
+<rect x="320" y="204" width="204" height="120" rx="8" fill="#f3f5f8" stroke="#526176" stroke-width="1.4" />
+<text x="334" y="230" font-size="12" font-weight="bold">UNCHANGED</text>
+<text x="334" y="260" font-size="20" font-weight="bold">Product service</text>
+<text x="334" y="285" font-size="14" font-weight="normal">catalog/service.py</text>
+<rect x="596" y="204" width="204" height="120" rx="8" fill="#f3f5f8" stroke="#526176" stroke-width="1.4" />
+<text x="610" y="230" font-size="12" font-weight="bold">UNCHANGED</text>
+<text x="610" y="260" font-size="20" font-weight="bold">Repository</text>
+<text x="610" y="285" font-size="14" font-weight="normal">catalog/repository.py</text>
+<rect x="872" y="204" width="204" height="120" rx="8" fill="#f3f5f8" stroke="#526176" stroke-width="1.4" />
+<text x="886" y="230" font-size="12" font-weight="bold">UNCHANGED</text>
+<text x="886" y="260" font-size="20" font-weight="bold">Database</text>
+<text x="886" y="285" font-size="14" font-weight="normal">In-memory dictionary</text>
+<path d="M248,264 L320,264" fill="none" stroke="#526176" stroke-width="2" marker-end="url(#arrow)" />
+<rect x="261.2" y="232" width="45.6" height="20" fill="white" />
+<text x="284.0" y="248" text-anchor="middle" font-size="13">LOOKUP</text>
+<path d="M524,264 L596,264" fill="none" stroke="#526176" stroke-width="2" marker-end="url(#arrow)" />
+<rect x="537.2" y="232" width="45.6" height="20" fill="white" />
+<text x="560.0" y="248" text-anchor="middle" font-size="13">LOOKUP</text>
+<path d="M800,264 L872,264" fill="none" stroke="#526176" stroke-width="2" marker-end="url(#arrow)" />
+<rect x="820.8" y="232" width="30.4" height="20" fill="white" />
+<text x="836.0" y="248" text-anchor="middle" font-size="13">READ</text>
+<text x="44" y="414" font-size="17" font-weight="normal">Every request goes through the repository. Missing IDs become HTTP 404.</text>
+<text x="44" y="512" font-size="20" font-weight="bold">PROPOSED — step 1 adds cache; step 2 integrates it</text>
+<rect x="44" y="552" width="204" height="120" rx="8" fill="#f3f5f8" stroke="#526176" stroke-width="1.4" />
+<text x="58" y="578" font-size="12" font-weight="bold">UNCHANGED</text>
+<text x="58" y="608" font-size="20" font-weight="bold">API</text>
+<text x="58" y="633" font-size="14" font-weight="normal">Same 200 / 404 contract</text>
+<rect x="320" y="552" width="204" height="120" rx="8" fill="#fff1cb" stroke="#526176" stroke-width="1.4" />
+<text x="334" y="578" font-size="12" font-weight="bold">CHANGED</text>
+<text x="334" y="608" font-size="20" font-weight="bold">Product service</text>
+<text x="334" y="633" font-size="14" font-weight="normal">catalog/service.py</text>
+<text x="334" y="653" font-size="14" font-weight="normal">Step 2: read-through cache</text>
+<rect x="596" y="552" width="204" height="120" rx="8" fill="#f3f5f8" stroke="#526176" stroke-width="1.4" />
+<text x="610" y="578" font-size="12" font-weight="bold">UNCHANGED</text>
+<text x="610" y="608" font-size="20" font-weight="bold">Repository</text>
+<text x="610" y="633" font-size="14" font-weight="normal">Same get_product method</text>
+<rect x="872" y="552" width="204" height="120" rx="8" fill="#f3f5f8" stroke="#526176" stroke-width="1.4" />
+<text x="886" y="578" font-size="12" font-weight="bold">UNCHANGED</text>
+<text x="886" y="608" font-size="20" font-weight="bold">Database</text>
+<text x="886" y="633" font-size="14" font-weight="normal">Same dictionary fixture</text>
+<path d="M248,612 L320,612" fill="none" stroke="#526176" stroke-width="2" marker-end="url(#arrow)" />
+<rect x="261.2" y="580" width="45.6" height="20" fill="white" />
+<text x="284.0" y="596" text-anchor="middle" font-size="13">LOOKUP</text>
+<path d="M524,612 L596,612" fill="none" stroke="#526176" stroke-width="2" marker-end="url(#arrow)" />
+<rect x="533.4" y="580" width="53.199999999999996" height="20" fill="white" />
+<text x="560.0" y="596" text-anchor="middle" font-size="13">ON MISS</text>
+<path d="M800,612 L872,612" fill="none" stroke="#526176" stroke-width="2" marker-end="url(#arrow)" />
+<rect x="820.8" y="580" width="30.4" height="20" fill="white" />
+<text x="836.0" y="596" text-anchor="middle" font-size="13">READ</text>
+<rect x="320" y="808" width="240" height="120" rx="8" fill="#e4f4e9" stroke="#526176" stroke-width="1.4" />
+<text x="334" y="834" font-size="12" font-weight="bold">ADDED</text>
+<text x="334" y="864" font-size="20" font-weight="bold">Product cache</text>
+<text x="334" y="889" font-size="14" font-weight="normal">catalog/cache.py</text>
+<text x="334" y="909" font-size="14" font-weight="normal">Step 1: TTL + fixed capacity</text>
+<path d="M422,672 L422,808" fill="none" stroke="#526176" stroke-width="2" marker-end="url(#arrow)" />
+<text x="436" y="740.0" font-size="13" font-weight="normal">READ / FILL</text>
+<text x="44" y="1024" font-size="15" font-weight="normal">ADDED: cache   ·   CHANGED: service   ·   UNCHANGED: API, repository, database</text>
+<text x="44" y="1054" font-size="15" font-weight="normal">REMOVED: none. Single process only; no new network boundary.</text>
+</g></svg>
