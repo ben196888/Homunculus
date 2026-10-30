@@ -45,18 +45,27 @@ npx skills add github.com/ben196888/homunculus --list
 ## Install script (all agents on a machine)
 
 For a shared agent machine (Claude Code, Codex, and Cursor), run the
-idempotent installer. Each harness gets **one** copy of the pstack-derived
-skills (aliases whose `skill-aliases.yml` source is `cursor/plugins`):
+idempotent installer. Each harness gets exactly **one** copy of every skill.
+Third-party skills reach each harness either as a native **plugin** or as a
+Homunculus **alias** (vendored copy from `skill-aliases.yml`):
 
-| Harness | Homunculus skills | pstack |
-| --- | --- | --- |
-| Claude Code | non-pstack only (`~/.claude/skills`) | `pstack@cursor-plugins` plugin |
-| Cursor | non-pstack only (universal `~/.agents/skills`) | Cursor's native pstack plugin |
-| Codex | full set under `~/.codex/skills` | vendored Homunculus copies (no plugin) |
+| Third-party source | Skills | Claude Code | Cursor | Codex |
+| --- | --- | --- | --- | --- |
+| pstack ([cursor/plugins](https://github.com/cursor/plugins) `pstack/`) | `principles/*`, `writing/unslop`, `writing/technical-writing`, `programming/tdd` | plugin (`pstack@cursor-plugins`, full set incl. subagent workflows) | plugin (Cursor's native pstack) | alias (no plugin; subagent workflows not available) |
+| Ponytail ([DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail)) | `programming/ponytail*` | alias | alias | alias |
+| Matt Pocock ([mattpocock/skills](https://github.com/mattpocock/skills)) | `productivity/grilling`, `productivity/edit-article` (pinned) | alias | alias | alias |
+| Homunculus's own skills | everything else | Homunculus | Homunculus | Homunculus |
 
-The `skills` CLI treats Cursor and Codex as universal agents that share
-`~/.agents/skills`, so the installer keeps that store non-pstack and mirrors
-the full Homunculus tree into `~/.codex/skills` for Codex.
+Rule of thumb: when a harness has an official plugin that ships the full
+upstream set, use the plugin and skip the alias there; otherwise install the
+alias. The installer derives the plugin-covered list from `skill-aliases.yml`
+(aliases with `source: cursor/plugins`).
+
+Install locations: Claude Code reads `~/.claude/skills`; Cursor reads the
+universal `~/.agents/skills`; Codex gets the full tree mirrored into
+`~/.codex/skills`, because the `skills` CLI treats Cursor and Codex as
+universal agents sharing `~/.agents/skills`, which must stay pstack-free for
+Cursor.
 
 ```bash
 ./scripts/install.sh            # from github.com/ben196888/homunculus
@@ -64,10 +73,9 @@ the full Homunculus tree into `~/.codex/skills` for Codex.
 ./scripts/install.sh /path/to/Homunculus
 ```
 
-Safe to rerun: it strips leftover Homunculus pstack copies from Claude Code
-and the universal store before reinstalling. If `claude` is not on `PATH`,
-or Claude Code is not signed in, the skill copy still succeeds and the plugin
-step prints a skip note.
+Safe to rerun: it reinstalls the same set each time. If `claude` is not on
+`PATH`, or Claude Code is not signed in, the skill copy still succeeds and the
+plugin step prints a skip note.
 
 ## Skills
 
