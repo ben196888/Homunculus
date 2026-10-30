@@ -43,6 +43,7 @@ class AliasConfig:
     source: str
     skill: str
     ref: str
+    path: str | None = None
 
 
 @dataclass(frozen=True)
@@ -200,6 +201,17 @@ def validate_alias(alias: str) -> None:
             )
 
 
+def validate_source_path(path: str) -> None:
+    if path.startswith("/") or path.endswith("/"):
+        raise SkillAliasError(f"path must be relative to the source repo root: {path!r}")
+    parts = path.split("/")
+    if any(part in {"", ".", ".."} for part in parts):
+        raise SkillAliasError(f"path contains an unsafe path segment: {path!r}")
+    for part in parts:
+        if part.startswith("."):
+            raise SkillAliasError(f"path contains a hidden path segment: {path!r}")
+
+
 def target_for_alias(alias: str) -> Path:
     validate_alias(alias)
     target = SKILLS_ROOT.joinpath(*alias.split("/"))
@@ -243,7 +255,18 @@ def read_manifest() -> Manifest:
             raise SkillAliasError(
                 f"alias {alias!r} source must be GitHub owner/repo form: {source!r}"
             )
-        aliases[alias] = AliasConfig(alias=alias, source=source, skill=skill, ref=ref)
+        raw_path = raw_config.get("path")
+        path: str | None
+        if raw_path is None or raw_path == "":
+            path = None
+        elif isinstance(raw_path, str):
+            validate_source_path(raw_path)
+            path = raw_path
+        else:
+            raise SkillAliasError(f"alias {alias!r} path must be a string when set")
+        aliases[alias] = AliasConfig(
+            alias=alias, source=source, skill=skill, ref=ref, path=path
+        )
 
     return Manifest(namespace=namespace, aliases=aliases)
 
@@ -385,7 +408,28 @@ def rewrite_frontmatter_name(skill_file: Path, new_name: str) -> None:
     skill_file.write_text("---\n" + "\n".join(rewritten) + "\n---\n" + body, encoding="utf-8")
 
 
-def locate_upstream_skill(repo_path: Path, skill: str) -> Path:
+def locate_upstream_skill(
+    repo_path: Path, skill: str, path: str | None = None
+) -> Path:
+    if path is not None:
+        validate_source_path(path)
+        skill_dir = (repo_path / path).resolve()
+        try:
+            skill_dir.relative_to(repo_path.resolve())
+        except ValueError as exc:
+            raise SkillAliasError(f"path escapes source repo: {path!r}") from exc
+        skill_file = skill_dir / "SKILL.md"
+        if not skill_file.is_file():
+            raise SkillAliasError(
+                f"Could not find SKILL.md at source path {path!r}"
+            )
+        actual_name = frontmatter_name(skill_file)
+        if actual_name != skill:
+            raise SkillAliasError(
+                f"Skill at {path!r} has name {actual_name!r}, expected {skill!r}"
+            )
+        return skill_dir
+
     matches: list[Path] = []
     for skill_file in repo_path.rglob("SKILL.md"):
         if ".git" in skill_file.parts:
@@ -403,7 +447,8 @@ def locate_upstream_skill(repo_path: Path, skill: str) -> Path:
             f"- {match.relative_to(repo_path)}" for match in sorted(matches)
         )
         raise SkillAliasError(
-            f"Found multiple upstream skills with name {skill!r}:\n{rendered}"
+            f"Found multiple upstream skills with name {skill!r}:\n{rendered}\n"
+            "Set path: to the desired skill directory relative to the source repo."
         )
     return matches[0]
 
@@ -428,7 +473,7 @@ def update_alias(config: AliasConfig, manifest: Manifest, lock_entries: dict[str
     repo_path = ensure_source_repo(config.source)
     commit = resolve_ref(repo_path, config.ref)
     checkout_commit(repo_path, commit)
-    upstream_dir = locate_upstream_skill(repo_path, config.skill)
+    upstream_dir = locate_upstream_skill(repo_path, config.skill, config.path)
 
     with tempfile.TemporaryDirectory(prefix="skill-alias-copy-") as tmp:
         staged_dir = Path(tmp) / "skill"
