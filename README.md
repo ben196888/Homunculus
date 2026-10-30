@@ -79,7 +79,7 @@ plugin step prints a skip note.
 
 ## Skills
 
-- `homunculus-productivity-commit-plan` - review a multi-commit plan as the intended git history before implementation.
+- `homunculus-productivity-visual-plan` - diagrams-first plans (plan.md, visual-plan.md, visual-plan.html) via a visualisation guideline and templates (task, rfc, tech-comparison, ab-test-report).
 - `homunculus-productivity-create-printable-html` - self-contained, multilingual HTML documents optimized for printing.
 - `homunculus-programming-codebase-search` - fast repository exploration using `rg`.
 - `homunculus-programming-autosquash` - safely fold marked fixup and squash commits and update the remote branch.
@@ -87,7 +87,6 @@ plugin step prints a skip note.
 - `homunculus-programming-wt-drop` - remove completed worktrees and branches.
 - `homunculus-programming-wt-find` - recover worktrees from partial context.
 - `homunculus-productivity-development-workflow` - plan, clarify, document, implement, verify.
-- `homunculus-productivity-rfc-writer` - write RFCs for cross-cutting or architectural changes.
 - `homunculus-productivity-task-ledger` - persist concise local ticket, branch, verification, and MR state across tasks.
 - `homunculus-productivity-change-detection` - check changed work has completion evidence before handoff.
 - `homunculus-programming-mr-steward` - inspect GitLab MR state and recommend read-only follow-up actions.
