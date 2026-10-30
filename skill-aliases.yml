@@ -1,11 +1,174 @@
 namespace: homunculus
 
 aliases:
+  # Pinned: removed from mattpocock/skills main on 2026-08-05 (c66bdee); last available commit.
   productivity/edit-article:
     source: mattpocock/skills
     skill: edit-article
-    ref: main
+    ref: 6eeb81b5fcfeeb5bd531dd47ab2f9f2bbea27461
+    path: skills/personal/edit-article
   productivity/grilling:
     source: mattpocock/skills
     skill: grilling
     ref: main
+    path: skills/productivity/grilling
+  programming/ponytail:
+    source: DietrichGebert/ponytail
+    skill: ponytail
+    ref: main
+    path: skills/ponytail
+  programming/ponytail-review:
+    source: DietrichGebert/ponytail
+    skill: ponytail-review
+    ref: main
+    path: skills/ponytail-review
+  programming/ponytail-audit:
+    source: DietrichGebert/ponytail
+    skill: ponytail-audit
+    ref: main
+    path: skills/ponytail-audit
+  programming/ponytail-debt:
+    source: DietrichGebert/ponytail
+    skill: ponytail-debt
+    ref: main
+    path: skills/ponytail-debt
+  programming/ponytail-help:
+    source: DietrichGebert/ponytail
+    skill: ponytail-help
+    ref: main
+    path: skills/ponytail-help
+  principles/attack-the-premise:
+    source: cursor/plugins
+    skill: principle-attack-the-premise
+    ref: main
+    path: pstack/skills/principle-attack-the-premise
+  principles/boundary-discipline:
+    source: cursor/plugins
+    skill: principle-boundary-discipline
+    ref: main
+    path: pstack/skills/principle-boundary-discipline
+  principles/build-the-lever:
+    source: cursor/plugins
+    skill: principle-build-the-lever
+    ref: main
+    path: pstack/skills/principle-build-the-lever
+  principles/encode-lessons-in-structure:
+    source: cursor/plugins
+    skill: principle-encode-lessons-in-structure
+    ref: main
+    path: pstack/skills/principle-encode-lessons-in-structure
+  principles/exhaust-the-design-space:
+    source: cursor/plugins
+    skill: principle-exhaust-the-design-space
+    ref: main
+    path: pstack/skills/principle-exhaust-the-design-space
+  principles/experience-first:
+    source: cursor/plugins
+    skill: principle-experience-first
+    ref: main
+    path: pstack/skills/principle-experience-first
+  principles/explain-the-number:
+    source: cursor/plugins
+    skill: principle-explain-the-number
+    ref: main
+    path: pstack/skills/principle-explain-the-number
+  principles/fix-root-causes:
+    source: cursor/plugins
+    skill: principle-fix-root-causes
+    ref: main
+    path: pstack/skills/principle-fix-root-causes
+  principles/foundational-thinking:
+    source: cursor/plugins
+    skill: principle-foundational-thinking
+    ref: main
+    path: pstack/skills/principle-foundational-thinking
+  principles/guard-the-context-window:
+    source: cursor/plugins
+    skill: principle-guard-the-context-window
+    ref: main
+    path: pstack/skills/principle-guard-the-context-window
+  principles/laziness-protocol:
+    source: cursor/plugins
+    skill: principle-laziness-protocol
+    ref: main
+    path: pstack/skills/principle-laziness-protocol
+  principles/make-operations-idempotent:
+    source: cursor/plugins
+    skill: principle-make-operations-idempotent
+    ref: main
+    path: pstack/skills/principle-make-operations-idempotent
+  principles/migrate-callers-then-delete-legacy-apis:
+    source: cursor/plugins
+    skill: principle-migrate-callers-then-delete-legacy-apis
+    ref: main
+    path: pstack/skills/principle-migrate-callers-then-delete-legacy-apis
+  principles/minimize-reader-load:
+    source: cursor/plugins
+    skill: principle-minimize-reader-load
+    ref: main
+    path: pstack/skills/principle-minimize-reader-load
+  principles/model-the-domain:
+    source: cursor/plugins
+    skill: principle-model-the-domain
+    ref: main
+    path: pstack/skills/principle-model-the-domain
+  principles/never-block-on-the-human:
+    source: cursor/plugins
+    skill: principle-never-block-on-the-human
+    ref: main
+    path: pstack/skills/principle-never-block-on-the-human
+  principles/outcome-oriented-execution:
+    source: cursor/plugins
+    skill: principle-outcome-oriented-execution
+    ref: main
+    path: pstack/skills/principle-outcome-oriented-execution
+  principles/prove-it-works:
+    source: cursor/plugins
+    skill: principle-prove-it-works
+    ref: main
+    path: pstack/skills/principle-prove-it-works
+  principles/redesign-from-first-principles:
+    source: cursor/plugins
+    skill: principle-redesign-from-first-principles
+    ref: main
+    path: pstack/skills/principle-redesign-from-first-principles
+  principles/separate-before-serializing-shared-state:
+    source: cursor/plugins
+    skill: principle-separate-before-serializing-shared-state
+    ref: main
+    path: pstack/skills/principle-separate-before-serializing-shared-state
+  principles/sequence-verifiable-units:
+    source: cursor/plugins
+    skill: principle-sequence-verifiable-units
+    ref: main
+    path: pstack/skills/principle-sequence-verifiable-units
+  principles/subtract-before-you-add:
+    source: cursor/plugins
+    skill: principle-subtract-before-you-add
+    ref: main
+    path: pstack/skills/principle-subtract-before-you-add
+  principles/test-behavior-not-implementation:
+    source: cursor/plugins
+    skill: principle-test-behavior-not-implementation
+    ref: main
+    path: pstack/skills/principle-test-behavior-not-implementation
+  principles/type-system-discipline:
+    source: cursor/plugins
+    skill: principle-type-system-discipline
+    ref: main
+    path: pstack/skills/principle-type-system-discipline
+  programming/tdd:
+    source: cursor/plugins
+    skill: tdd
+    ref: main
+    path: pstack/skills/tdd
+  writing/technical-writing:
+    source: cursor/plugins
+    skill: technical-writing
+    ref: main
+    path: pstack/skills/technical-writing
+  writing/unslop:
+    source: cursor/plugins
+    skill: unslop
+    ref: main
+    path: pstack/skills/unslop

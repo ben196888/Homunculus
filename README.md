@@ -42,6 +42,41 @@ List available skills without installing:
 npx skills add github.com/ben196888/homunculus --list
 ```
 
+## Install script (all agents on a machine)
+
+For a shared agent machine (Claude Code, Codex, and Cursor), run the
+idempotent installer. Each harness gets exactly **one** copy of every skill.
+Third-party skills reach each harness either as a native **plugin** or as a
+Homunculus **alias** (vendored copy from `skill-aliases.yml`):
+
+| Third-party source | Skills | Claude Code | Cursor | Codex |
+| --- | --- | --- | --- | --- |
+| pstack ([cursor/plugins](https://github.com/cursor/plugins) `pstack/`) | `principles/*`, `writing/unslop`, `writing/technical-writing`, `programming/tdd` | plugin (`pstack@cursor-plugins`, full set incl. subagent workflows) | plugin (Cursor's native pstack) | alias (no plugin; subagent workflows not available) |
+| Ponytail ([DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail)) | `programming/ponytail*` | alias | alias | alias |
+| Matt Pocock ([mattpocock/skills](https://github.com/mattpocock/skills)) | `productivity/grilling`, `productivity/edit-article` (pinned) | alias | alias | alias |
+| Homunculus's own skills | everything else | Homunculus | Homunculus | Homunculus |
+
+Rule of thumb: when a harness has an official plugin that ships the full
+upstream set, use the plugin and skip the alias there; otherwise install the
+alias. The installer derives the plugin-covered list from `skill-aliases.yml`
+(aliases with `source: cursor/plugins`).
+
+Install locations: Claude Code reads `~/.claude/skills`; Cursor reads the
+universal `~/.agents/skills`; Codex gets the full tree mirrored into
+`~/.codex/skills`, because the `skills` CLI treats Cursor and Codex as
+universal agents sharing `~/.agents/skills`, which must stay pstack-free for
+Cursor.
+
+```bash
+./scripts/install.sh            # from github.com/ben196888/homunculus
+./scripts/install.sh .          # from this checkout
+./scripts/install.sh /path/to/Homunculus
+```
+
+Safe to rerun: it reinstalls the same set each time. If `claude` is not on
+`PATH`, or Claude Code is not signed in, the skill copy still succeeds and the
+plugin step prints a skip note.
+
 ## Skills
 
 - `homunculus-productivity-commit-plan` - review a multi-commit plan as the intended git history before implementation.
@@ -57,6 +92,25 @@ npx skills add github.com/ben196888/homunculus --list
 - `homunculus-productivity-change-detection` - check changed work has completion evidence before handoff.
 - `homunculus-programming-mr-steward` - inspect GitLab MR state and recommend read-only follow-up actions.
 - `homunculus-productivity-harness-session-retro` - analyze recent Codex sessions and recommend skills or harness components to create, improve, merge, keep, or retire.
+
+
+### Third-party aliases
+
+Vendored via `skill-aliases.yml` (see below). Public names keep the
+`homunculus-` prefix.
+
+**Ponytail** ([DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail), MIT):
+`homunculus-programming-ponytail`, `-ponytail-review`, `-ponytail-audit`,
+`-ponytail-debt`, `-ponytail-help`.
+
+**pstack portable skills** ([cursor/plugins](https://github.com/cursor/plugins)
+`pstack/`, MIT © Lauren Tan): all `homunculus-principles-*` principles,
+`homunculus-writing-unslop`, `homunculus-writing-technical-writing`,
+`homunculus-programming-tdd`. Vendored for Codex (and as the alias source of
+truth); Claude Code and Cursor load these via the pstack plugin instead of
+the Homunculus copies. Cursor-only subagent workflows (`poteto-mode`, `how`,
+`why`, `swarm`, `arena`, …) are not vendored; `./scripts/install.sh` installs
+the full pstack Claude Code plugin for those.
 
 ## Layout
 
@@ -78,6 +132,10 @@ Alias keys are paths relative to `skills/`. For example,
 `productivity/article-editor` is copied to
 `skills/productivity/article-editor/` and installed as
 `homunculus-productivity-article-editor`.
+
+When an upstream repo contains the same skill name more than once, set
+`path:` to the skill directory relative to that repo root (for example
+`path: skills/ponytail` or `path: pstack/skills/unslop`).
 
 The resolved upstream commit is recorded in `skill-aliases.lock.yml`. Removing
 an alias from the manifest does not delete files during update; run
