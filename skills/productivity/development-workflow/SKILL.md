@@ -19,6 +19,6 @@ Use this skill for non-trivial engineering work that benefits from explicit sequ
 
 - Start by understanding the task, affected systems, and the proposed change.
 - Ask questions only when a reasonable assumption would be risky.
-- For large changes, write a short design note or RFC before implementation.
+- For large changes, run `homunculus-productivity-visual-plan` with the **rfc** template before implementation (unless the user overrode sections or named another template).
 - After implementation, run the relevant checks and call out any gaps.
 - Do not claim deployment or monitoring work unless it actually happened.

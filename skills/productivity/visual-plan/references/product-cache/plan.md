@@ -1,4 +1,6 @@
 # Mock plan: cache product lookup for 60 seconds
+<!-- template: task -->
+
 
 Worked example only. The bundled fixture captures the current state; the two caching commits below are proposed and have not been implemented. Read from `fixture/` when running its baseline checks.
 
