@@ -90,29 +90,6 @@ install_skills() {
   npx -y skills add "${SOURCE}" --skill "${skills[@]}" --agent "${agent}" --copy -g -y
 }
 
-remove_skills_via_cli() {
-  local agent="$1"
-  shift
-  local skills=("$@")
-  if [[ ${#skills[@]} -eq 0 ]]; then
-    return 0
-  fi
-  npx -y skills remove -g -y -a "${agent}" --skill "${skills[@]}" 2>/dev/null || true
-}
-
-remove_skill_dirs() {
-  local parent="$1"
-  shift
-  local name dir
-  for name in "$@"; do
-    dir="${parent}/${name}"
-    if [[ -e "${dir}" ]]; then
-      rm -rf "${dir}"
-      echo "Removed ${dir}"
-    fi
-  done
-}
-
 sync_codex_skills() {
   # Mirror every Homunculus skill into ~/.codex/skills/<public-name>/.
   # Codex natively reads $CODEX_HOME/skills (default ~/.codex/skills).
@@ -162,16 +139,6 @@ ALL_ARR=( ${ALL} )
 echo "pstack-derived skills (plugin on Claude Code / Cursor): ${#PSTACK_ARR[@]}"
 echo "non-pstack Homunculus skills: ${#NON_PSTACK_ARR[@]}"
 echo "all Homunculus skills (Codex ~/.codex/skills): ${#ALL_ARR[@]}"
-
-echo ""
-echo "==> Cleanup: drop Homunculus pstack copies from Claude Code and universal store"
-# skills remove deletes from ~/.agents/skills; also scrub Claude's private copy.
-remove_skills_via_cli claude-code "${PSTACK_ARR[@]}"
-remove_skills_via_cli cursor "${PSTACK_ARR[@]}"
-remove_skills_via_cli codex "${PSTACK_ARR[@]}"
-remove_skill_dirs "${HOME}/.claude/skills" "${PSTACK_ARR[@]}"
-remove_skill_dirs "${HOME}/.agents/skills" "${PSTACK_ARR[@]}"
-remove_skill_dirs "${HOME}/.cursor/skills" "${PSTACK_ARR[@]}"
 
 echo ""
 echo "==> claude-code (non-pstack Homunculus skills)"
