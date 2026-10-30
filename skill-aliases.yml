@@ -9,7 +9,7 @@ aliases:
   productivity/grilling:
     source: mattpocock/skills
     skill: grilling
-    ref: 6eeb81b5fcfeeb5bd531dd47ab2f9f2bbea27461
+    ref: main
     path: skills/productivity/grilling
   programming/ponytail:
     source: DietrichGebert/ponytail

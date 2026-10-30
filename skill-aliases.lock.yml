@@ -178,8 +178,8 @@ productivity/edit-article:
 productivity/grilling:
   source: mattpocock/skills
   skill: grilling
-  ref: 6eeb81b5fcfeeb5bd531dd47ab2f9f2bbea27461
-  commit: 6eeb81b5fcfeeb5bd531dd47ab2f9f2bbea27461
+  ref: main
+  commit: a496f5513d4a4cf889bc48e189e579f4b0bdf6aa
   upstreamPath: skills/productivity/grilling
 
 programming/ponytail:
