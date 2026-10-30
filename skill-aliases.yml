@@ -1,6 +1,7 @@
 namespace: homunculus
 
 aliases:
+  # Pinned: removed from mattpocock/skills main on 2026-08-05 (c66bdee); last available commit.
   productivity/edit-article:
     source: mattpocock/skills
     skill: edit-article
