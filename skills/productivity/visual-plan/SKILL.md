@@ -8,8 +8,7 @@ description: >
   plan, plan for X, we need a plan, we need an RFC, design doc, RFC before,
   multi-commit plan, tech comparison, A/B or experiment report, or when
   development-workflow reaches its document step. Also use for before/after plan
-  comparison artifacts. Skip one-line fixes and pure prose edits. Prefer this
-  over commit-plan or rfc-writer. Do not use when the user explicitly asks for
+  comparison artifacts. Skip one-line fixes and pure prose edits. Do not use when the user explicitly asks for
   pstack architect, statechart, or technical-writing and that skill fully covers
   the ask (those design or verify code/prose; this skill produces the human
   review artifact set).

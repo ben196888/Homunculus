@@ -1,5 +1,5 @@
 # Mock plan: cache product lookup for 60 seconds
-<!-- Port note: diagrams + plan only. Python fixture from commit-plan was dropped (not needed to illustrate visuals). template: task -->
+<!-- template: task -->
 
 
 Worked example only. The bundled fixture captures the current state; the two caching commits below are proposed and have not been implemented. Read from `fixture/` when running its baseline checks.
