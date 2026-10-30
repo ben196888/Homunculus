@@ -45,9 +45,18 @@ npx skills add github.com/ben196888/homunculus --list
 ## Install script (all agents on a machine)
 
 For a shared agent machine (Claude Code, Codex, and Cursor), run the
-idempotent installer. It copies every Homunculus skill into each agent's
-global skills directory, then tries to install the full pstack Claude Code
-plugin (subagent workflows such as `/pstack:poteto-mode`):
+idempotent installer. Each harness gets **one** copy of the pstack-derived
+skills (aliases whose `skill-aliases.yml` source is `cursor/plugins`):
+
+| Harness | Homunculus skills | pstack |
+| --- | --- | --- |
+| Claude Code | non-pstack only (`~/.claude/skills`) | `pstack@cursor-plugins` plugin |
+| Cursor | non-pstack only (universal `~/.agents/skills`) | Cursor's native pstack plugin |
+| Codex | full set under `~/.codex/skills` | vendored Homunculus copies (no plugin) |
+
+The `skills` CLI treats Cursor and Codex as universal agents that share
+`~/.agents/skills`, so the installer keeps that store non-pstack and mirrors
+the full Homunculus tree into `~/.codex/skills` for Codex.
 
 ```bash
 ./scripts/install.sh            # from github.com/ben196888/homunculus
@@ -55,8 +64,10 @@ plugin (subagent workflows such as `/pstack:poteto-mode`):
 ./scripts/install.sh /path/to/Homunculus
 ```
 
-Safe to rerun. If `claude` is not on `PATH`, or Claude Code is not signed in,
-the skill copy still succeeds and the plugin step prints a skip note.
+Safe to rerun: it strips leftover Homunculus pstack copies from Claude Code
+and the universal store before reinstalling. If `claude` is not on `PATH`,
+or Claude Code is not signed in, the skill copy still succeeds and the plugin
+step prints a skip note.
 
 ## Skills
 
@@ -87,9 +98,11 @@ Vendored via `skill-aliases.yml` (see below). Public names keep the
 **pstack portable skills** ([cursor/plugins](https://github.com/cursor/plugins)
 `pstack/`, MIT © Lauren Tan): all `homunculus-principles-*` principles,
 `homunculus-writing-unslop`, `homunculus-writing-technical-writing`,
-`homunculus-programming-tdd`. Cursor-only subagent workflows (`poteto-mode`,
-`how`, `why`, `swarm`, `arena`, …) are not vendored here; install the full
-pstack Claude Code plugin via `./scripts/install.sh` for those.
+`homunculus-programming-tdd`. Vendored for Codex (and as the alias source of
+truth); Claude Code and Cursor load these via the pstack plugin instead of
+the Homunculus copies. Cursor-only subagent workflows (`poteto-mode`, `how`,
+`why`, `swarm`, `arena`, …) are not vendored; `./scripts/install.sh` installs
+the full pstack Claude Code plugin for those.
 
 ## Layout
 
