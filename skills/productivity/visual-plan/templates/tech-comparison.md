@@ -11,4 +11,5 @@ Use when choosing among technologies, libraries, or approaches.
 | Verification / next checks | Short checklist |
 | Out of scope | Short list |
 
-Outputs: follow SKILL.md — always emit plan.md, visual-plan.md, and visual-plan.html from these sections.
+Outputs: follow SKILL.md — always emit plan.md and visual-plan.md; also emit
+visual-plan.html and a Canvas when the environment supports them (skip either when unavailable).
