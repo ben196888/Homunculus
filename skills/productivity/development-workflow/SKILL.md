@@ -19,6 +19,6 @@ Use this skill for non-trivial engineering work that benefits from explicit sequ
 
 - Start by understanding the task, affected systems, and the proposed change.
 - Ask questions only when a reasonable assumption would be risky.
-- For large changes, run `homunculus-productivity-visual-plan` with the **rfc** template before implementation (unless the user overrode sections or named another template).
+- For large or cross-cutting design, run `homunculus-productivity-visual-plan` with the **rfc** template before implementation. For a concrete behavior or system change that needs human approval before coding (decision callout, before/after, unchanged, status), use the **change-plan** template instead. If the user overrode sections or named another template, follow that.
 - After implementation, run the relevant checks and call out any gaps.
 - Do not claim deployment or monitoring work unless it actually happened.

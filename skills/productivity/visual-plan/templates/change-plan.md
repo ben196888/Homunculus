@@ -1,3 +1,4 @@
+<!-- template-id: change-plan -->
 # Template: change-plan
 
 Use when proposing a concrete behavior or system change that needs human approval
@@ -5,6 +6,9 @@ before implementation — decision-first, before/after, what stays the same, and
 status checklist. Prefer this over **task** when the artifact is for approval
 rather than a commit-sized engineering breakdown; prefer **rfc** when the ask is
 cross-cutting architecture alignment with option trade-offs.
+
+To rename this template later: change the `template-id` comment, this H1, the
+filename, and every id listed in SKILL.md's Template ids rename checklist.
 
 | Section | Default visual |
 | --- | --- |
@@ -22,8 +26,6 @@ user asks (those belong on **task** / **rfc**).
 Keep content generic to the change under review; do not bake in product- or
 bot-specific names unless the user supplied them.
 
-When a Page/Canvas host is available alongside this skill, map the same sections
-to callout → diagram → table → steps → properties → checklist; still emit
-`plan.md`, `visual-plan.md`, and `visual-plan.html` per SKILL.md.
-
-Outputs: follow SKILL.md — always emit plan.md, visual-plan.md, and visual-plan.html from these sections.
+Outputs: follow SKILL.md — emit plan.md, visual-plan.md, and visual-plan.html
+from these sections, plus a hosted interactive page when the environment
+supports one (skip when unavailable).

@@ -2,17 +2,18 @@
 name: homunculus-productivity-visual-plan
 description: >
   Turn a plan, RFC, comparison, experiment write-up, or approval-oriented change
-  plan into three diagrams-first artifacts (plan.md plain prose, visual-plan.md,
-  visual-plan.html) using a visualisation guideline and named templates. Use
-  whenever planning work before implementation — including phrases like visual
-  plan, plan this, show me the plan, plan for X, we need a plan, we need an RFC,
-  design doc, RFC before, multi-commit plan, change plan, implementation plan,
-  before/after plan, tech comparison, A/B or experiment report, or when
-  development-workflow reaches its document step. Also use for before/after plan
-  comparison artifacts. Skip one-line fixes and pure prose edits. Do not use when the user explicitly asks for
-  pstack architect, statechart, or technical-writing and that skill fully covers
-  the ask (those design or verify code/prose; this skill produces the human
-  review artifact set).
+  plan into diagrams-first artifacts (plan.md, visual-plan.md, visual-plan.html,
+  and a hosted interactive page when the environment supports one) using a
+  visualisation guideline and named templates. Use whenever planning work before
+  implementation — including phrases like visual plan, plan this, show me the
+  plan, plan for X, we need a plan, we need an RFC, design doc, RFC before,
+  multi-commit plan, change plan, implementation plan, before/after plan, tech
+  comparison, A/B or experiment report, or when development-workflow reaches its
+  document step. Also use for before/after plan comparison artifacts. Skip
+  one-line fixes and pure prose edits. Do not use when the user explicitly asks
+  for pstack architect, statechart, or technical-writing and that skill fully
+  covers the ask (those design or verify code/prose; this skill produces the
+  human review artifact set).
 ---
 
 # Visual plan
@@ -22,14 +23,28 @@ A **visualisation guideline**, not a fixed document outline. Choose *how* each s
 ## Section source (priority)
 
 1. **User-provided sections always win.** If the user lists headings or a custom outline, use that exact structure.
-2. Else use a **named template** the user or caller asked for (`task`, `change-plan`, `rfc`, `tech-comparison`, `ab-test-report`).
-3. Else pick the **closest template**, and state which one you picked and why in one line at the top (`template: <name> · reason: …`).
+2. Else use a **named template** the user or caller asked for (see [Template ids](#template-ids)).
+3. Else pick the **closest template**, and state which one you picked and why in one line at the top (`template: <id> · reason: …`).
 
-Templates live beside this skill: [templates/](templates/). Each file lists sections and the default visual for that section. The five starters cover commit-sized plans, approval-oriented change plans, RFCs, tech comparisons, and experiment reports; do not invent new template files unless the user asks.
+Templates live beside this skill: [templates/](templates/). Each file lists sections and the default visual for that section. The starters cover commit-sized plans, approval-oriented change plans, RFCs, tech comparisons, and experiment reports; do not invent new template files unless the user asks.
 
-`development-workflow`'s document step means: run visual-plan with the **rfc** template (unless the user overrode sections or named another template).
+### Template ids
 
-Pick **change-plan** (not **task**) when the deliverable is a decision callout, before/after behavior table, unchanged list, and status checklist for human approval before coding. Keep **task** for commit-sized engineering breakdowns (heat map + commit timeline). Keep **rfc** for cross-cutting architecture with option trade-offs.
+Stable ids (rename = replace the id string in every row location below):
+
+| Id | File | Prefer when |
+| --- | --- | --- |
+| `task` | [templates/task.md](templates/task.md) | Commit-sized engineering breakdown (heat map + commit timeline) |
+| `change-plan` | [templates/change-plan.md](templates/change-plan.md) | Approval-oriented concrete behavior change (decision callout, before/after, unchanged, status) |
+| `rfc` | [templates/rfc.md](templates/rfc.md) | Cross-cutting architecture with option trade-offs |
+| `tech-comparison` | [templates/tech-comparison.md](templates/tech-comparison.md) | Choosing among technologies or approaches |
+| `ab-test-report` | [templates/ab-test-report.md](templates/ab-test-report.md) | Experiment write-up / go-no-go from measured results |
+
+**Rename checklist for an id:** `templates/<id>.md` filename + H1/`template-id` comment; this table; `development-workflow` template guidance; README skill blurb; `<!-- template: <id> -->` in references; cross-mentions in other templates or SKILL prose.
+
+`development-workflow`'s document step: run visual-plan with **`rfc`** for large or cross-cutting design, or **`change-plan`** for a concrete behavior/system change that needs approval before coding (unless the user overrode sections or named another template).
+
+Pick **`change-plan`** (not **`task`**) when the deliverable is a decision callout, before/after behavior table, unchanged list, and status checklist for human approval before coding. Keep **`task`** for commit-sized engineering breakdowns (heat map + commit timeline). Keep **`rfc`** for cross-cutting architecture with option trade-offs.
 
 ## Visualisation guideline
 
@@ -56,15 +71,15 @@ Rules:
 - Ground current state in inspected code or data with real paths/figures. Label proposals. Invent nothing.
 - **Mermaid by default**; SVG only where Mermaid cannot (e.g. heat-map grid, custom charts).
 - **Render-check** every diagram before presenting.
-- Prefer stable section ids (`{#slug}`) and per-commit or per-phase tags on diagram nodes so all three outputs share structure.
-- End with the closing lists the template (or user) includes — e.g. **Verification** / **Out of scope**, or **Unchanged** / **Status** on change-plan; do not invent sections the template omitted unless the user asked.
+- Prefer stable section ids (`{#slug}`) and per-commit or per-phase tags on diagram nodes so all outputs share structure.
+- End with the closing lists the template (or user) includes — e.g. **Verification** / **Out of scope**, or **Unchanged** / **Status** on `change-plan`; do not invent sections the template omitted unless the user asked.
 
 ## Outputs (every run)
 
-Produce **all three** from the same sections and diagrams (same facts):
+Produce these from the **same sections and diagrams** (same facts):
 
 1. **`plan.md`** — plain Markdown prose/bullets, **no diagrams**. The conventional wordy form of the plan (useful as the "before" in a comparison and for terminals that will not render Mermaid).
-2. **`visual-plan.md`** — diagrams-first Markdown (embedded Mermaid; SVG files beside it when needed). Put `template: <name>` at the top.
+2. **`visual-plan.md`** — diagrams-first Markdown (embedded Mermaid; SVG files beside it when needed). Put `template: <id>` at the top.
 3. **`visual-plan.html`** — one **self-contained** interactive HTML page of the same plan:
    - Mermaid via CDN (or inline) + small vanilla JS; **no build step**, no bundler
    - Collapsible sections
@@ -73,9 +88,13 @@ Produce **all three** from the same sections and diagrams (same facts):
    - Optional click on architecture nodes → files/commits
    - **Before/after workflow toggle** when a plain `plan.md` (or before-state diagram) exists for comparison
    - Axis titles on heat maps: Risk along the left, Impact under the columns
+4. **Hosted interactive page** (when the agent environment supports one) — publish the same sections as an interactive page the reviewer can open in the product UI (for example a Canvas/Page host). Map sections to the host's callout, diagram, table, steps, properties/unchanged, and checklist building blocks when those exist. **Skip this output** when no such host is available; still emit the three files above and say the hosted page was skipped.
 
-Save the three files next to each other in the working directory the user named (or a sensible draft folder) and report their paths.
+Save the file outputs next to each other in the working directory the user named (or a sensible draft folder), report their paths, and report the hosted page link when one was created.
 
-## Example
+## Examples
 
-[references/product-cache/](references/product-cache/) — mock task-template visuals (architecture + data-flow SVGs and a sample plan; no runnable fixture). Scenario choices there are not requirements for other plans.
+- [references/product-cache/](references/product-cache/) — mock **`task`** visuals (architecture + data-flow SVGs and a sample plan; no runnable fixture).
+- [references/job-lease/](references/job-lease/) — mock **`change-plan`** (decision callout shape, flow SVG, before/after, implementation, unchanged, status).
+
+Scenario choices in examples are not requirements for other plans.

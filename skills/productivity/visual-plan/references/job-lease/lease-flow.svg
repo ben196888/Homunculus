@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="900" viewBox="0 0 720 900" role="img" aria-labelledby="lease-flow-title lease-flow-desc">
+<title id="lease-flow-title">Job lease: claim, work, and timeout paths</title>
+<desc id="lease-flow-desc">Proposed worker flow: claim a job with a lease, finish and ack, or let the lease expire so another worker can reclaim it.</desc>
+<defs>
+  <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#526176" /></marker>
+  <style>
+    .box { fill:#f4f7fb; stroke:#526176; stroke-width:2; }
+    .decision { fill:#fff8e8; stroke:#526176; stroke-width:2; }
+    .terminal { fill:#e8f5ee; stroke:#2f6b4f; stroke-width:2; }
+    .label { font-family: ui-sans-serif, system-ui, sans-serif; font-size:16px; fill:#1b2430; text-anchor:middle; }
+    .edge { font-family: ui-sans-serif, system-ui, sans-serif; font-size:13px; fill:#526176; text-anchor:middle; }
+    .caption { font-family: ui-sans-serif, system-ui, sans-serif; font-size:13px; fill:#526176; }
+  </style>
+</defs>
+<rect width="720" height="900" fill="#ffffff" />
+<text class="caption" x="24" y="28">Proposed paths only — mock scenario, not a live system.</text>
+
+<rect class="terminal" x="220" y="48" width="280" height="56" rx="10" />
+<text class="label" x="360" y="82">Job available in queue</text>
+
+<line x1="360" y1="104" x2="360" y2="140" stroke="#526176" stroke-width="2" marker-end="url(#arrow)" />
+
+<rect class="box" x="200" y="140" width="320" height="64" rx="10" />
+<text class="label" x="360" y="168">Worker claims job</text>
+<text class="label" x="360" y="190" style="font-size:13px;fill:#526176">sets lease_expires_at (new)</text>
+
+<line x1="360" y1="204" x2="360" y2="240" stroke="#526176" stroke-width="2" marker-end="url(#arrow)" />
+
+<polygon class="decision" points="360,240 480,300 360,360 240,300" />
+<text class="label" x="360" y="304">Finished before lease?</text>
+
+<line x1="480" y1="300" x2="580" y2="300" stroke="#526176" stroke-width="2" marker-end="url(#arrow)" />
+<text class="edge" x="530" y="288">yes</text>
+<rect class="terminal" x="580" y="272" width="120" height="56" rx="10" />
+<text class="label" x="640" y="306">Ack / done</text>
+
+<line x1="360" y1="360" x2="360" y2="400" stroke="#526176" stroke-width="2" marker-end="url(#arrow)" />
+<text class="edge" x="392" y="384">no</text>
+
+<polygon class="decision" points="360,400 500,470 360,540 220,470" />
+<text class="label" x="360" y="466">Lease expired?</text>
+<text class="label" x="360" y="486" style="font-size:13px;fill:#526176">new check</text>
+
+<line x1="500" y1="470" x2="580" y2="470" stroke="#526176" stroke-width="2" marker-end="url(#arrow)" />
+<text class="edge" x="540" y="458">yes</text>
+<rect class="terminal" x="580" y="442" width="120" height="56" rx="10" />
+<text class="label" x="640" y="476">Requeue</text>
+
+<line x1="360" y1="540" x2="360" y2="590" stroke="#526176" stroke-width="2" marker-end="url(#arrow)" />
+<text class="edge" x="400" y="570">no / still working</text>
+
+<rect class="box" x="220" y="590" width="280" height="56" rx="10" />
+<text class="label" x="360" y="624">Continue work / heartbeat</text>
+
+<line x1="360" y1="646" x2="360" y2="690" stroke="#526176" stroke-width="2" marker-end="url(#arrow)" />
+<text class="caption" x="372" y="674">loops to finished check</text>
+
+<rect class="box" x="40" y="760" width="640" height="100" rx="10" />
+<text class="label" x="360" y="800" style="text-anchor:middle">Unchanged: queue storage, job payload schema, success ack API</text>
+<text class="label" x="360" y="828" style="font-size:13px;fill:#526176;text-anchor:middle">Only claim + expiry reclaim paths are proposed in this mock.</text>
+</svg>
