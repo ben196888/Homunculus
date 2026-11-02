@@ -2,8 +2,8 @@
 name: homunculus-productivity-visual-plan
 description: >
   Turn a plan, RFC, comparison, experiment write-up, or approval-oriented
-  implementation plan into diagrams-first artifacts (plan.md, visual-plan.md,
-  visual-plan.html, and a Canvas when the environment supports one) using a
+  implementation plan into diagrams-first artifacts (plan.md and visual-plan.md,
+  plus visual-plan.html and a Canvas when the environment supports them) using a
   visualisation guideline and named templates. Use whenever planning work before
   implementation — including phrases like visual plan, plan this, show me the
   plan, plan for X, we need a plan, we need an RFC, design doc, RFC before,
@@ -74,13 +74,13 @@ Rules:
 - Prefer stable section ids (`{#slug}`) and per-commit or per-phase tags on diagram nodes so all outputs share structure.
 - End with the closing lists the template (or user) includes — e.g. **Verification** / **Out of scope**, or **Unchanged** / **Status** on `implementation-plan`; do not invent sections the template omitted unless the user asked.
 
-## Outputs (every run)
+## Outputs
 
-Produce these from the **same sections and diagrams** (same facts):
+Produce these from the **same sections and diagrams** (same facts). Outputs 1–2 are **required** on every run. Outputs 3–4 are **optional**: produce each one when the environment supports it, and **skip it** when it does not (for example no way to write or open an HTML file, no Canvas tool, or the user opted out). Never block the plan on a skipped output; say which outputs were skipped and why in one line.
 
 1. **`plan.md`** — plain Markdown prose/bullets, **no diagrams**. The conventional wordy form of the plan (useful as the "before" in a comparison and for terminals that will not render Mermaid).
 2. **`visual-plan.md`** — diagrams-first Markdown (embedded Mermaid; SVG files beside it when needed). Put `template: <id>` at the top.
-3. **`visual-plan.html`** — one **self-contained** interactive HTML page of the same plan:
+3. **`visual-plan.html`** (optional; skip when unavailable) — one **self-contained** interactive HTML page of the same plan:
    - Mermaid via CDN (or inline) + small vanilla JS; **no build step**, no bundler
    - Collapsible sections
    - Heat-map hover → risk/impact reason (when a heat map exists)
@@ -88,9 +88,9 @@ Produce these from the **same sections and diagrams** (same facts):
    - Optional click on architecture nodes → files/commits
    - **Before/after workflow toggle** when a plain `plan.md` (or before-state diagram) exists for comparison
    - Axis titles on heat maps: Risk along the left, Impact under the columns
-4. **Canvas** (when the agent environment supports Canvas) — publish the same sections as an interactive Canvas page the reviewer can open in the product UI (for example Cursor/Grok Bot `WriteCanvas`). Map sections to the host's callout, diagram, table, steps, properties/unchanged, and checklist building blocks when those exist. **Skip this output** when Canvas is unavailable; still emit the three files above and say the Canvas was skipped.
+4. **Canvas** (optional; skip when unavailable) — when the agent environment supports Canvas, publish the same sections as an interactive Canvas page the reviewer can open in the product UI (for example Cursor/Grok Bot `WriteCanvas`). Map sections to the host's callout, diagram, table, steps, properties/unchanged, and checklist building blocks when those exist. **Skip this output** when Canvas is unavailable.
 
-Save the file outputs next to each other in the working directory the user named (or a sensible draft folder), report their paths, and report the Canvas link when one was created.
+Save the file outputs next to each other in the working directory the user named (or a sensible draft folder), report their paths, report the Canvas link when one was created, and list any skipped outputs.
 
 ## Examples
 

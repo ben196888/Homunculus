@@ -14,5 +14,5 @@ Prefer **implementation-plan** when the artifact is for human approval (decision
 
 Optional if needed: architecture or data-flow diagrams as extra sections the user requests.
 
-Outputs: follow SKILL.md — emit plan.md, visual-plan.md, visual-plan.html, and a
-Canvas when the environment supports one (skip Canvas when unavailable).
+Outputs: follow SKILL.md — always emit plan.md and visual-plan.md; also emit
+visual-plan.html and a Canvas when the environment supports them (skip either when unavailable).

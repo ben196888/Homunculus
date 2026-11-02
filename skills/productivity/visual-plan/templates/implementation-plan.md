@@ -26,5 +26,5 @@ user asks (those belong on **task** / **rfc**).
 Keep content generic to the change under review; do not bake in product- or
 bot-specific names unless the user supplied them.
 
-Outputs: follow SKILL.md — emit plan.md, visual-plan.md, visual-plan.html, and a
-Canvas when the environment supports one (skip Canvas when unavailable).
+Outputs: follow SKILL.md — always emit plan.md and visual-plan.md; also emit
+visual-plan.html and a Canvas when the environment supports them (skip either when unavailable).

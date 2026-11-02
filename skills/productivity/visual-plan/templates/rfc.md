@@ -13,5 +13,5 @@ Use for cross-cutting or architectural alignment before implementation. This is 
 | Verification | Short checklist |
 | Out of scope / non-goals | Short list |
 
-Outputs: follow SKILL.md — emit plan.md, visual-plan.md, visual-plan.html, and a
-Canvas when the environment supports one (skip Canvas when unavailable).
+Outputs: follow SKILL.md — always emit plan.md and visual-plan.md; also emit
+visual-plan.html and a Canvas when the environment supports them (skip either when unavailable).
