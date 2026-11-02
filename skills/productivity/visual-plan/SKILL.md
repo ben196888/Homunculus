@@ -40,9 +40,9 @@ Stable ids (rename = replace the id string in every row location below):
 | `tech-comparison` | [templates/tech-comparison.md](templates/tech-comparison.md) | Choosing among technologies or approaches |
 | `ab-test-report` | [templates/ab-test-report.md](templates/ab-test-report.md) | Experiment write-up / go-no-go from measured results |
 
-**Rename checklist for an id:** `templates/<id>.md` filename + H1/`template-id` comment; this table; `development-workflow` template guidance; README skill blurb; `<!-- template: <id> -->` in references; cross-mentions in other templates or SKILL prose.
+**Rename checklist for an id:** `templates/<id>.md` filename + H1/`template-id` comment; this table; README skill blurb; `<!-- template: <id> -->` in references; cross-mentions in other templates or SKILL prose.
 
-`development-workflow`'s document step: run visual-plan with **`rfc`** for large or cross-cutting design, or **`implementation-plan`** for a concrete behavior/system change that needs approval before coding (unless the user overrode sections or named another template).
+`development-workflow`'s document step uses **`rfc`** only (unless the user overrode sections or named another template). Use **`implementation-plan`** when the user or caller asks for an approval-oriented plan directly.
 
 Pick **`implementation-plan`** (not **`task`**) when the deliverable is a decision callout, before/after behavior table, unchanged list, and status checklist for human approval before coding. Keep **`task`** for commit-sized engineering breakdowns (heat map + commit timeline). Keep **`rfc`** for cross-cutting architecture with option trade-offs.
 

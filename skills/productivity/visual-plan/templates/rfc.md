@@ -1,6 +1,6 @@
 # Template: rfc
 
-Use for cross-cutting or architectural alignment before implementation. This is what `development-workflow`'s document step should invoke for large or cross-cutting design (use **implementation-plan** instead when the ask is an approval-oriented concrete behavior change).
+Use for cross-cutting or architectural alignment before implementation. This is the template `development-workflow`'s document step invokes. Use **implementation-plan** instead when someone asks directly for an approval-oriented concrete behavior change.
 
 | Section | Default visual |
 | --- | --- |
