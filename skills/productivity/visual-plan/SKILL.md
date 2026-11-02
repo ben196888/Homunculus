@@ -1,12 +1,13 @@
 ---
 name: homunculus-productivity-visual-plan
 description: >
-  Turn a plan, RFC, comparison, or experiment write-up into three diagrams-first
-  artifacts (plan.md plain prose, visual-plan.md, visual-plan.html) using a
-  visualisation guideline and named templates. Use whenever planning work before
-  implementation — including phrases like visual plan, plan this, show me the
-  plan, plan for X, we need a plan, we need an RFC, design doc, RFC before,
-  multi-commit plan, tech comparison, A/B or experiment report, or when
+  Turn a plan, RFC, comparison, experiment write-up, or approval-oriented change
+  plan into three diagrams-first artifacts (plan.md plain prose, visual-plan.md,
+  visual-plan.html) using a visualisation guideline and named templates. Use
+  whenever planning work before implementation — including phrases like visual
+  plan, plan this, show me the plan, plan for X, we need a plan, we need an RFC,
+  design doc, RFC before, multi-commit plan, change plan, implementation plan,
+  before/after plan, tech comparison, A/B or experiment report, or when
   development-workflow reaches its document step. Also use for before/after plan
   comparison artifacts. Skip one-line fixes and pure prose edits. Do not use when the user explicitly asks for
   pstack architect, statechart, or technical-writing and that skill fully covers
@@ -21,12 +22,14 @@ A **visualisation guideline**, not a fixed document outline. Choose *how* each s
 ## Section source (priority)
 
 1. **User-provided sections always win.** If the user lists headings or a custom outline, use that exact structure.
-2. Else use a **named template** the user or caller asked for (`task`, `rfc`, `tech-comparison`, `ab-test-report`).
+2. Else use a **named template** the user or caller asked for (`task`, `change-plan`, `rfc`, `tech-comparison`, `ab-test-report`).
 3. Else pick the **closest template**, and state which one you picked and why in one line at the top (`template: <name> · reason: …`).
 
-Templates live beside this skill: [templates/](templates/). Each file lists sections and the default visual for that section. The four starters are enough for plan / RFC / compare / experiment asks; do not invent new template files unless the user asks.
+Templates live beside this skill: [templates/](templates/). Each file lists sections and the default visual for that section. The five starters cover commit-sized plans, approval-oriented change plans, RFCs, tech comparisons, and experiment reports; do not invent new template files unless the user asks.
 
 `development-workflow`'s document step means: run visual-plan with the **rfc** template (unless the user overrode sections or named another template).
+
+Pick **change-plan** (not **task**) when the deliverable is a decision callout, before/after behavior table, unchanged list, and status checklist for human approval before coding. Keep **task** for commit-sized engineering breakdowns (heat map + commit timeline). Keep **rfc** for cross-cutting architecture with option trade-offs.
 
 ## Visualisation guideline
 
@@ -34,7 +37,9 @@ Map content kinds to visuals (pick only what the content needs):
 
 | Content kind | Default visual |
 | --- | --- |
+| Proposed decision for approval | Decision callout (lead + short proposal) |
 | Steps, user flow, before→after process | Workflow chart (Mermaid flowchart) |
+| Behavior today vs after a change | Before/after table |
 | Components, boundaries, add/change/remove | Architecture diagram |
 | Requests, payloads, contracts, ordering | Data-flow or sequence diagram |
 | Impact × risk, effort, or score intensity | Heat map (SVG if Mermaid cannot) |
@@ -42,6 +47,8 @@ Map content kinds to visuals (pick only what the content needs):
 | Options with choice + why | Decision table |
 | Multi-criteria option scores | Scored matrix |
 | Experiment metrics / lifts | Charts with confidence ranges |
+| What deliberately stays the same | Unchanged list / labeled properties |
+| Plan progress (approve → ship) | Status checklist |
 
 Rules:
 
@@ -50,7 +57,7 @@ Rules:
 - **Mermaid by default**; SVG only where Mermaid cannot (e.g. heat-map grid, custom charts).
 - **Render-check** every diagram before presenting.
 - Prefer stable section ids (`{#slug}`) and per-commit or per-phase tags on diagram nodes so all three outputs share structure.
-- End with short **Verification** and **Out of scope** lists when the template (or user) includes them; do not invent sections the template omitted unless the user asked.
+- End with the closing lists the template (or user) includes — e.g. **Verification** / **Out of scope**, or **Unchanged** / **Status** on change-plan; do not invent sections the template omitted unless the user asked.
 
 ## Outputs (every run)
 

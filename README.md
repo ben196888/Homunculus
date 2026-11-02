@@ -79,7 +79,7 @@ plugin step prints a skip note.
 
 ## Skills
 
-- `homunculus-productivity-visual-plan` - diagrams-first plans (plan.md, visual-plan.md, visual-plan.html) via a visualisation guideline and templates (task, rfc, tech-comparison, ab-test-report).
+- `homunculus-productivity-visual-plan` - diagrams-first plans (plan.md, visual-plan.md, visual-plan.html) via a visualisation guideline and templates (task, change-plan, rfc, tech-comparison, ab-test-report).
 - `homunculus-productivity-create-printable-html` - self-contained, multilingual HTML documents optimized for printing.
 - `homunculus-programming-codebase-search` - fast repository exploration using `rg`.
 - `homunculus-programming-autosquash` - safely fold marked fixup and squash commits and update the remote branch.
