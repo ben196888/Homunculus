@@ -1,0 +1,9 @@
+{
+  "servers": {
+    "discord": {
+      "command": "npx",
+      "args": ["-y", "discord-mcp@latest"],
+      "env_vars": ["DISCORD_TOKEN"]
+    }
+  }
+}

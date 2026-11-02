@@ -42,11 +42,117 @@ List available skills without installing:
 npx skills add github.com/ben196888/homunculus --list
 ```
 
-## Install script (all agents on a machine)
+## Machine setup (Codex, Claude Code, Cursor)
 
-For a shared agent machine (Claude Code, Codex, and Cursor), run the
-idempotent installer. Each harness gets exactly **one** copy of every skill.
-Third-party skills reach each harness either as a native **plugin** or as a
+`scripts/install.sh` is the official, idempotent setup for any machine that
+runs coding agents: an agent VM (such as a Grok Bot box) or a daily laptop,
+on macOS or Linux. It installs global instructions, skills, the pstack
+Claude Code plugin, and MCP servers.
+
+One-liner (no clone needed):
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/ben196888/homunculus/main/scripts/install.sh | bash
+```
+
+When it is not run from inside a Homunculus checkout, the script fetches a
+pinned copy (detached at `--ref`, default `main`) into `~/.homunculus` and
+runs from there; rerunning updates that copy. If `~/.homunculus` has local
+changes it is left as-is. Needs `git`, `python3`, and (for skills) `npx`.
+
+From a checkout:
+
+```bash
+./scripts/install.sh --source .          # skills from this checkout
+./scripts/install.sh                     # skills from github.com/ben196888/homunculus
+./scripts/install.sh --dry-run --source .
+```
+
+Pass flags through the one-liner with `bash -s --`:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/ben196888/homunculus/main/scripts/install.sh | bash -s -- --yes --tools codex,claude
+```
+
+### Flags
+
+| Flag | Effect |
+| --- | --- |
+| `-n`, `--dry-run` | Print what would change; write nothing |
+| `-y`, `--yes` | Never prompt; differing instruction files get the default (merge) |
+| `--merge` | Differing instruction file: back up, put the Homunculus block on top, keep existing content below (default) |
+| `--overwrite` | Differing instruction file: back up, then replace |
+| `--skip` | Differing instruction file: leave it alone |
+| `--tools codex,claude,cursor` | Limit every step to these tools (default: all three) |
+| `--source PATH\|URL` | Where skills come from (positional `SOURCE` still works; `.` = this checkout) |
+| `--ref REF` | Git ref for the `~/.homunculus` copy (env `HOMUNCULUS_REF`) |
+| `--no-instructions` / `--no-skills` / `--no-plugin` | Skip that step |
+| `--no-mcp` | Skip MCP configuration |
+| `--mcp` | Configure MCP even on a Grok Bot machine |
+
+Environment: `HOMUNCULUS_HOME` (checkout dir, default `~/.homunculus`),
+`HOMUNCULUS_REPO_URL`, `HOMUNCULUS_GROK_BOT` (`1` force / `0` disable Grok
+Bot detection), `CODEX_HOME`, `CLAUDE_CONFIG_DIR`.
+
+### Per-tool support
+
+| | Codex | Claude Code | Cursor (incl. Grok Bot on Cursor) |
+| --- | --- | --- | --- |
+| Global instructions | `~/.codex/AGENTS.md` | `~/.claude/CLAUDE.md` | `~/.cursor/rules/homunculus-global.mdc` (`alwaysApply: true`) |
+| Homunculus skills | full set mirrored to `~/.codex/skills` | non-pstack set in `~/.claude/skills` | non-pstack set in `~/.agents/skills` |
+| pstack | vendored aliases (in the skill set) | `pstack@cursor-plugins` plugin | Cursor's native pstack plugin |
+| MCP (when detected) | `[mcp_servers.*]` appended to `~/.codex/config.toml` | `claude mcp add --scope user` | `~/.cursor/mcp.json` |
+| Detected by | `codex` on `PATH` or `Codex.app` | `claude` on `PATH` | `cursor`/`cursor-agent` on `PATH` or `Cursor.app` |
+
+Instructions and skills install for every tool in `--tools`; MCP is only
+written for detected tools. Detection looks only at binaries on `PATH` and app
+bundles in `/Applications` or `~/Applications` — never at `~/.codex`,
+`~/.claude` or `~/.cursor`, because the instructions step creates those, which
+would make a second run configure MCP that the first run skipped.
+
+`--dry-run` writes nothing under `HOME` and does not invoke `claude` at all
+(even its read-only subcommands create `~/.claude.json`), so Claude Code MCP and
+plugin steps are reported as "would run (unless already configured)".
+
+### Global instructions
+
+[`agentic/AGENTS.md`](agentic/AGENTS.md) is the single source. At install
+time it is wrapped in a marked block
+(`<!-- BEGIN HOMUNCULUS GLOBAL INSTRUCTIONS ... -->` …
+`<!-- END HOMUNCULUS GLOBAL INSTRUCTIONS -->`) and written to each tool's
+file; the Cursor rule adds always-apply frontmatter. Preview with
+`python3 scripts/agent_setup.py render --tool claude`.
+
+- Missing file: created.
+- File already has the block: only the block is refreshed; text around it stays.
+- File is an unmodified copy from the old mac-set-up `agentic/` installer:
+  backed up and replaced.
+- Any other existing file: backed up to `<file>.homunculus-bak-<timestamp>`,
+  then merged. On a terminal you are asked to merge, overwrite, skip, or
+  view a diff; without a TTY (agent VMs, CI) the `--merge`/`--overwrite`/`--skip`
+  flag decides, defaulting to merge.
+
+Nothing is backed up or rewritten when the file is already current, so a
+rerun changes nothing.
+
+### MCP servers
+
+Servers are listed in [`agentic/mcp-servers.json`](agentic/mcp-servers.json)
+(currently Discord, `npx -y discord-mcp@latest`). Entries name the env vars a
+server needs (`env_vars`); secret values are never written to config. Codex
+gets `env_vars = [...]`, Cursor gets `"env": {"VAR": "${env:VAR}"}`, and
+Claude Code inherits the variable from your shell. Export them yourself,
+e.g. `export DISCORD_TOKEN=...` in your shell profile. Existing entries with
+the same name are never changed.
+
+**Grok Bot machines** supply their own connectors, so the MCP step is skipped
+automatically when `/home/box/agent-data` exists (override the path with
+`HOMUNCULUS_GROK_BOT_MARKER`, or set `HOMUNCULUS_GROK_BOT=1`/`0`). Use
+`--mcp` to configure anyway, or `--no-mcp` to skip MCP on any machine.
+
+### Skills and plugins
+
+Each harness gets exactly **one** copy of every skill. Third-party skills reach each harness either as a native **plugin** or as a
 Homunculus **alias** (vendored copy from `skill-aliases.yml`):
 
 | Third-party source | Skills | Claude Code | Cursor | Codex |
@@ -67,15 +173,37 @@ universal `~/.agents/skills`; Codex gets the full tree mirrored into
 universal agents sharing `~/.agents/skills`, which must stay pstack-free for
 Cursor.
 
-```bash
-./scripts/install.sh            # from github.com/ben196888/homunculus
-./scripts/install.sh .          # from this checkout
-./scripts/install.sh /path/to/Homunculus
-```
-
 Safe to rerun: it reinstalls the same set each time. If `claude` is not on
 `PATH`, or Claude Code is not signed in, the skill copy still succeeds and the
 plugin step prints a skip note.
+
+### Calling it from mac-set-up
+
+mac-set-up should hand its agent setup to Homunculus instead of shipping its
+own `agentic/AGENTS.md`, `CLAUDE.md`, entry, skills, and MCP scripts. In
+`agentic/install.sh`:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/ben196888/homunculus/main/scripts/install.sh | bash -s -- --yes
+```
+
+Add `--ref <tag-or-sha>` to pin a version. Existing `~/.codex/AGENTS.md` and
+`~/.claude/CLAUDE.md` files that mac-set-up installed are recognised and
+replaced (with a backup); hand-edited ones are merged. Third-party skill
+repos that Homunculus does not vendor (such as Caveman) stay in
+mac-set-up.
+
+### Testing the installer
+
+```bash
+python3 -m unittest tests/test_install.py   # or: pnpm test:install
+shellcheck scripts/install.sh
+```
+
+The tests run every install under a throwaway `HOME` with stubbed `npx` and
+`claude`, so they never touch your real `~/.claude`, `~/.codex`, or
+`~/.cursor`. Never run the installer itself against a real HOME to test it;
+use `--dry-run` or `HOME=$(mktemp -d)`.
 
 ## Skills
 
@@ -139,3 +267,22 @@ When an upstream repo contains the same skill name more than once, set
 The resolved upstream commit is recorded in `skill-aliases.lock.yml`. Removing
 an alias from the manifest does not delete files during update; run
 `pnpm skill-alias prune` to remove stale locked aliases explicitly.
+
+## Contributing
+
+Homunculus ships no repo-local `AGENTS.md` or `CLAUDE.md`; the files under
+`agentic/` are the *global* instructions installed on agent machines. Rules
+for working on this repo:
+
+- Commits use Conventional Commits, `<type>(<scope>): <subject>`, with types
+  `feat`, `fix`, `docs`, `refactor`, `test`, `chore`, `style`, `perf`
+  (scopes in use include `productivity`, `programming`, `setup`).
+- Skill ids are `homunculus-<subpath-with-dashes>` and must match their
+  directory under `skills/` (checked by `pnpm validate`).
+- `visual-plan` template ids are the file names in
+  `skills/productivity/visual-plan/templates/` (`task`,
+  `implementation-plan`, `rfc`, `tech-comparison`, `ab-test-report`); add
+  a file there to add a template id.
+- Change global agent instructions only in `agentic/AGENTS.md`; never hand-edit
+  generated copies.
+- Run `pnpm validate`, `pnpm test`, and the `tests/` suites before opening a PR.
