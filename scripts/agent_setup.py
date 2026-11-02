@@ -275,17 +275,18 @@ def mcp_claude(dry_run: bool) -> None:
     servers = load_servers()
     changed = False
     for name, cfg in servers.items():
+        # Claude Code passes its own environment to stdio servers, so the
+        # server reads env_vars from the shell; nothing secret is stored.
+        command = ["claude", "mcp", "add", "--scope", "user", name, "--", cfg["command"], *cfg.get("args", [])]
+        if dry_run:
+            # Never invoke claude here: even `claude mcp get` creates ~/.claude.json.
+            log("  [dry-run] would run (unless already registered): " + " ".join(command))
+            continue
         exists = subprocess.run(
             ["claude", "mcp", "get", name], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
         ).returncode == 0
         if exists:
             log(f"  Claude Code MCP '{name}' already registered")
-            continue
-        # Claude Code passes its own environment to stdio servers, so the
-        # server reads env_vars from the shell; nothing secret is stored.
-        command = ["claude", "mcp", "add", "--scope", "user", name, "--", cfg["command"], *cfg.get("args", [])]
-        if dry_run:
-            log("  [dry-run] would run: " + " ".join(command))
             continue
         result = subprocess.run(command)
         if result.returncode == 0:

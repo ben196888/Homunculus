@@ -1,6 +1,7 @@
 """End-to-end tests for scripts/install.sh.
 
-Every run uses a throwaway HOME and a PATH of stubs (npx, claude) plus
+Every run uses a throwaway HOME and a PATH of stubs (npx, claude, and
+codex/cursor when a test wants them detected) plus
 symlinks to python3/git, so the real ~/.claude, ~/.codex and ~/.cursor are
 never touched and nothing hits the network.
 """
@@ -27,6 +28,8 @@ echo "npx $*" >> "$STUB_STATE/calls.log"
 
 CLAUDE_STUB = """#!/bin/sh
 echo "claude $*" >> "$STUB_STATE/calls.log"
+# Like the real CLI, any invocation creates the user config file.
+touch "$HOME/.claude.json"
 touch "$STUB_STATE/mcp.list" "$STUB_STATE/marketplaces"
 case "$1 $2" in
   "mcp get") grep -qx "$3" "$STUB_STATE/mcp.list"; exit $? ;;
@@ -80,6 +83,10 @@ class InstallTest(unittest.TestCase):
             "LANG": "C.UTF-8",
         }
 
+    def add_tool_stubs(self):
+        for name in ("codex", "cursor"):
+            self.add_stub(name, "#!/bin/sh\nexit 0\n")
+
     def add_stub(self, name, body):
         path = self.bin / name
         path.write_text(body, encoding="utf-8")
@@ -108,8 +115,7 @@ class InstallTest(unittest.TestCase):
         return [p for p in self.home.rglob("*") if ".homunculus-bak-" in p.name]
 
     def test_fresh_install_then_rerun_changes_nothing(self):
-        (self.home / ".codex").mkdir()
-        (self.home / ".cursor").mkdir()
+        self.add_tool_stubs()
         self.install("--source", str(ROOT), "--yes")
 
         source = (ROOT / "agentic" / "AGENTS.md").read_text().strip()
@@ -144,13 +150,37 @@ class InstallTest(unittest.TestCase):
         self.assertEqual(sum(c.startswith("claude plugin marketplace add") for c in self.calls()), 1)
 
     def test_dry_run_writes_nothing(self):
+        self.add_tool_stubs()
         (self.home / ".codex").mkdir()
         out = self.install("--source", str(ROOT), "--dry-run")
         self.assertIn("[dry-run]", out)
+        self.assertIn("would run (unless already registered): claude mcp add", out)
         self.assertEqual(snapshot(self.home), {})
         self.assertEqual([p.name for p in self.home.iterdir()], [".codex"])
         self.assertFalse(any(c.startswith("npx ") for c in self.calls()))
-        self.assertFalse(any(" add " in c or " install " in c for c in self.calls()))
+        # Any claude call, even a read-only probe, would create ~/.claude.json.
+        self.assertFalse(any(c.startswith("claude ") for c in self.calls()))
+
+    def test_mcp_ignores_dirs_created_by_installer(self):
+        # No codex/cursor on PATH: their dirs appear during run one (instructions),
+        # but must not make run two configure their MCP.
+        args = ("--source", str(ROOT), "--yes", "--no-skills", "--no-plugin")
+        codex_cfg = self.home / ".codex" / "config.toml"
+        cursor_cfg = self.home / ".cursor" / "mcp.json"
+        out = self.install(*args)
+        self.assertIn("Codex not detected", out)
+        self.assertIn("Cursor not detected", out)
+        self.assertFalse(codex_cfg.exists())
+        self.assertFalse(cursor_cfg.exists())
+        self.assertTrue((self.home / ".codex" / "AGENTS.md").exists())
+
+        before = snapshot(self.home)
+        out = self.install(*args)
+        self.assertIn("Codex not detected", out)
+        self.assertIn("Cursor not detected", out)
+        self.assertFalse(codex_cfg.exists())
+        self.assertFalse(cursor_cfg.exists())
+        self.assertEqual(snapshot(self.home), before)
 
     def only_instructions(self, *args):
         return self.install("--source", str(ROOT), "--no-skills", "--no-plugin", "--no-mcp", *args)
@@ -197,8 +227,7 @@ class InstallTest(unittest.TestCase):
     def test_grok_bot_skips_mcp_unless_forced(self):
         marker = Path(self.temp.name) / "agent-data"
         marker.mkdir()
-        (self.home / ".codex").mkdir()
-        (self.home / ".cursor").mkdir()
+        self.add_tool_stubs()
         env = {"HOMUNCULUS_GROK_BOT": "", "HOMUNCULUS_GROK_BOT_MARKER": str(marker)}
         args = ("--source", str(ROOT), "--no-skills", "--no-plugin", "--no-instructions")
         out = self.install(*args, env=env)
@@ -211,6 +240,7 @@ class InstallTest(unittest.TestCase):
         self.assertTrue((self.home / ".cursor" / "mcp.json").exists())
 
     def test_mcp_only_for_detected_tools_and_keeps_existing_entries(self):
+        self.add_stub("cursor", "#!/bin/sh\nexit 0\n")
         (self.home / ".cursor").mkdir()
         (self.home / ".cursor" / "mcp.json").write_text('{"mcpServers": {"other": {"url": "https://x"}}}')
         (self.bin / "claude").unlink()
@@ -220,6 +250,7 @@ class InstallTest(unittest.TestCase):
         self.assertFalse((self.home / ".codex").exists())
 
     def test_existing_codex_server_is_left_alone(self):
+        self.add_tool_stubs()
         config = self.home / ".codex" / "config.toml"
         config.parent.mkdir()
         config.write_text('model = "x"\n\n[mcp_servers."discord"]\ncommand = "mine"\n')

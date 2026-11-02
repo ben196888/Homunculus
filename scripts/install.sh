@@ -201,14 +201,15 @@ if [ "${SOURCE}" = "." ]; then
   SOURCE="${ROOT}"
 fi
 
-# Detect tools before any step creates their directories.
+# Detect tools by binary on PATH or installed app bundle only. Never by
+# ~/.codex, ~/.claude or ~/.cursor: this script creates those itself, so
+# using them would make MCP eligibility differ between the first and second run.
 has() { command -v "$1" >/dev/null 2>&1; }
+has_app() { [ -d "/Applications/$1.app" ] || [ -d "${HOME}/Applications/$1.app" ]; }
 HAS_CODEX=0; HAS_CLAUDE=0; HAS_CURSOR=0
-if has codex || [ -d "${CODEX_DIR}" ]; then HAS_CODEX=1; fi
+if has codex || has_app Codex; then HAS_CODEX=1; fi
 if has claude; then HAS_CLAUDE=1; fi
-if has cursor || has cursor-agent || [ -d "${CURSOR_DIR}" ] || [ -d /Applications/Cursor.app ]; then
-  HAS_CURSOR=1
-fi
+if has cursor || has cursor-agent || has_app Cursor; then HAS_CURSOR=1; fi
 
 is_grok_bot() {
   case "${HOMUNCULUS_GROK_BOT:-}" in
@@ -434,6 +435,13 @@ install_pstack_plugin() {
     echo "Install Claude Code, then rerun this script (or run the two commands below)."
     echo "  claude plugin marketplace add cursor/plugins"
     echo "  claude plugin install pstack@cursor-plugins -y"
+    return 0
+  fi
+
+  # Dry run never invokes claude: even read-only subcommands create ~/.claude.json.
+  if [ "${DRY_RUN}" = 1 ]; then
+    echo "[dry-run] would run (unless already configured): claude plugin marketplace add cursor/plugins"
+    echo "[dry-run] would run: claude plugin install pstack@cursor-plugins -y"
     return 0
   fi
 

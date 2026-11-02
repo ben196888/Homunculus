@@ -102,10 +102,17 @@ Bot detection), `CODEX_HOME`, `CLAUDE_CONFIG_DIR`.
 | Homunculus skills | full set mirrored to `~/.codex/skills` | non-pstack set in `~/.claude/skills` | non-pstack set in `~/.agents/skills` |
 | pstack | vendored aliases (in the skill set) | `pstack@cursor-plugins` plugin | Cursor's native pstack plugin |
 | MCP (when detected) | `[mcp_servers.*]` appended to `~/.codex/config.toml` | `claude mcp add --scope user` | `~/.cursor/mcp.json` |
-| Detected by | `codex` on `PATH` or `~/.codex` exists | `claude` on `PATH` | `cursor`/`cursor-agent` on `PATH`, `~/.cursor`, or `/Applications/Cursor.app` |
+| Detected by | `codex` on `PATH` or `Codex.app` | `claude` on `PATH` | `cursor`/`cursor-agent` on `PATH` or `Cursor.app` |
 
 Instructions and skills install for every tool in `--tools`; MCP is only
-written for tools detected before the run starts.
+written for detected tools. Detection looks only at binaries on `PATH` and app
+bundles in `/Applications` or `~/Applications` — never at `~/.codex`,
+`~/.claude` or `~/.cursor`, because the instructions step creates those, which
+would make a second run configure MCP that the first run skipped.
+
+`--dry-run` writes nothing under `HOME` and does not invoke `claude` at all
+(even its read-only subcommands create `~/.claude.json`), so Claude Code MCP and
+plugin steps are reported as "would run (unless already configured)".
 
 ### Global instructions
 
