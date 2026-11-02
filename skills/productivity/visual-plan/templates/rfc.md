@@ -1,6 +1,6 @@
 # Template: rfc
 
-Use for cross-cutting or architectural alignment before implementation. This is what `development-workflow`'s document step should invoke.
+Use for cross-cutting or architectural alignment before implementation. This is what `development-workflow`'s document step should invoke for large or cross-cutting design (use **implementation-plan** instead when the ask is an approval-oriented concrete behavior change).
 
 | Section | Default visual |
 | --- | --- |
@@ -13,4 +13,5 @@ Use for cross-cutting or architectural alignment before implementation. This is 
 | Verification | Short checklist |
 | Out of scope / non-goals | Short list |
 
-Outputs: follow SKILL.md — always emit plan.md, visual-plan.md, and visual-plan.html from these sections.
+Outputs: follow SKILL.md — emit plan.md, visual-plan.md, visual-plan.html, and a
+Canvas when the environment supports one (skip Canvas when unavailable).

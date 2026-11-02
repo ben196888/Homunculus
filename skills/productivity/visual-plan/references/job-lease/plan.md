@@ -1,5 +1,5 @@
 # Mock plan: reclaim jobs when a worker lease expires
-<!-- template: change-plan -->
+<!-- template: implementation-plan -->
 
 Worked example only. Scenario choices here are not requirements for other plans.
 

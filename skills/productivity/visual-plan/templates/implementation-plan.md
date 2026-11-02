@@ -1,5 +1,5 @@
-<!-- template-id: change-plan -->
-# Template: change-plan
+<!-- template-id: implementation-plan -->
+# Template: implementation-plan
 
 Use when proposing a concrete behavior or system change that needs human approval
 before implementation — decision-first, before/after, what stays the same, and a
@@ -26,6 +26,5 @@ user asks (those belong on **task** / **rfc**).
 Keep content generic to the change under review; do not bake in product- or
 bot-specific names unless the user supplied them.
 
-Outputs: follow SKILL.md — emit plan.md, visual-plan.md, and visual-plan.html
-from these sections, plus a hosted interactive page when the environment
-supports one (skip when unavailable).
+Outputs: follow SKILL.md — emit plan.md, visual-plan.md, visual-plan.html, and a
+Canvas when the environment supports one (skip Canvas when unavailable).

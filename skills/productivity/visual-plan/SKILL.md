@@ -1,19 +1,19 @@
 ---
 name: homunculus-productivity-visual-plan
 description: >
-  Turn a plan, RFC, comparison, experiment write-up, or approval-oriented change
-  plan into diagrams-first artifacts (plan.md, visual-plan.md, visual-plan.html,
-  and a hosted interactive page when the environment supports one) using a
+  Turn a plan, RFC, comparison, experiment write-up, or approval-oriented
+  implementation plan into diagrams-first artifacts (plan.md, visual-plan.md,
+  visual-plan.html, and a Canvas when the environment supports one) using a
   visualisation guideline and named templates. Use whenever planning work before
   implementation — including phrases like visual plan, plan this, show me the
   plan, plan for X, we need a plan, we need an RFC, design doc, RFC before,
-  multi-commit plan, change plan, implementation plan, before/after plan, tech
-  comparison, A/B or experiment report, or when development-workflow reaches its
-  document step. Also use for before/after plan comparison artifacts. Skip
-  one-line fixes and pure prose edits. Do not use when the user explicitly asks
-  for pstack architect, statechart, or technical-writing and that skill fully
-  covers the ask (those design or verify code/prose; this skill produces the
-  human review artifact set).
+  multi-commit plan, implementation plan, before/after plan, tech comparison,
+  A/B or experiment report, or when development-workflow reaches its document
+  step. Also use for before/after plan comparison artifacts. Skip one-line fixes
+  and pure prose edits. Do not use when the user explicitly asks for pstack
+  architect, statechart, or technical-writing and that skill fully covers the
+  ask (those design or verify code/prose; this skill produces the human review
+  artifact set).
 ---
 
 # Visual plan
@@ -26,7 +26,7 @@ A **visualisation guideline**, not a fixed document outline. Choose *how* each s
 2. Else use a **named template** the user or caller asked for (see [Template ids](#template-ids)).
 3. Else pick the **closest template**, and state which one you picked and why in one line at the top (`template: <id> · reason: …`).
 
-Templates live beside this skill: [templates/](templates/). Each file lists sections and the default visual for that section. The starters cover commit-sized plans, approval-oriented change plans, RFCs, tech comparisons, and experiment reports; do not invent new template files unless the user asks.
+Templates live beside this skill: [templates/](templates/). Each file lists sections and the default visual for that section. The starters cover commit-sized plans, approval-oriented implementation plans, RFCs, tech comparisons, and experiment reports; do not invent new template files unless the user asks.
 
 ### Template ids
 
@@ -35,16 +35,16 @@ Stable ids (rename = replace the id string in every row location below):
 | Id | File | Prefer when |
 | --- | --- | --- |
 | `task` | [templates/task.md](templates/task.md) | Commit-sized engineering breakdown (heat map + commit timeline) |
-| `change-plan` | [templates/change-plan.md](templates/change-plan.md) | Approval-oriented concrete behavior change (decision callout, before/after, unchanged, status) |
+| `implementation-plan` | [templates/implementation-plan.md](templates/implementation-plan.md) | Approval-oriented concrete behavior change (decision callout, before/after, unchanged, status) |
 | `rfc` | [templates/rfc.md](templates/rfc.md) | Cross-cutting architecture with option trade-offs |
 | `tech-comparison` | [templates/tech-comparison.md](templates/tech-comparison.md) | Choosing among technologies or approaches |
 | `ab-test-report` | [templates/ab-test-report.md](templates/ab-test-report.md) | Experiment write-up / go-no-go from measured results |
 
 **Rename checklist for an id:** `templates/<id>.md` filename + H1/`template-id` comment; this table; `development-workflow` template guidance; README skill blurb; `<!-- template: <id> -->` in references; cross-mentions in other templates or SKILL prose.
 
-`development-workflow`'s document step: run visual-plan with **`rfc`** for large or cross-cutting design, or **`change-plan`** for a concrete behavior/system change that needs approval before coding (unless the user overrode sections or named another template).
+`development-workflow`'s document step: run visual-plan with **`rfc`** for large or cross-cutting design, or **`implementation-plan`** for a concrete behavior/system change that needs approval before coding (unless the user overrode sections or named another template).
 
-Pick **`change-plan`** (not **`task`**) when the deliverable is a decision callout, before/after behavior table, unchanged list, and status checklist for human approval before coding. Keep **`task`** for commit-sized engineering breakdowns (heat map + commit timeline). Keep **`rfc`** for cross-cutting architecture with option trade-offs.
+Pick **`implementation-plan`** (not **`task`**) when the deliverable is a decision callout, before/after behavior table, unchanged list, and status checklist for human approval before coding. Keep **`task`** for commit-sized engineering breakdowns (heat map + commit timeline). Keep **`rfc`** for cross-cutting architecture with option trade-offs.
 
 ## Visualisation guideline
 
@@ -72,7 +72,7 @@ Rules:
 - **Mermaid by default**; SVG only where Mermaid cannot (e.g. heat-map grid, custom charts).
 - **Render-check** every diagram before presenting.
 - Prefer stable section ids (`{#slug}`) and per-commit or per-phase tags on diagram nodes so all outputs share structure.
-- End with the closing lists the template (or user) includes — e.g. **Verification** / **Out of scope**, or **Unchanged** / **Status** on `change-plan`; do not invent sections the template omitted unless the user asked.
+- End with the closing lists the template (or user) includes — e.g. **Verification** / **Out of scope**, or **Unchanged** / **Status** on `implementation-plan`; do not invent sections the template omitted unless the user asked.
 
 ## Outputs (every run)
 
@@ -88,13 +88,13 @@ Produce these from the **same sections and diagrams** (same facts):
    - Optional click on architecture nodes → files/commits
    - **Before/after workflow toggle** when a plain `plan.md` (or before-state diagram) exists for comparison
    - Axis titles on heat maps: Risk along the left, Impact under the columns
-4. **Hosted interactive page** (when the agent environment supports one) — publish the same sections as an interactive page the reviewer can open in the product UI (for example a Canvas/Page host). Map sections to the host's callout, diagram, table, steps, properties/unchanged, and checklist building blocks when those exist. **Skip this output** when no such host is available; still emit the three files above and say the hosted page was skipped.
+4. **Canvas** (when the agent environment supports Canvas) — publish the same sections as an interactive Canvas page the reviewer can open in the product UI (for example Cursor/Grok Bot `WriteCanvas`). Map sections to the host's callout, diagram, table, steps, properties/unchanged, and checklist building blocks when those exist. **Skip this output** when Canvas is unavailable; still emit the three files above and say the Canvas was skipped.
 
-Save the file outputs next to each other in the working directory the user named (or a sensible draft folder), report their paths, and report the hosted page link when one was created.
+Save the file outputs next to each other in the working directory the user named (or a sensible draft folder), report their paths, and report the Canvas link when one was created.
 
 ## Examples
 
 - [references/product-cache/](references/product-cache/) — mock **`task`** visuals (architecture + data-flow SVGs and a sample plan; no runnable fixture).
-- [references/job-lease/](references/job-lease/) — mock **`change-plan`** (decision callout shape, flow SVG, before/after, implementation, unchanged, status).
+- [references/job-lease/](references/job-lease/) — mock **`implementation-plan`** (decision callout shape, flow SVG, before/after, implementation, unchanged, status).
 
 Scenario choices in examples are not requirements for other plans.
