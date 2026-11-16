@@ -6,8 +6,7 @@ Use for cross-cutting or architectural alignment before implementation. This is 
 | --- | --- |
 | Problem | Short prose (≤3 lines) |
 | Current vs proposed | Architecture diagram (two panels or annotated) |
-| Target layout (UI changes) | Whole-screen wireframes at desktop and mobile widths; label widths and highlight the changed region |
-| Expected UI (UI changes) | State mockups (default, hover/active, empty, error as applicable) with real labels and copy |
+| Wireframes (UI changes) | `## Wireframes` near the top: desktop and mobile, current and target, fenced `text` blocks + annotations table |
 | Data flow | Data-flow or sequence diagram |
 | Decision table | Decision table (options, choice, why) |
 | Rollout timeline | Timeline (milestones / phases) |
@@ -15,7 +14,7 @@ Use for cross-cutting or architectural alignment before implementation. This is 
 | Verification | Short checklist |
 | Out of scope / non-goals | Short list |
 
-RFCs that propose UI changes must include **Target layout** and **Expected UI** in the RFC body in `plan.md`, following [UI changes in approved plans](../SKILL.md#ui-changes-in-approved-plans). Embed ASCII/box-drawing wireframes or inline SVG text so hashing and approval include them. For non-UI RFCs, skip both sections and include one line: `Target layout / Expected UI: not applicable — no UI change`.
+RFCs that propose UI changes must include `## Wireframes` near the top of the RFC body in `plan.md` (desktop and mobile, current and target, fenced `text` blocks, plus an Annotations table), following [UI changes in approved plans](../SKILL.md#ui-changes-in-approved-plans), including the hidden-information rule and self-check. For non-UI RFCs, skip the section and include exactly: `Wireframes: not applicable — no UI change`.
 
 Outputs: follow SKILL.md — always emit plan.md and visual-plan.md; also emit
 visual-plan.html and a Canvas when the environment supports them (skip either when unavailable).
