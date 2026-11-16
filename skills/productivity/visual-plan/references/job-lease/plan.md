@@ -3,7 +3,7 @@
 
 Worked example only. Scenario choices here are not requirements for other plans.
 
-Target layout / Expected UI: not applicable — no UI change
+Wireframes: not applicable — no UI change
 
 ## Decision needed
 

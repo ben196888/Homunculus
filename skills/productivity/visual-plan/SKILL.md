@@ -48,16 +48,80 @@ Pick **`implementation-plan`** (not **`task`**) when the deliverable is a decisi
 
 ## UI changes in approved plans
 
-For UI-changing tasks, including task plans and the Dexter plan flow, include both sections in `plan.md` before it is hashed and submitted for approval:
+Every UI plan that is approved and hashed (task plans, RFCs, and the Dexter plan flow, where it is typically the start of `scope`) must contain a `## Wireframes` section **near the top of `plan.md`**, before the long Scope prose. Files, tests, and risks come after it. This replaces the earlier batch-2 convention of separate **Target layout** and **Expected UI** sections.
 
-- **Target layout** — a wireframe of the whole screen at desktop and mobile widths, with the changed region highlighted. Label the widths.
-- **Expected UI** — a mockup of each applicable state (default, hover/active, empty, error), using real labels and copy.
+For each UI change, all four blocks are required:
 
-Embed the wireframes and mockups in `plan.md` itself as ASCII/box-drawing wireframes in fenced text blocks or inline SVG text. Separate image files or visuals only in `visual-plan.html` or Canvas do not satisfy this requirement; those outputs are supplements. The wireframe text must be part of the plan text that gets hashed and approved.
+1. Desktop · current
+2. Desktop · target
+3. Mobile · current
+4. Mobile · target
 
-Ground both sections in the source design: the prototype capture (for OSV, `/workspace/osv-prototype-capture`) and cached Figma (`/workspace/bin/figma-cache`). Never make new Figma MCP reads. Label anything found in neither source as **proposed**.
+Rules:
 
-For non-UI tasks, skip both sections and include one line: `Target layout / Expected UI: not applicable — no UI change`.
+- Each block is a monospace ASCII box drawing in a fenced ```text block. It renders everywhere and is part of the hashed text.
+- Label with exact UI copy (Chinese when the product is Chinese). Mark anything not found in the source design as **proposed**.
+- After the four blocks, add a short **Annotations** table mapping each labelled element to the component/file that changes.
+- Expected-UI *states* (hover, empty, error, flow steps) may follow as extra fenced frames after the four required blocks.
+- An SVG/PNG referenced by content hash for a Canvas/Page is optional. It is a supplement, never a substitute. `visual-plan.html` and Canvas are supplements too.
+- Keep each plan under ~12KB.
+
+Ground the wireframes in the source design: the prototype capture (for OSV, `/workspace/osv-prototype-capture`) and cached Figma (`/workspace/bin/figma-cache`). Never make new Figma MCP reads.
+
+Non-UI plans skip the section and include exactly: `Wireframes: not applicable — no UI change`. The older line `Target layout / Expected UI: not applicable — no UI change` is still accepted as valid.
+
+Template snippet:
+
+````markdown
+## Wireframes
+
+**Desktop · current**
+```text
+┌ 1024px ─────────────────────┐
+│ <exact current copy>        │
+└─────────────────────────────┘
+```
+**Desktop · target**
+```text
+┌ 1024px ─────────────────────┐
+│ <exact target copy> (proposed) │
+└─────────────────────────────┘
+```
+**Mobile · current**
+```text
+┌ 375px ──────┐
+│ ...         │
+└─────────────┘
+```
+**Mobile · target**
+```text
+┌ 375px ──────┐
+│ ...         │
+└─────────────┘
+```
+
+| Label | Component / file | Change |
+| --- | --- | --- |
+| `<exact copy>` | `src/.../Component.tsx` | what changes |
+````
+
+### Game rules / hidden information
+
+Wireframes, flow frames, and described animations or transitions must never reveal hidden information before the player's confirming action. Example: in OSV 換人力 (refill, issue #496), new job cards must not appear in any transition or animation before 確認人力. A plan showing new cards sliding up before confirm was a hidden-information leak. Until confirm, show backs, ghosts, or still-current faces; ×, swap, and 取消 must not deal or flip new faces. The same applies to deck draws, unseen hands, and any other hidden game information. A leak is a **blocking defect**.
+
+### Wireframe self-check
+
+Run before hashing and submitting for approval:
+
+- [ ] `## Wireframes` is near the top of plan.md (or the non-UI exemption line is present)
+- [ ] Before and after, desktop and mobile, in fenced ```text blocks
+- [ ] Exact UI copy; proposed items marked
+- [ ] Annotations map labels to files/components
+- [ ] Hidden information: no frame or animation note reveals hidden info before the confirming action
+- [ ] ASCII is in the hashed text; images/HTML/Canvas are supplements
+- [ ] Plan stays under ~12KB
+
+Worked example: [references/ui-hand-off/plan.md](references/ui-hand-off/plan.md).
 
 ## Visualisation guideline
 
@@ -91,7 +155,7 @@ Rules:
 
 Produce these from the **same sections and diagrams** (same facts). Outputs 1–2 are **required** on every run. Outputs 3–4 are **optional**: produce each one when the environment supports it, and **skip it** when it does not (for example no way to write or open an HTML file, no Canvas tool, or the user opted out). Never block the plan on a skipped output; say which outputs were skipped and why in one line.
 
-1. **`plan.md`** — plain Markdown prose/bullets, with embedded **Target layout** and **Expected UI** wireframes for UI changes as required above; no other diagrams. The conventional wordy form of the plan (useful as the "before" in a comparison and for terminals that will not render Mermaid).
+1. **`plan.md`** — plain Markdown prose/bullets, with an inline `## Wireframes` section for UI changes as required above; no other diagrams. The conventional wordy form of the plan (useful as the "before" in a comparison and for terminals that will not render Mermaid).
 2. **`visual-plan.md`** — diagrams-first Markdown (embedded Mermaid; SVG files beside it when needed). Put `template: <id>` at the top.
 3. **`visual-plan.html`** (optional; skip when unavailable) — one **self-contained** interactive HTML page of the same plan:
    - Mermaid via CDN (or inline) + small vanilla JS; **no build step**, no bundler
@@ -109,5 +173,6 @@ Save the file outputs next to each other in the working directory the user named
 
 - [references/product-cache/](references/product-cache/) — mock **`task`** visuals (architecture + data-flow SVGs and a sample plan; no runnable fixture).
 - [references/job-lease/](references/job-lease/) — mock **`implementation-plan`** (decision callout shape, flow SVG, before/after, implementation, unchanged, status).
+- [references/ui-hand-off/](references/ui-hand-off/) — mock UI plan with the required `## Wireframes` before/after desktop and mobile blocks, annotations, and a hidden-information confirm flow.
 
 Scenario choices in examples are not requirements for other plans.
