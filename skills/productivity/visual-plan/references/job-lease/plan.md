@@ -3,6 +3,8 @@
 
 Worked example only. Scenario choices here are not requirements for other plans.
 
+Target layout / Expected UI: not applicable — no UI change
+
 ## Decision needed
 
 **Proposal:** When a worker claims a job, attach a short lease. If the lease expires before the job is acknowledged, return the job to the queue so another worker can claim it. Successful acks and the public job payload stay the same.

@@ -46,6 +46,19 @@ Stable ids (rename = replace the id string in every row location below):
 
 Pick **`implementation-plan`** (not **`task`**) when the deliverable is a decision callout, before/after behavior table, unchanged list, and status checklist for human approval before coding. Keep **`task`** for commit-sized engineering breakdowns (heat map + commit timeline). Keep **`rfc`** for cross-cutting architecture with option trade-offs.
 
+## UI changes in approved plans
+
+For UI-changing tasks, including task plans and the Dexter plan flow, include both sections in `plan.md` before it is hashed and submitted for approval:
+
+- **Target layout** — a wireframe of the whole screen at desktop and mobile widths, with the changed region highlighted. Label the widths.
+- **Expected UI** — a mockup of each applicable state (default, hover/active, empty, error), using real labels and copy.
+
+Embed the wireframes and mockups in `plan.md` itself as ASCII/box-drawing wireframes in fenced text blocks or inline SVG text. Separate image files or visuals only in `visual-plan.html` or Canvas do not satisfy this requirement; those outputs are supplements. The wireframe text must be part of the plan text that gets hashed and approved.
+
+Ground both sections in the source design: the prototype capture (for OSV, `/workspace/osv-prototype-capture`) and cached Figma (`/workspace/bin/figma-cache`). Never make new Figma MCP reads. Label anything found in neither source as **proposed**.
+
+For non-UI tasks, skip both sections and include one line: `Target layout / Expected UI: not applicable — no UI change`.
+
 ## Visualisation guideline
 
 Map content kinds to visuals (pick only what the content needs):
@@ -69,7 +82,7 @@ Rules:
 
 - Every section **leads with its visual**; caption ≤ ~3 lines.
 - Ground current state in inspected code or data with real paths/figures. Label proposals. Invent nothing.
-- **Mermaid by default**; SVG only where Mermaid cannot (e.g. heat-map grid, custom charts).
+- **Mermaid by default**; SVG only where Mermaid cannot (e.g. heat-map grid, custom charts). UI wireframes use the text formats required above.
 - **Render-check** every diagram before presenting.
 - Prefer stable section ids (`{#slug}`) and per-commit or per-phase tags on diagram nodes so all outputs share structure.
 - End with the closing lists the template (or user) includes — e.g. **Verification** / **Out of scope**, or **Unchanged** / **Status** on `implementation-plan`; do not invent sections the template omitted unless the user asked.
@@ -78,7 +91,7 @@ Rules:
 
 Produce these from the **same sections and diagrams** (same facts). Outputs 1–2 are **required** on every run. Outputs 3–4 are **optional**: produce each one when the environment supports it, and **skip it** when it does not (for example no way to write or open an HTML file, no Canvas tool, or the user opted out). Never block the plan on a skipped output; say which outputs were skipped and why in one line.
 
-1. **`plan.md`** — plain Markdown prose/bullets, **no diagrams**. The conventional wordy form of the plan (useful as the "before" in a comparison and for terminals that will not render Mermaid).
+1. **`plan.md`** — plain Markdown prose/bullets, with embedded **Target layout** and **Expected UI** wireframes for UI changes as required above; no other diagrams. The conventional wordy form of the plan (useful as the "before" in a comparison and for terminals that will not render Mermaid).
 2. **`visual-plan.md`** — diagrams-first Markdown (embedded Mermaid; SVG files beside it when needed). Put `template: <id>` at the top.
 3. **`visual-plan.html`** (optional; skip when unavailable) — one **self-contained** interactive HTML page of the same plan:
    - Mermaid via CDN (or inline) + small vanilla JS; **no build step**, no bundler
