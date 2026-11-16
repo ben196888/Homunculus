@@ -8,6 +8,8 @@ Worked example only. The bundled fixture captures the current state; the two cac
 
 Mock request: reduce repeated repository reads by caching successful product lookups for 60 seconds. Keep the public response contract and missing-product behavior unchanged.
 
+Target layout / Expected UI: not applicable — no UI change
+
 Current state, inspected in the fixture:
 - `fixture/catalog/api.py:1` calls the service and maps `LookupError` to `(404, {"error": "Product not found"})`.
 - `fixture/catalog/service.py:1` delegates every lookup to the repository.
