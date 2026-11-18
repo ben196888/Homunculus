@@ -72,11 +72,11 @@ Non-UI plans skip the section and include exactly: `Wireframes: not applicable �
 
 ### How to produce the PNGs
 
-1. Capture **current** screenshots from a local production build of the real app at 1280 and 390 with headless Playwright.
+1. Capture **current** screenshots from a local production build of the real app at 1280 and 390 with headless Playwright. If there is no existing UI (first release), supply clearly labeled "no existing UI" current frames at both widths instead of a production capture.
 2. Build HTML/CSS mockups of the **target** layout and the main states, using exact UI copy, at the same widths.
 3. Render each mockup with headless Playwright to PNG.
 4. Save files next to `plan.md` (e.g. `img/desktop-1280-current.png`).
-5. Run `sha256sum img/*.png` and fill the `| file | sha256 |` table. Before hashing or submitting for approval, recompute every digest and reject missing or mismatched files — the plan hash covers the table strings, not the PNG bytes on disk.
+5. Run `sha256sum img/*.png` and fill the `| file | sha256 |` table. Before hashing or submitting for approval, recompute every digest and reject missing or mismatched files — the plan hash covers the table strings, not the PNG bytes on disk. When storing a Dexter plan, pass that plan directory (the folder that contains `plan.md` and `img/`) as `createPlanVersion`'s lint-time `planDir`; a scope string alone is reported unverified and rejected.
 
 ```js
 const { chromium } = require('playwright');
