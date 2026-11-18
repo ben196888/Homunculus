@@ -13,14 +13,14 @@ filename, and every id listed in SKILL.md's Template ids rename checklist.
 | Section | Default visual |
 | --- | --- |
 | Decision needed | Decision callout (lead + one-paragraph proposal) at the top |
-| Wireframes (UI changes) | `## Wireframes` right after the callout: desktop and mobile, current and target, fenced `text` blocks + annotations table |
+| Wireframes (UI changes) | `## Wireframes` right after the callout: desktop 1280 and mobile 390, current and target PNG image refs + `\| file \| sha256 \|` table + annotations table |
 | How it works / flow | Workflow chart (Mermaid flowchart; label new checks or paths) |
 | Before vs after | Before/after table (situation × today × after change) |
 | Implementation | Numbered steps (each step: title + short detail) |
 | Unchanged | Short list or labeled properties (what deliberately stays the same) |
 | Status | Checklist (plan → approval → PR → review → deploy / done) |
 
-For UI changes, `## Wireframes` is required near the top of `plan.md` (and inside the hashed text, typically the start of Dexter `scope`): Desktop · current, Desktop · target, Mobile · current, Mobile · target, then an Annotations table. Follow [UI changes in approved plans](../SKILL.md#ui-changes-in-approved-plans), including the hidden-information rule and self-check. Non-UI plans include exactly: `Wireframes: not applicable — no UI change`.
+For UI changes, `## Wireframes` is required near the top of `plan.md` (and inside the hashed text, typically the start of Dexter `scope`): embedded PNG image refs (beside plan.md, relative paths) for Desktop 1280 · current/target and Mobile 390 · current/target plus main states, a `| file | sha256 |` table covering every image (so the plan hash covers image bytes), then an Annotations table. ASCII, HTML, or Canvas are optional extras, not substitutes. Follow [UI changes in approved plans](../SKILL.md#ui-changes-in-approved-plans), including the hidden-information rule and self-check. Non-UI plans include exactly: `Wireframes: not applicable — no UI change`.
 
 Optional if needed: ownership / who-approves table; short prose under the callout
 for investigation context. Do not add heat maps or commit timelines unless the
