@@ -27,14 +27,20 @@ Worked example only: this repo has no app to build, so both current and target f
 ![Desktop · marked, before confirm (1280)](img/desktop-1280-marked.png)
 ![Mobile · marked, before confirm (390)](img/mobile-390-marked.png)
 
+**State · after 確認人力** — new faces (工人D, 工人E) appear only after confirm; 工人B is unchanged
+![Desktop · after confirm (1280)](img/desktop-1280-confirmed.png)
+![Mobile · after confirm (390)](img/mobile-390-confirmed.png)
+
 | file | sha256 |
 | --- | --- |
 | img/desktop-1280-current.png | 521cbc69cae07732e57a5c8e9a07d72360a7f7dc76dd8cd730d0ec4a5edc9a84 |
 | img/desktop-1280-marked.png | 662a800a41ed85211835615363787f83c7f3117215ef0ef4af2e938a349e822d |
 | img/desktop-1280-target.png | ff0dfc7d7dd95e0559c479dbef7abae4cb88e06c488abd9cb1e9376b1cf1bae1 |
+| img/desktop-1280-confirmed.png | f9b8d4d01f15d75c07e97898027d31d7a374043c25abfd23f0a8c60e99f987b8 |
 | img/mobile-390-current.png | 3c2bc0a1997dd7c83001611a51879a51f2b7bae22da2bccbce9358de60cd76cf |
 | img/mobile-390-marked.png | 2332bd35db2a7a1a2572fd62803ebd689cce8037f29c510fd48381b63e59f280 |
 | img/mobile-390-target.png | bad60f7d8f36ef510c3ec12b130a8737f85751d561fe8c659b3954483a2d522e |
+| img/mobile-390-confirmed.png | 495ba320c2bfa6f5a416b0ec72562987c8ff29f2bcf00d845d59331934406510 |
 
 | Label | Component / file | Change |
 | --- | --- | --- |

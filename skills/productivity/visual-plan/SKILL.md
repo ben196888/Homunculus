@@ -76,19 +76,20 @@ Non-UI plans skip the section and include exactly: `Wireframes: not applicable â
 2. Build HTML/CSS mockups of the **target** layout and the main states, using exact UI copy, at the same widths.
 3. Render each mockup with headless Playwright to PNG.
 4. Save files next to `plan.md` (e.g. `img/desktop-1280-current.png`).
-5. Run `sha256sum img/*.png` and fill the `| file | sha256 |` table.
+5. Run `sha256sum img/*.png` and fill the `| file | sha256 |` table. Before hashing or submitting for approval, recompute every digest and reject missing or mismatched files â€” the plan hash covers the table strings, not the PNG bytes on disk.
 
 ```js
 const { chromium } = require('playwright');
 (async () => {
+  const [url, name, width, height] = process.argv.slice(2);
   const b = await chromium.launch();
-  for (const [name, width, height] of [['desktop-1280', 1280, 800], ['mobile-390', 390, 844]]) {
-    const p = await b.newPage({ viewport: { width, height } });
-    await p.goto(process.argv[2]); // http://localhost:3000/... or file:///.../mock.html
-    await p.screenshot({ path: `img/${name}-current.png` });
-  }
+  const p = await b.newPage({ viewport: { width: Number(width), height: Number(height) } });
+  await p.goto(url); // http://localhost:3000/... or file:///.../mock.html
+  await p.screenshot({ path: `img/${name}.png` }); // e.g. desktop-1280-current, mobile-390-target
   await b.close();
 })();
+// node shot.js http://localhost:3000/hand desktop-1280-current 1280 800
+// node shot.js file:///tmp/mock-target.html desktop-1280-target 1280 800
 ```
 
 ### Game rules / hidden information
@@ -103,6 +104,7 @@ Run before hashing and submitting for approval:
 - [ ] Desktop (1280) and mobile (390) PNG before/after image refs, plus main screen states
 - [ ] Images live beside plan.md (e.g. img/) as relative Markdown image refs
 - [ ] `| file | sha256 |` table lists every referenced image
+- [ ] Recomputed sha256 of each referenced PNG matches the table; missing or mismatched files are rejected before hashing or approval
 - [ ] Exact UI copy; proposed items marked
 - [ ] Annotations map labels to files/components
 - [ ] Hidden information: no frame or animation note reveals hidden info before the confirming action
